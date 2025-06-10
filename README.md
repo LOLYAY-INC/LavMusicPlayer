@@ -106,7 +106,7 @@ java -jar target/your-bot-name-1.0.0.jar
 Configuration (settings.yml)
 
 Create this file and place it in the same directory where you run the bot's JAR file.
-
+```
 # ---------------------------------- #
 #      Lava JDA Music Bot Config     #
 # ---------------------------------- #
@@ -137,7 +137,7 @@ lavalink-password: "pleaseletmein"
 
 # --- Do Not Edit Below This Line ---
 version: "1.0.0"
-
+```
 # Roadmap
 
 Here are some of the features planned for future updates:
