@@ -1,0 +1,11 @@
+discord-bot-token : "YOUR_TOKEN_HERE" # Your discord bot token, get it from https://discord.com/developers/applications
+# Lavalink Server, Get it from https://lavalink-list.appujet.site/non-ssl
+
+lavalink-host: "lavahatry4.techbyte.host" # The standart host will work but isnt recommended
+lavalink-port: 3000
+lavalink-secure: false
+lavalink-password: "NAIGLAVA-dash.techbyte.host"
+
+
+
+version: "1.0.0" # Do not edit
