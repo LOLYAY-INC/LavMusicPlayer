@@ -4,6 +4,7 @@ import dev.arbjerg.lavalink.client.FunctionalLoadResultHandler;
 import dev.arbjerg.lavalink.client.LavalinkClient;
 import dev.arbjerg.lavalink.client.event.TrackEndEvent;
 import dev.arbjerg.lavalink.client.player.Track;
+import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Logger;
@@ -193,6 +194,8 @@ public class PlayerManager {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setTrack(null)
                 .subscribe();
+        JdaMain.jda.getDirectAudioController().disconnect(JdaMain.jda.getGuildById(guildId));
+       // lavaLinkClient.getOrCreateLink(guildId).destroy();
     }
 
     public void setVolume(long guildId, int volume) {

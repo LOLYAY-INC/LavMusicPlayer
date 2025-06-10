@@ -1,5 +1,6 @@
 package io.lolyay;
 
+import dev.arbjerg.lavalink.client.Helpers;
 import dev.arbjerg.lavalink.client.LavalinkClient;
 import io.lolyay.commands.Manager.CommandRegistrer;
 import io.lolyay.config.ConfigManager;
@@ -35,7 +36,7 @@ public class JdaMain {
         EventRegistrer.register();
         Logger.log("Registering events...");
 
-        lavalinkClient = LavaLinkSetup.setup(Long.parseLong(ConfigManager.getConfig("discord-bot-id")), builder);
+        lavalinkClient = LavaLinkSetup.setup(Long.parseLong(String.valueOf(Helpers.getUserIdFromToken(ConfigManager.getConfig("discord-bot-token")))), builder);
         playerManager = new PlayerManager(lavalinkClient);
 
         Logger.log("Music Bot Setup Complete");

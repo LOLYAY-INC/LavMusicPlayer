@@ -1,49 +1,53 @@
 
 package io.lolyay.commands.music;
 
-import io.lolyay.infusiadc.MusicBot.commands.MusicCommandType;
-import io.lolyay.infusiadc.Settingsmanager.FlagManager.FlagManager;
-import io.lolyay.infusiadc.Utils.Emoji;
+import io.lolyay.JdaMain;
+import io.lolyay.commands.Manager.Command;
+import io.lolyay.commands.Manager.CommandOption;
+import io.lolyay.commands.Manager.CommandOptionMultiple;
+import io.lolyay.commands.Manager.CommandOptionType;
+import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 
 
-public class VolumeCmd implements MusicCommandType
+public class VolumeCmd implements Command
 {
 
 
     @Override
     public String getName() {
-        return "m volume";
+        return "volume";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Sets the volume for the current Track";
+    }
+
+    @Override
+    public CommandOption[] getOptions() {
+        return new CommandOption[]{
+                new CommandOption("volume", "The volume to set to", OptionType.INTEGER, true)
+        };
     }
 
     @Override
     public boolean requiresPermission() {
-        return false;
+        return true;
     }
 
     @Override
-    public String[] getAliases() {
-        return new String[0];
-    }
-
-    @Override
-    public void execute(Message message, String[] args) {
-       // Settings settings = event.getClient().getSettingsFor(message.getGuild());
-            int nvolume;
-            try{
-                nvolume = Integer.parseInt(args[0]);
-            }catch(NumberFormatException e){
-                nvolume = -1;
-            }
-            if(nvolume<0 || nvolume>150)
-                message.reply(Emoji.ERROR.getCode() +" Volume must be a valid integer between 0 and 150!");
-            else
-            {
-                //settings.setVolume(nvolume);
-                message.reply( Emoji.SUCCESS.getCode() + nvolume +" Volume changed from `"+ FlagManager.getFlag("MUSICBOT_VOLUME").valuetoString() +"` to `"+nvolume+"`").queue();
-                FlagManager.setFlag("MUSICBOT_VOLUME", nvolume);
-            }
-
+    public void execute(SlashCommandInteractionEvent event) {
+        int nvolume = event.getOption("volume").getAsInt();
+        if(nvolume<0 || nvolume>150)
+            event.reply(Emoji.ERROR.getCode() +" Volume must be a valid integer between 0 and 150!").queue();
+        else
+        {
+            event.reply( Emoji.SUCCESS.getCode() + " Volume changed from `"+ (int) JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).getVolume() +"` to `"+nvolume+"`").queue();
+            JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).setVolume(nvolume);
+        }
 
     }
 }

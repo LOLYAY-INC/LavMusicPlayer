@@ -1,20 +1,19 @@
 
 package io.lolyay.commands.music;
 
-import io.lolyay.infusiadc.Bot;
-import io.lolyay.infusiadc.Commands.Manager.CommandOptionMultiple;
-import io.lolyay.infusiadc.Commands.Manager.KVPair;
-import io.lolyay.infusiadc.MusicBot.audio.que.RepeatMode;
-import io.lolyay.infusiadc.MusicBot.commands.SlashMusicCommandType;
-import io.lolyay.infusiadc.Settingsmanager.FlagManager.FlagManager;
-import io.lolyay.infusiadc.Utils.Emoji;
+import io.lolyay.JdaMain;
+import io.lolyay.commands.Manager.Command;
+import io.lolyay.commands.Manager.CommandOptionMultiple;
+import io.lolyay.musicbot.queue.RepeatMode;
+import io.lolyay.utils.Emoji;
+import io.lolyay.utils.KVPair;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 
-import static io.lolyay.infusiadc.Commands.Manager.CommandOptionMultiple.enumToKVPairArray;
+import static io.lolyay.commands.Manager.CommandOptionMultiple.enumToKVPairArray;
 
 
-public class SlashRepeatCmd implements SlashMusicCommandType {
+public class RepeatModeCommand implements Command {
 
 
     @Override
@@ -62,8 +61,7 @@ public class SlashRepeatCmd implements SlashMusicCommandType {
             event.reply(Emoji.ERROR.getCode() + " Invalid repeat mode: `" + argsstr + "` Valid modes: `false`, `true`, `all`, `one`, `single`").queue();
             return;
         }
-        Bot.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).setRepeatMode(value);
-        FlagManager.setFlag("MUSICBOT_REPEATMODE", value.name());
-        event.reply(Emoji.SUCCESS.getCode() + "Repeat mode is now `"+value.getUserFriendlyName()+"`").queue();
+        JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).setRepeatMode(value);
+        event.reply(Emoji.SUCCESS.getCode() + " Repeat mode is now `"+value.getUserFriendlyName()+"`").queue();
     }
 }

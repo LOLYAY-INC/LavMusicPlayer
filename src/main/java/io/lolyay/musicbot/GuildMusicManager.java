@@ -69,14 +69,17 @@ public class GuildMusicManager {
     /**
      * Skips the current track and plays the next one in the queue.
      */
-    public void skip() {
+    public MusicAudioTrack skip() {
+        MusicAudioTrack currentrack = queManager.getQueue().getFirst();
         MusicAudioTrack nextTrack = queManager.skip();
         if (nextTrack != null) {
             isPlaying = true;
             playerManager.playTrack(nextTrack);
+            return currentrack;
         } else {
             // Skipped the last song, so stop everything.
             stop();
+            return null; // No track to skip, Stopped
         }
     }
 

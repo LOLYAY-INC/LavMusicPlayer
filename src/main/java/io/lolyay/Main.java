@@ -15,6 +15,11 @@ public class Main {
             System.exit(1);
         }
         Logger.log("Loading JDA...");
-        JdaMain.init();
+        try {
+            JdaMain.init();
+        }catch (Exception e){
+            Logger.err("Error while starting bot: ");
+            e.printStackTrace();
+        }
     }
 }

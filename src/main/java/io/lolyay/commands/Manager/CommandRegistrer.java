@@ -1,6 +1,10 @@
 package io.lolyay.commands.Manager;
 
 import io.lolyay.JdaMain;
+import io.lolyay.commands.music.PlayCommand;
+import io.lolyay.commands.music.RepeatModeCommand;
+import io.lolyay.commands.music.SkipCommand;
+import io.lolyay.commands.music.VolumeCmd;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.entities.Guild;
@@ -17,7 +21,10 @@ public class CommandRegistrer {
     private static final Map<String, Command> commandstorun = new HashMap<>();
 
     private static final Command[] commandstoberegistered = {
-
+            new RepeatModeCommand(),
+            new SkipCommand(),
+            new VolumeCmd(),
+            new PlayCommand()
 
     };
 

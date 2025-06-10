@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class YamlParser {
 
-    public static Map<String, String> loadYaml(InputStream filePath) {
+    public static Map<String, Object> loadYaml(InputStream filePath) {
         Yaml yaml = new Yaml();
         try {
             return yaml.load(filePath);

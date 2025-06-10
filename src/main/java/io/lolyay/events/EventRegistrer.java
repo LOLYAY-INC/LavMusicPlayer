@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class EventRegistrer {
     public static void register() {
         registerImpl(new OnReadyEventListener());
+        registerImpl(new OnSlashCommandInteractionEventListener());
 
     }
 

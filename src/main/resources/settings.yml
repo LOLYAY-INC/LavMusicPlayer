@@ -1,6 +1,8 @@
 discord-bot-token : "YOUR_TOKEN_HERE" # Your discord bot token, get it from https://discord.com/developers/applications
 # Lavalink Server, Get it from https://lavalink-list.appujet.site/non-ssl
 
+default-volume: 10 # The default volume of the bot, 1 - 100
+
 lavalink-host: "lavahatry4.techbyte.host" # The standart host will work but isnt recommended
 lavalink-port: 3000
 lavalink-secure: false
