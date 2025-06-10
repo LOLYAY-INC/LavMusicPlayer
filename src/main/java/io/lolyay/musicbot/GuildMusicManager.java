@@ -66,6 +66,10 @@ public class GuildMusicManager {
         playerManager.stop(guildId);
     }
 
+    public boolean isPlaying(){
+        return isPlaying;
+    }
+
     /**
      * Skips the current track and plays the next one in the queue.
      */

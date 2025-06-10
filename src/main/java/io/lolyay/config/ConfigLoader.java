@@ -17,7 +17,7 @@ public class ConfigLoader {
 
     public static void load() throws FileNotFoundException {
         createConfigIfNotExists();
-        Logger.log("Loading config file...");
+        Logger.debug("Loading config file...");
         ConfigManager.loadConfig(YamlParser.loadYaml(new FileInputStream(CONFIG_FILE_NAME)));
     }
 

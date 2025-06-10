@@ -1,6 +1,7 @@
 package io.lolyay.utils;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 
 public class Logger {
     private static String formatTime() {

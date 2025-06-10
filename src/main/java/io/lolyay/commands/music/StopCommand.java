@@ -10,17 +10,17 @@ import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class SkipCommand implements Command {
+public class StopCommand implements Command {
 
 
     @Override
     public String getName() {
-        return "skip";
+        return "stop";
     }
 
     @Override
     public String getDescription() {
-        return "Skips the current track and plays the next one in the queue.";
+        return "Stops the current Playback and Clears the queue.";
     }
 
     @Override
@@ -35,12 +35,12 @@ public class SkipCommand implements Command {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        MusicAudioTrack currentTrack = JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).skip();
-        if(currentTrack == null)
-            event.reply(Emoji.SUCCESS.getCode() + " No more Tracks to play, stopping!").queue();
+        if(JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).isPlaying()){
+            JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).stop();
+            event.reply(Emoji.SUCCESS.getCode() + " Stopped Playback and Cleared the queue!").queue();
+        }
         else
-            event.reply(Emoji.SUCCESS.getCode() + " Skipped: `" + currentTrack.track().getInfo()
-                    .getTitle() + "´ (Requested by " + currentTrack.userData().userName() + " )").queue();
+            event.reply(Emoji.ERROR.getCode() + " No Track is playing, couldn't stop!").queue();
 
     }
 }

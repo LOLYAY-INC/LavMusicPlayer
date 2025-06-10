@@ -28,13 +28,13 @@ public class JdaMain {
     public static Scheduler scheduledTasksManager = new Scheduler();
 
     public static void init() throws InterruptedException {
-        builder = JDABuilder.create(ConfigManager.getConfig("discord-bot-token"), GatewayIntent.getIntents(GatewayIntent.DEFAULT));
-        Logger.log("Created Builder, Setting up...");
+        builder = JDABuilder.createLight(ConfigManager.getConfig("discord-bot-token"), GatewayIntent.getIntents(GatewayIntent.DEFAULT));
+        Logger.debug("Created Builder, Setting up...");
 
         builder.setStatus(OnlineStatus.ONLINE);
 
         EventRegistrer.register();
-        Logger.log("Registering events...");
+        Logger.debug("Registering events...");
 
         lavalinkClient = LavaLinkSetup.setup(Long.parseLong(String.valueOf(Helpers.getUserIdFromToken(ConfigManager.getConfig("discord-bot-token")))), builder);
         playerManager = new PlayerManager(lavalinkClient);
@@ -49,7 +49,7 @@ public class JdaMain {
 
     private static void jdaBuilt(JDA jda) {
 
-        Logger.log("JDA Built, Registering Commands...");
+        Logger.debug("JDA Built, Registering Commands...");
 
         CommandRegistrer.register();
 

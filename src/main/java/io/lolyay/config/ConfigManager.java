@@ -20,6 +20,7 @@ public class ConfigManager {
             System.exit(1);
         }
         version = configMap.get("version").toString();
-        Logger.log("Config loaded, version: " + version);
+        Logger.debug("Config loaded, version: " + version);
+        Logger.log("Loaded Config, Bot version is " + version);
     }
 }

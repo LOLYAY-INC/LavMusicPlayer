@@ -14,7 +14,7 @@ public class Main {
             Logger.err("Error creating / reading config file.");
             System.exit(1);
         }
-        Logger.log("Loading JDA...");
+        Logger.debug("Loading JDA...");
         try {
             JdaMain.init();
         }catch (Exception e){

@@ -1,10 +1,7 @@
 package io.lolyay.commands.Manager;
 
 import io.lolyay.JdaMain;
-import io.lolyay.commands.music.PlayCommand;
-import io.lolyay.commands.music.RepeatModeCommand;
-import io.lolyay.commands.music.SkipCommand;
-import io.lolyay.commands.music.VolumeCmd;
+import io.lolyay.commands.music.*;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.entities.Guild;
@@ -24,7 +21,8 @@ public class CommandRegistrer {
             new RepeatModeCommand(),
             new SkipCommand(),
             new VolumeCmd(),
-            new PlayCommand()
+            new PlayCommand(),
+            new StopCommand()
 
     };
 
@@ -45,10 +43,10 @@ public class CommandRegistrer {
         }
         clearGuildCommands(guild.retrieveCommands().complete(), guild);
         guild.updateCommands().addCommands(commands).complete();
-        Logger.log("Registered Commands for guild: " + guild.getName());
+        Logger.debug("Registered Commands for guild: " + guild.getName());
     }
 
-    public static void register() {
+    public static void register() { // Bot command
         commands.clear();
         for (Command command : commandstoberegistered) {
             registerCommandImpl(command);
@@ -57,14 +55,15 @@ public class CommandRegistrer {
         clearBotCommands(JdaMain.jda.retrieveCommands().complete());
         JdaMain.jda.updateCommands().addCommands(commands).complete();
         // not needed : registertorun();
-        Logger.success("Registered Commands");
+        Logger.debug("Registered Commands");
+        Logger.success("Bot is now Ready, You can use it now!");
 
     }
 
     private static void clearGuildCommands(List<net.dv8tion.jda.api.interactions.commands.Command> commandList, Guild guild) {
         for (net.dv8tion.jda.api.interactions.commands.Command command : commandList) {
             guild.deleteCommandById(command.getId()).complete();
-            Logger.log("Deleted Guild Command: " + command.getName());
+            Logger.debug("Deleted Guild Command: " + command.getName());
         }
     }
 
@@ -75,7 +74,7 @@ public class CommandRegistrer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Logger.log("Deleted Bot Command: " + command.getName());
+            Logger.debug("Deleted Bot Command: " + command.getName());
         }
     }
 
@@ -96,7 +95,7 @@ public class CommandRegistrer {
         else if (command.getOptions() instanceof CommandOptionMultiple[]) {
             commands.add(commandOptionMultipleBuilderImpl(command));
         } else { // Left unchanged! Registering, but warning
-            Logger.warn("Command %s has no options, use with ´CommandOption[0] null´ if no arguments are needed!".formatted(command.getName()));
+            Logger.warn("Command %s has no options, use with ´CommandOption[0]´ if no arguments are needed!".formatted(command.getName()));
             SlashCommandData slash = Commands.slash(command.getName(), command.getDescription());
             commands.add(slash);
         }
