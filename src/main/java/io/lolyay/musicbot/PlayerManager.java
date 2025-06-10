@@ -83,7 +83,7 @@ public class PlayerManager {
                         searchResult -> {
                             final List<Track> tracks = searchResult.getTracks();
                             if (tracks.isEmpty()) {
-                                Logger.log("Search returned no results for: " + finalQuery);
+                                Logger.warn("Search returned no results for: " + finalQuery);
                                 failureCallback.run();
                                 return;
                             }
@@ -96,7 +96,7 @@ public class PlayerManager {
                         () -> searchTrackWithYoutube(finalQuery,member,successCallback,failureCallback),
                         // The load failed with an exception
                         exception -> {
-                            Logger.log("Error loading track: " + exception.getException().getMessage());
+                            Logger.err("Error loading track: " + exception.getException().getMessage());
                             failureCallback.run();
                         }
                 ));
@@ -107,7 +107,7 @@ public class PlayerManager {
 
         // If the query isn't a URL, prefix it with "ytsearch:" to ensure a YouTube search.
         final String finalQuery = "ytsearch:" +  query;
-        Logger.log("Couldnt Locate track, searching with youtube: " + query);
+        Logger.debug("Couldnt Locate track, searching with youtube: " + query);
 
         lavaLinkClient.getOrCreateLink(guildId)
                 .loadItem(finalQuery)
@@ -135,7 +135,7 @@ public class PlayerManager {
                         searchResult -> {
                             final List<Track> tracks = searchResult.getTracks();
                             if (tracks.isEmpty()) {
-                                Logger.log("Search returned no results for: " + finalQuery);
+                                Logger.warn("Search returned no results for: " + finalQuery);
                                 failureCallback.run();
                                 return;
                             }
