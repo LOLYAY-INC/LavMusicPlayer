@@ -28,7 +28,7 @@ public class JdaMain {
     public static Scheduler scheduledTasksManager = new Scheduler();
 
     public static void init() throws InterruptedException {
-        builder = JDABuilder.createLight(ConfigManager.getConfig("discord-bot-token"), GatewayIntent.getIntents(GatewayIntent.DEFAULT));
+        builder = JDABuilder.createDefault(ConfigManager.getConfig("discord-bot-token"), GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_EXPRESSIONS,GatewayIntent.SCHEDULED_EVENTS);
         Logger.debug("Created Builder, Setting up...");
 
         builder.setStatus(OnlineStatus.ONLINE);
