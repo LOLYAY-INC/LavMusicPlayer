@@ -5,7 +5,7 @@ name: Build and Release with Changelog
 on:
   push:
     branches:
-      - master  # Triggers the workflow on a push to the master branch
+      - main  # Triggers the workflow on a push to the master branch
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 jobs:
