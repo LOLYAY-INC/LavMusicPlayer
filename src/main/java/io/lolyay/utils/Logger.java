@@ -1,5 +1,7 @@
 package io.lolyay.utils;
 
+import io.lolyay.JdaMain;
+
 import java.time.LocalTime;
 import java.util.Arrays;
 
@@ -31,6 +33,7 @@ public class Logger {
     }
 
     public static void debug(String message) {
+        if(!JdaMain.debug) return;
         String debugMessage = formatLogMessage(Color.LIGHT_GRAY.getCode(), "DEBUG", message);
         System.out.println(debugMessage);
     }

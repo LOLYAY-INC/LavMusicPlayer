@@ -12,7 +12,7 @@ public class ConfigLoader {
     private static final String CONFIG_FILE_NAME = "settings.yml";
     private static final InputStream CONFIG_TEMPLATE = Main.class.getResourceAsStream("/" + CONFIG_FILE_NAME);
 
-
+    public static boolean overWriteConfig = false;
 
 
     public static void load() throws FileNotFoundException {
@@ -23,7 +23,7 @@ public class ConfigLoader {
 
 
     private static void createConfigIfNotExists() {
-        if (!Path.of(CONFIG_FILE_NAME).toFile().exists()) {
+        if (!Path.of(CONFIG_FILE_NAME).toFile().exists() || overWriteConfig) {
             createConfig();
             Logger.err("Config file created. Please edit it and restart the bot.");
             System.exit(1);
