@@ -1,6 +1,6 @@
-# This workflow builds the project with Java 23, creates a version number,
-# and publishes a GitHub Release with the compiled JAR.
-name: Build and Release
+# This workflow builds the project, creates a versioned tag,
+# and publishes a GitHub Release with an auto-generated changelog.
+name: Build and Release with Changelog
 
 on:
   push:
@@ -11,8 +11,8 @@ on:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
-    # Grant permissions for the workflow to create releases and tags.
     permissions:
+      # Required to create releases and tags, and to generate release notes.
       contents: write
 
     steps:
@@ -20,7 +20,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        # Fetches all history for all branches/tags, which is required for counting commits.
+        # Fetches all history for all branches/tags.
+        # This is REQUIRED for generating release notes.
         fetch-depth: 0
 
     # 2. Set up JDK 23
@@ -30,34 +31,29 @@ jobs:
         java-version: '23'
         distribution: 'temurin'
 
-    # 3. Calculate the version number
-    # Creates a version like "1.0.15" where 15 is the total number of commits on the branch.
-    - name: Generate version number
-      run: echo "RELEASE_VERSION=1.0.$(git rev-list --count HEAD)" >> $GITHUB_ENV
+    # 3. Generate a version tag (e.g., v1.0.172)
+    - name: Generate version tag
+      id: version
+      run: echo "tag=v1.0.$(git rev-list --count HEAD)" >> $GITHUB_OUTPUT
 
     # 4. Build the project with Maven
-    # This compiles the code and packages it into a JAR file in the `target/` directory.
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    # 5. Create a GitHub Release
-    # This uses the official action to create a new tag and release based on the generated version.
-    - name: Create Release
+    # 5. Create a GitHub Release with an auto-generated changelog
+    - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.RELEASE_VERSION }}
-        release_name: Release ${{ env.RELEASE_VERSION }}
-        body: |
-          Automated release based on the latest commit.
-          Version format: 1.0.(commit count)
-        draft: false
-        prerelease: false
+        tag_name: ${{ steps.version.outputs.tag }}
+        release_name: Release ${{ steps.version.outputs.tag }}
+        # This is the magic part! It creates a release body with a list of
+        # commits and a "Full Changelog" link, just like you want.
+        generate_release_notes: true
 
     # 6. Find the compiled JAR file name and path
-    # This step locates the JAR created by Maven, making sure to exclude source/javadoc jars.
     - name: Get JAR filename
       id: get_jar
       run: |
@@ -65,8 +61,7 @@ jobs:
         echo "path=$JAR_FILE" >> $GITHUB_OUTPUT
         echo "name=$(basename $JAR_FILE)" >> $GITHUB_OUTPUT
 
-    # 7. Upload the JAR as a release asset
-    # This attaches the bot's runnable JAR file to the GitHub release created above.
+    # 7. Upload the JAR file as a release asset
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
