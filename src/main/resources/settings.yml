@@ -1,13 +1,30 @@
-discord-bot-token : "YOUR_TOKEN_HERE" # Your discord bot token, get it from https://discord.com/developers/applications
-# Lavalink Server, Get it from https://lavalink-list.appujet.site/non-ssl
+# ---------------------------------- #
+#      LavMusicBot Config     #
+# ---------------------------------- #
 
-default-volume: 10 # The default volume of the bot, 1 - 100
+# Your discord bot token, get it from https://discord.com/developers/applications
+discord-bot-token: "YOUR_TOKEN_HERE"
 
-lavalink-host: "lavahatry4.techbyte.host" # The standart host will work but isnt recommended
-lavalink-port: 3000
+# The default volume of the bot when it starts playing in a new server.
+# Value must be between 1 and 100.
+default-volume: 10
+
+# --- Lavalink Server Details ---
+# Get these from your Lavalink provider or your own server.
+# A list of public servers can be found at https://lavalink-list.appujet.site/
+
+# The hostname or IP address of the Lavalink server.
+lavalink-host: "lavalink.example.com"
+
+# The port the Lavalink server is running on.
+lavalink-port: 2000
+
+# Set to 'true' if your Lavalink server uses a secure (SSL/TLS) connection.
 lavalink-secure: false
-lavalink-password: "NAIGLAVA-dash.techbyte.host"
 
-#WIP role-id : "0" # The id of the role that can use the bot, set to 0 to allow everyone to use the bot, WILL NOT WORK IF BOT IS USED IN MORE THAN ONE GUILD
+# The password for your Lavalink server.
+lavalink-password: "pleaseletmein"
 
-version: "1.0.0" # Do not edit
+
+# --- Do Not Edit Below This Line ---
+version: "1.0.0"

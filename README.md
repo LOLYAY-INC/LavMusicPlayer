@@ -57,45 +57,48 @@ Here are all the available commands:
 | **/skip** | Skips the currently playing song and plays the next one in the queue. |
 | **/volume `<level>`** | Adjusts the player volume from 1 to 100. |
 
-## 🚀 Self-Hosting Guide
 
-Hosting the bot yourself gives you full control and the best performance.
+***
 
-### Prerequisites
+### 🚀 Self-Hosting Guide
 
-- **Java 17 or higher:** You need a recent Java Development Kit (JDK) installed.
-- **A running Lavalink Server:** This bot requires a connection to a Lavalink server to function. You can host one yourself or use a public service.
-    - Find a list of public Lavalink servers [here](https://lavalink-list.appujet.site/).
-    - To host your own, see the [official Lavalink repository](https://github.com/lavalink-devs/Lavalink).
-- **A Discord Bot Token:** You need to create a bot application in the [Discord Developer Portal](https://discord.com/developers/applications).
+This guide is for running the bot using the pre-compiled releases. No development tools are required.
+
+#### Prerequisites
+
+- **Java 17 or higher:** You need Java installed to run the `.jar` file.
+- **A running Lavalink Server:** This bot requires a connection to a Lavalink server. You can find public ones [here](https://lavalink-list.appujet.site/) or host your own.
+- **A Discord Bot Token:** Create a bot application in the [Discord Developer Portal](https://discord.com/developers/applications).
 
 ### Setup Instructions
 
-1.  **Clone the Repository**
-    ```sh
-    git clone https://github.com/your-username/your-repo-name.git
-    cd your-repo-name
-    ```
+1.  **Download the Bot**
+    Go to the [**Latest Release Page**](https://github.com/LOLYAY-INC/LavMusicBot/releases/latest) on GitHub. Download the `.jar` file (e.g., `LavMusicBot-1.0.0.jar`) and save it to a new, empty folder where you want the bot to live.
 
-2.  **Configure `settings.yml`**
-    Create a file named `settings.yml` in the root directory of the project and fill it with your details. A template is provided in the Configuration section below.
-
-3.  **Build the Project**
-    This project uses Maven to build. Run the following command in the root directory:
+2.  **Generate the Configuration File**
+    Open your terminal or command prompt, navigate to the folder where you saved the bot, and run it for the first time with the following command:
     ```sh
-    mvn clean package
+    java -jar LavMusicBot-1.0.0.jar
     ```
-    This will create a `.jar` file in the `target/` directory.
+    *(Replace `LavMusicBot-1.0.0.jar` with the actual name of the file you downloaded).*
+
+    The bot will state that a new configuration file was created and then shut down. This is expected. You will now see a `settings.yml` file in the folder.
+
+3.  **Edit the Configuration**
+    Open the newly created `settings.yml` file with any text editor. Fill in your `discord-bot-token` and your `lavalink-*` details. **The bot will not start without these values.**
 
 4.  **Run the Bot**
-    Execute the compiled JAR file to start your bot (replace the filename with your actual JAR file name).
+    Once you have saved your changes to `settings.yml`, run the exact same command again:
     ```sh
-    java -jar target/your-bot-name-1.0.0.jar
+    java -jar LavMusicBot-1.0.0.jar
     ```
+    This time, the bot will read your configuration and connect to Discord. Congratulations, your bot is now online!
+
+---
 
 ### ⚙️ Configuration (settings.yml)
 
-Create this file and place it in the same directory where you run the bot's JAR file.
+This `settings.yml` file will be automatically generated in the same folder as your `.jar` file after you run it for the first time. Open it and edit the values as needed.
 
 ```yaml
 # ---------------------------------- #
