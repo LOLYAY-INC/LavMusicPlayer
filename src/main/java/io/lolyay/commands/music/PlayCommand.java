@@ -1,10 +1,11 @@
 package io.lolyay.commands.music;
 
-import io.lolyay.infusiadc.Bot;
-import io.lolyay.infusiadc.Commands.Manager.CommandOption;
-import io.lolyay.infusiadc.MusicBot.Rewrite.GuildMusicManager;
-import io.lolyay.infusiadc.MusicBot.commands.SlashMusicCommandType;
-import io.lolyay.infusiadc.Utils.Emoji;
+
+import io.lolyay.JdaMain;
+import io.lolyay.commands.Manager.Command;
+import io.lolyay.commands.Manager.CommandOption;
+import io.lolyay.musicbot.GuildMusicManager;
+import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -14,7 +15,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-public class SecretMusicCommand implements SlashMusicCommandType {
+public class PlayCommand implements Command {
 
     @Override
     public String getName() {
@@ -70,7 +71,7 @@ public class SecretMusicCommand implements SlashMusicCommandType {
 
         // Defer the reply immediately. This shows "Bot is thinking..."
         // and gives us time to search for the track.
-        event.deferReply().setEphemeral(true).queue();
+        event.deferReply().queue();
 
         // Connect if not already in the user's channel, or switch to it
         final AudioManager audioManager = guild.getAudioManager();
@@ -81,9 +82,9 @@ public class SecretMusicCommand implements SlashMusicCommandType {
         // --- 3. Search and Queue ---
 
         final String query = event.getOption("song").getAsString();
-        final GuildMusicManager musicManager = Bot.playerManager.getGuildMusicManager(guild.getIdLong());
+        final GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(guild.getIdLong());
 
-        Bot.playerManager.searchTrack(query, member,
+        JdaMain.playerManager.searchTrack(query, member,
                 // --- SUCCESS CALLBACK ---
                 (track) -> {
                     final boolean isPlayingNow = musicManager.getQueManager().isEmpty();
@@ -91,19 +92,19 @@ public class SecretMusicCommand implements SlashMusicCommandType {
 
                     String response;
                     if (isPlayingNow) {
-                        response = Emoji.PLAY.getCode() + " Now Playing: **" + track.getTrack().getInfo().getTitle() + "**";
+                        response = Emoji.PLAY.getCode() + " Now Playing: **" + track.track().getInfo().getTitle() + "**";
                     } else {
                         int position = musicManager.getQueManager().getQueue().size();
-                        response = Emoji.SUCCESS.getCode() + " Added to queue: **" + track.getTrack().getInfo().getTitle() + "**"
+                        response = Emoji.SUCCESS.getCode() + " Added to queue: **" + track.track().getInfo().getTitle() + "**"
                                 + "\n" + Emoji.MUSIC.getCode() + " Position: **#" + position + "**";
                     }
                     // Use the hook to send the final response
-                    event.getHook().sendMessage(response).setEphemeral(true).queue();
+                    event.getHook().sendMessage(response).queue();
                 },
                 // --- FAILURE CALLBACK ---
                 () -> {
                     String response = Emoji.ERROR.getCode() + " Could not find any results for `" + query + "`.";
-                    event.getHook().sendMessage(response).setEphemeral(true).queue();
+                    event.getHook().sendMessage(response).queue();
                 }
         );
     }

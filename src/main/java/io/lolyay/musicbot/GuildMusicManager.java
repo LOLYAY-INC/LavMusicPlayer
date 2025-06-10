@@ -1,10 +1,11 @@
 package io.lolyay.musicbot;
 
-import io.lolyay.infusiadc.Bot;
-import io.lolyay.infusiadc.MusicBot.Rewrite.PlayerManager;
-import io.lolyay.infusiadc.MusicBot.audio.que.QueManager;
-import io.lolyay.infusiadc.MusicBot.audio.que.RepeatMode;
-import io.lolyay.infusiadc.MusicBot.audio.tracks.MusicAudioTrack;
+
+
+import io.lolyay.JdaMain;
+import io.lolyay.musicbot.queue.QueManager;
+import io.lolyay.musicbot.queue.RepeatMode;
+import io.lolyay.musicbot.tracks.MusicAudioTrack;
 
 import java.util.List;
 
@@ -17,15 +18,17 @@ public class GuildMusicManager {
     private final PlayerManager playerManager;
     private final QueManager queManager;
     private final long guildId;
+    private long volume;
 
     // A flag to track the playing state to prevent race conditions.
     private volatile boolean isPlaying = false;
 
-    public GuildMusicManager(PlayerManager playerManager, long guildId) {
+    public GuildMusicManager(PlayerManager playerManager, long guildId,long volume) {
         this.playerManager = playerManager;
         this.guildId = guildId;
         this.queManager = new QueManager();
         this.queManager.init(); // Load settings like repeat mode
+        this.volume = volume;
     }
 
     /**
@@ -91,7 +94,7 @@ public class GuildMusicManager {
         } else {
             // The queue is now empty, so we are no longer playing.
             this.isPlaying = false;
-            Bot.jda.getDirectAudioController().disconnect(Bot.jda.getGuildById(guildId));
+            JdaMain.jda.getDirectAudioController().disconnect(JdaMain.jda.getGuildById(guildId));
         }
     }
 
@@ -102,5 +105,7 @@ public class GuildMusicManager {
     public List<MusicAudioTrack> getQueue() { return queManager.getQueue(); }
     public void setRepeatMode(RepeatMode mode) { queManager.setRepeatMode(mode); }
     public RepeatMode getRepeatMode() { return queManager.getRepeatMode(); }
+    public void setVolume(long volume) { this.volume = volume; playerManager.setVolume(this.guildId, (int) volume); }
+    public long getVolume() { return this.volume; }
     public QueManager getQueManager() { return queManager; }
 }

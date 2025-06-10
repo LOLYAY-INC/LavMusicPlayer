@@ -4,13 +4,12 @@ import dev.arbjerg.lavalink.client.FunctionalLoadResultHandler;
 import dev.arbjerg.lavalink.client.LavalinkClient;
 import dev.arbjerg.lavalink.client.event.TrackEndEvent;
 import dev.arbjerg.lavalink.client.player.Track;
-import io.lolyay.infusiadc.MusicBot.audio.tracks.MusicAudioTrack;
-import io.lolyay.infusiadc.Settingsmanager.FlagManager.FlagManager;
-import io.lolyay.infusiadc.Utils.Logger;
+import io.lolyay.config.ConfigManager;
+import io.lolyay.musicbot.tracks.MusicAudioTrack;
+import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.entities.Member;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,13 +30,14 @@ public class PlayerManager {
             if (musicManager != null && event.getEndReason().getMayStartNext()) {
                 musicManager.onTrackEnd();
             } else {
+                assert musicManager != null;
                 musicManager.getQueManager().clear();
             }
         });
     }
 
     public synchronized GuildMusicManager getGuildMusicManager(long guildId) {
-        return musicManagers.computeIfAbsent(guildId, id -> new GuildMusicManager(this, id));
+        return musicManagers.computeIfAbsent(guildId, id -> new GuildMusicManager(this, id, Long.parseLong(ConfigManager.getConfig("default-volume"))));
     }
 
     /**
@@ -54,7 +54,7 @@ public class PlayerManager {
         long guildId = member.getGuild().getIdLong();
 
         // If the query isn't a URL, prefix it with "ytsearch:" to ensure a YouTube search.
-        final String finalQuery = isUrl(query) ? query : "ytsearch:" + query;
+        final String finalQuery = query;
 
         lavaLinkClient.getOrCreateLink(guildId)
                 .loadItem(finalQuery)
@@ -69,7 +69,7 @@ public class PlayerManager {
                         playlistLoaded -> {
                             // For this example, we'll just take the first track of the playlist.
                             // In a real bot, you might want to queue all tracks.
-                            Track firstTrack = playlistLoaded.getTracks().get(0);
+                            Track firstTrack = playlistLoaded.getTracks().getFirst();
                             if (firstTrack != null) {
                                 Logger.log("Loaded playlist, taking first track: " + firstTrack.getInfo().getTitle());
                                 MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
@@ -86,13 +86,65 @@ public class PlayerManager {
                                 failureCallback.run();
                                 return;
                             }
-                            final Track firstTrack = tracks.get(0);
+                            final Track firstTrack = tracks.getFirst();
                             Logger.log("Loaded from search: " + firstTrack.getInfo().getTitle());
                             MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
                             successCallback.accept(track);
                         },
                         // No matches were found for the query
-                        failureCallback::run,
+                        () -> searchTrackWithYoutube(finalQuery,member,successCallback,failureCallback),
+                        // The load failed with an exception
+                        exception -> {
+                            Logger.log("Error loading track: " + exception.getException().getMessage());
+                            failureCallback.run();
+                        }
+                ));
+    }
+
+    private void searchTrackWithYoutube(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback) {
+        long guildId = member.getGuild().getIdLong();
+
+        // If the query isn't a URL, prefix it with "ytsearch:" to ensure a YouTube search.
+        final String finalQuery = "ytsearch:" +  query;
+        Logger.log("Couldnt Locate track, searching with youtube: " + query);
+
+        lavaLinkClient.getOrCreateLink(guildId)
+                .loadItem(finalQuery)
+                .subscribe(new FunctionalLoadResultHandler(
+                        // A single track was loaded (e.g., from a direct URL)
+                        trackLoaded -> {
+                            Logger.log("Loaded single track: " + trackLoaded.getTrack().getInfo().getTitle());
+                            MusicAudioTrack track = createMusicAudioTrack(trackLoaded.getTrack(), member);
+                            successCallback.accept(track);
+                        },
+                        // A playlist was loaded
+                        playlistLoaded -> {
+                            // For this example, we'll just take the first track of the playlist.
+                            // In a real bot, you might want to queue all tracks.
+                            Track firstTrack = playlistLoaded.getTracks().getFirst();
+                            if (firstTrack != null) {
+                                Logger.log("Loaded playlist, taking first track: " + firstTrack.getInfo().getTitle());
+                                MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
+                                successCallback.accept(track);
+                            } else {
+                                failureCallback.run();
+                            }
+                        },
+                        // A search result was loaded
+                        searchResult -> {
+                            final List<Track> tracks = searchResult.getTracks();
+                            if (tracks.isEmpty()) {
+                                Logger.log("Search returned no results for: " + finalQuery);
+                                failureCallback.run();
+                                return;
+                            }
+                            final Track firstTrack = tracks.getFirst();
+                            Logger.log("Loaded from search: " + firstTrack.getInfo().getTitle());
+                            MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
+                            successCallback.accept(track);
+                        },
+                        // No matches were found for the query
+                        failureCallback,
                         // The load failed with an exception
                         exception -> {
                             Logger.log("Error loading track: " + exception.getException().getMessage());
@@ -120,9 +172,9 @@ public class PlayerManager {
      */
     private boolean isUrl(String input) {
         try {
-            new URL(input);
+            new URI(input);
             return true;
-        } catch (MalformedURLException e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -130,10 +182,10 @@ public class PlayerManager {
     // --- Player Control Methods ---
 
     public void playTrack(MusicAudioTrack track) {
-        long guildId = track.getUserData().getDcGuildId();
+        long guildId = track.userData().dcGuildId();
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
-                .setTrack(track.getTrack())
-                .setVolume((int) FlagManager.getFlag("MUSICBOT_VOLUME").getValue())
+                .setTrack(track.track())
+                .setVolume((int) getGuildMusicManager(guildId).getVolume())
                 .subscribe();
     }
 

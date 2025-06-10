@@ -6,6 +6,6 @@ lavalink-port: 3000
 lavalink-secure: false
 lavalink-password: "NAIGLAVA-dash.techbyte.host"
 
-
+#WIP role-id : "0" # The id of the role that can use the bot, set to 0 to allow everyone to use the bot, WILL NOT WORK IF BOT IS USED IN MORE THAN ONE GUILD
 
 version: "1.0.0" # Do not edit

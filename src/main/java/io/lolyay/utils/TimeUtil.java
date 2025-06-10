@@ -24,7 +24,7 @@ public class TimeUtil
      */
     public static SeekTime parseTime(String args)
     {
-        if (args.length() == 0) return null;
+        if (args.isEmpty()) return null;
         String timestamp = args;
         boolean relative = false; // seek forward or backward
         boolean isSeekingBackwards = false;

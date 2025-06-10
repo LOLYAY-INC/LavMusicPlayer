@@ -1,7 +1,6 @@
 package io.lolyay.musicbot.queue;
 
-import io.lolyay.infusiadc.MusicBot.audio.tracks.MusicAudioTrack;
-import io.lolyay.infusiadc.Settingsmanager.FlagManager.FlagManager;
+import io.lolyay.musicbot.tracks.MusicAudioTrack;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -10,7 +9,7 @@ import java.util.List;
 
 /**
  * Manages the music queue, including adding, removing, skipping, and repeating tracks.
- *
+ * <p>
  * This implementation uses a "head-of-the-line" approach. The track at index 0
  * of the queue is always considered the currently playing track.
  */
@@ -25,14 +24,7 @@ public class QueManager {
      * This should be called once when the bot or GuildMusicManager is created.
      */
     public void init() {
-        try {
-            // It's safer to wrap this in a try-catch in case the flag value is invalid
-            String repeatModeFlag = FlagManager.getFlag("MUSICBOT_REPEATMODE").valuetoString();
-            this.repeatMode = RepeatMode.valueOf(repeatModeFlag.toUpperCase());
-        } catch (Exception e) {
-            System.err.println("Could not parse MUSICBOT_REPEATMODE flag. Defaulting to OFF. Error: " + e.getMessage());
-            this.repeatMode = RepeatMode.OFF;
-        }
+        this.repeatMode = RepeatMode.OFF;
     }
     /**
      * Called when the current track finishes playing.
@@ -50,24 +42,24 @@ public class QueManager {
         switch (repeatMode) {
             case SINGLE:
                 // Do not advance the queue, just return the current track to play again.
-                return queue.get(0);
+                return queue.getFirst();
 
             case ALL:
                 // Move the current track to the end of the queue.
-                MusicAudioTrack trackToMove = queue.remove(0);
+                MusicAudioTrack trackToMove = queue.removeFirst();
                 queue.add(trackToMove);
                 break;
 
             case OFF:
             default:
                 // Simply remove the track that just finished.
-                queue.remove(0);
+                queue.removeFirst();
                 break;
         }
 
         // After advancing, if the queue is not empty, return the new track at the head.
         if (!queue.isEmpty()) {
-            return queue.get(0);
+            return queue.getFirst();
         }
 
         // The queue is now empty.
@@ -87,12 +79,12 @@ public class QueManager {
 
         // Skipping always removes the head of the queue.
         // If repeat all is on, the skipped track will not be re-added.
-        queue.remove(0);
+        queue.removeFirst();
 
         if (queue.isEmpty()) {
             return null;
         }
-        return queue.get(0);
+        return queue.getFirst();
     }
 
     /**
@@ -147,11 +139,11 @@ public class QueManager {
     public void shuffle() {
         if (queue.size() > 1) {
             // Separate the currently playing track
-            MusicAudioTrack currentTrack = queue.remove(0);
+            MusicAudioTrack currentTrack = queue.removeFirst();
             // Shuffle the rest of the queue
             Collections.shuffle(queue);
             // Add the current track back to the front
-            queue.add(0, currentTrack);
+            queue.addFirst(currentTrack);
         }
     }
 
