@@ -32,4 +32,4 @@ lavalink-password: "pleaseletmein"
 
 
 # --- Do Not Edit Below This Line ---
-version: "${project.version}"
+version: "${app.version}"
