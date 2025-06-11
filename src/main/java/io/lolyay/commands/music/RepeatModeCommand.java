@@ -30,7 +30,7 @@ public class RepeatModeCommand implements Command {
     public CommandOptionMultiple[] getOptions() {
         KVPair<String, String>[] repeatOptions = enumToKVPairArray(RepeatMode.class);
         return new CommandOptionMultiple[] {
-                new CommandOptionMultiple("mode", "The Repeatmode", repeatOptions, OptionType.STRING)
+                new CommandOptionMultiple("mode", "The Repeatmode", repeatOptions, OptionType.STRING,true)
         };
     }
 
