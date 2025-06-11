@@ -7,6 +7,7 @@ public class EventRegistrer {
     public static void register() {
         registerImpl(new OnReadyEventListener());
         registerImpl(new OnSlashCommandInteractionEventListener());
+        registerImpl(new OnGuildVoiceUpdate());
 
     }
 
