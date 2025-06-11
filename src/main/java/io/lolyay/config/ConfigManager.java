@@ -11,8 +11,8 @@ public class ConfigManager {
 
     public static String getConfig(String key) {
         String conf = configMap.get(key).toString();
-        if (conf.equals("${project.version}"))
-            return "A modified In house version of LavMusicBot";
+        if (conf.equals("${app.version}"))
+            return "A development build"; // if project version wasn't replaced for some reason by maven
         return configMap.get(key).toString();
     }
 

@@ -6,14 +6,17 @@
 
     <groupId>io.lolyay</groupId>
     <artifactId>LavMusicBot</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>
         <maven.compiler.target>23</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- This is what flatten-maven-plugin's special mode looks for -->
+        <revision>1.0.${git.commit.count}</revision>
+        <!-- Default for IDEs -->
+        <git.commit.count>LOCAL</git.commit.count>
     </properties>
-
 
     <repositories>
         <repository>
@@ -57,7 +60,54 @@
 
     <build>
         <plugins>
-            <!-- Keep your maven-shade-plugin -->
+            <!-- PLUGIN 1: This is the plugin we are testing. It should set the property. -->
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>9.0.1</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnNoGitDirectory>true</failOnNoGitDirectory>
+                    <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                    <prefix>git</prefix>
+                </configuration>
+            </plugin>
+
+            <!-- PLUGIN 2: THIS IS OUR TEST. It will print the properties to the console. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>verify-git-properties</id>
+                        <phase>initialize</phase> <!-- Runs right after 'validate' -->
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo>--------------------------------------------------</echo>
+                                <echo>--             VERIFYING PROPERTIES             --</echo>
+                                <echo>--------------------------------------------------</echo>
+                                <echo>git.commit.count IS: [${git.commit.count}]</echo>
+                                <echo>revision IS: [${revision}]</echo>
+                                <echo>--------------------------------------------------</echo>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Your other plugins remain for a complete build test -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -71,7 +121,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Keep your maven-jar-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -85,18 +134,9 @@
         </plugins>
 
         <resources>
-            <!-- Keep your resources configuration -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
-                <includes>
-                    <include>**/*.yml</include>
-                    <include>**/*.xml</include>
-                    <include>META-INF/**</include>
-                </includes>
-                <excludes>
-                    <exclude>natives/**</exclude>
-                </excludes>
             </resource>
         </resources>
     </build>
