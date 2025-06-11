@@ -1,6 +1,7 @@
-package io.lolyay.commands.Manager;
+package io.lolyay.commands.manager;
 
 import io.lolyay.JdaMain;
+import io.lolyay.commands.info.VersionCommand;
 import io.lolyay.commands.music.*;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
@@ -20,9 +21,10 @@ public class CommandRegistrer {
     private static final Command[] commandstoberegistered = {
             new RepeatModeCommand(),
             new SkipCommand(),
-            new VolumeCmd(),
+            new VolumeCommand(),
             new PlayCommand(),
-            new StopCommand()
+            new StopCommand(),
+            new VersionCommand(),
 
     };
 

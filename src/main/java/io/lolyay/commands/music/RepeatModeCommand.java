@@ -2,15 +2,15 @@
 package io.lolyay.commands.music;
 
 import io.lolyay.JdaMain;
-import io.lolyay.commands.Manager.Command;
-import io.lolyay.commands.Manager.CommandOptionMultiple;
+import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandOptionMultiple;
 import io.lolyay.musicbot.queue.RepeatMode;
 import io.lolyay.utils.Emoji;
 import io.lolyay.utils.KVPair;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 
-import static io.lolyay.commands.Manager.CommandOptionMultiple.enumToKVPairArray;
+import static io.lolyay.commands.manager.CommandOptionMultiple.enumToKVPairArray;
 
 
 public class RepeatModeCommand implements Command {

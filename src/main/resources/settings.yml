@@ -1,5 +1,5 @@
 # ---------------------------------- #
-#      LavMusicBot Config     #
+#      LavMusicBot Config            #
 # ---------------------------------- #
 
 # Your discord bot token, get it from https://discord.com/developers/applications
@@ -27,4 +27,4 @@ lavalink-password: "pleaseletmein"
 
 
 # --- Do Not Edit Below This Line ---
-version: "1.0.0"
+version: "${project.version}"

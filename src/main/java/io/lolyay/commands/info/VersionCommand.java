@@ -1,24 +1,28 @@
 
-package io.lolyay.commands.music;
-
+package io.lolyay.commands.info;
 
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
+import io.lolyay.config.ConfigLoader;
+import io.lolyay.config.ConfigManager;
 import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 
-public class StopCommand implements Command {
+
+public class VersionCommand implements Command
+{
 
 
     @Override
     public String getName() {
-        return "stop";
+        return "version";
     }
 
     @Override
     public String getDescription() {
-        return "Stops the current Playback and Clears the queue.";
+        return "Get the version of the bot";
     }
 
     @Override
@@ -33,12 +37,7 @@ public class StopCommand implements Command {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        if(JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).isPlaying()){
-            JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).stop();
-            event.reply(Emoji.SUCCESS.getCode() + " Stopped Playback and Cleared the queue!").queue();
-        }
-        else
-            event.reply(Emoji.ERROR.getCode() + " No Track is playing, couldn't stop!").queue();
+        event.reply(Emoji.SEARCH + "The bot is running version " + ConfigManager.getConfig("version") + " of LavMusicBot, \n **Github**: https://github.com/LOLYAY-INC/LavMusicBot").queue();
 
     }
 }

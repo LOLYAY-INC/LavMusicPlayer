@@ -2,7 +2,7 @@ package io.lolyay;
 
 import dev.arbjerg.lavalink.client.Helpers;
 import dev.arbjerg.lavalink.client.LavalinkClient;
-import io.lolyay.commands.Manager.CommandRegistrer;
+import io.lolyay.commands.manager.CommandRegistrer;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.events.EventRegistrer;
 import io.lolyay.musicbot.LavaLinkSetup;
@@ -12,10 +12,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class JdaMain {
     public static JDABuilder builder;

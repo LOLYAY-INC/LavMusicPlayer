@@ -1,4 +1,4 @@
-package io.lolyay.commands.Manager;
+package io.lolyay.commands.manager;
 
 
 import io.lolyay.utils.KVPair;

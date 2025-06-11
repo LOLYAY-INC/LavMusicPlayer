@@ -2,8 +2,8 @@ package io.lolyay.commands.music;
 
 
 import io.lolyay.JdaMain;
-import io.lolyay.commands.Manager.Command;
-import io.lolyay.commands.Manager.CommandOption;
+import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.musicbot.GuildMusicManager;
 import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.Permission;

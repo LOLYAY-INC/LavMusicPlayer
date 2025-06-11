@@ -2,17 +2,14 @@
 package io.lolyay.commands.music;
 
 import io.lolyay.JdaMain;
-import io.lolyay.commands.Manager.Command;
-import io.lolyay.commands.Manager.CommandOption;
-import io.lolyay.commands.Manager.CommandOptionMultiple;
-import io.lolyay.commands.Manager.CommandOptionType;
+import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.utils.Emoji;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 
 
-public class VolumeCmd implements Command
+public class VolumeCommand implements Command
 {
 
 

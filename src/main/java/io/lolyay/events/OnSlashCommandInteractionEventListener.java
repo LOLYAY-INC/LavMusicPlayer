@@ -1,7 +1,7 @@
 package io.lolyay.events;
 
 
-import io.lolyay.commands.Manager.CommandRegistrer;
+import io.lolyay.commands.manager.CommandRegistrer;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;

@@ -1,4 +1,4 @@
-package io.lolyay.commands.Manager;
+package io.lolyay.commands.manager;
 
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 
