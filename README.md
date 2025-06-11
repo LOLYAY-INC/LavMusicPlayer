@@ -137,10 +137,10 @@ version: "1.0.0"
 
 Here are some of the features planned for future updates:
 
-- **Auto-Leave:** The bot will automatically leave the voice channel after a configurable amount of time when it's left alone.
-- **/lyrics Command:** A new command to fetch and display the lyrics for the currently playing song.
-- **Single-Guild Mode:** An option in the config to restrict the bot to operate in only one server, simplifying permissions and setup for private use.
-- **DJ Role:** A configurable "DJ role" that can exclusively use music commands.
+- [x] **Auto-Leave:** The bot will automatically leave the voice channel after a configurable amount of time when it's left alone.
+- [ ] **/lyrics Command:** A new command to fetch and display the lyrics for the currently playing song.
+- [ ] **Single-Guild Mode:** An option in the config to restrict the bot to operate in only one server, simplifying permissions and setup for private use.
+- [ ] **DJ Role:** A configurable "DJ role" that can exclusively use music commands.
 
 ## 🤝 Contributing
 
