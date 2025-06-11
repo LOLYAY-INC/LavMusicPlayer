@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class OnSlashCommandInteractionEventListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        Logger.debug("Executing (Slash) command: " + event.getName());
         CommandRegistrer.runCommand(event.getName(), event);
-        Logger.log("Executing (Slash) command: " + event.getName());
     }
 }

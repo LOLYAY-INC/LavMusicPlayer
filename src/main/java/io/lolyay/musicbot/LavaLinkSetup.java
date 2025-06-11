@@ -4,9 +4,11 @@ import dev.arbjerg.lavalink.client.LavalinkClient;
 import dev.arbjerg.lavalink.client.NodeOptions;
 import dev.arbjerg.lavalink.libraries.jda.JDAVoiceUpdateListener;
 import io.lolyay.config.ConfigManager;
+import io.lolyay.config.jsonnodes.NodesJsonManager;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.JDABuilder;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class LavaLinkSetup {
@@ -23,13 +25,24 @@ public class LavaLinkSetup {
 
 
     public static void setupLink(LavalinkClient lavaLinkClient) {
-        lavaLinkClient.addNode(
-                new NodeOptions.Builder()
-                        .setName("LavaLinkServer")
-                        .setPassword(ConfigManager.getConfig("lavalink-password"))
-                        .setServerUri(getConProtocol() + ConfigManager.getConfig("lavalink-host") + ":" + ConfigManager.getConfig("lavalink-port"))
-                        .build()
-        );
+        if(ConfigManager.getConfigBool("using-nodes-json-file")){
+            Logger.debug("Loading Nodes from nodes.json file...");
+            ArrayList<NodeOptions> nodes = NodesJsonManager.loadNodes();
+            for (NodeOptions node : nodes) {
+                lavaLinkClient.addNode(node);
+            }
+
+        }
+        else {
+            lavaLinkClient.addNode(
+                    new NodeOptions.Builder()
+                            .setName("LavaLinkServer")
+                            .setPassword(ConfigManager.getConfig("lavalink-password"))
+                            .setServerUri(getConProtocol() + ConfigManager.getConfig("lavalink-host") + ":" + ConfigManager.getConfig("lavalink-port"))
+                            .build()
+            );
+            Logger.debug("Loading One Node from Config...");
+        }
     }
 
     private static String getConProtocol(){

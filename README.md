@@ -102,7 +102,7 @@ This `settings.yml` file will be automatically generated in the same folder as y
 
 ```yaml
 # ---------------------------------- #
-#      Lava JDA Music Bot Config     #
+#      LavMusicBot Config            #
 # ---------------------------------- #
 
 # Your discord bot token, get it from https://discord.com/developers/applications
@@ -112,7 +112,12 @@ discord-bot-token: "YOUR_TOKEN_HERE"
 # Value must be between 1 and 100.
 default-volume: 10
 
-# --- Lavalink Server Details ---
+# --- Lavalink Config ---
+
+using-nodes-json-file: true # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
+nodes-json-file: "path/to/nodes.json" # The path to your nodes.json file
+
+# --- Lavalink Server Details (Only if you're not using a nodes.json file) ---
 # Get these from your Lavalink provider or your own server.
 # A list of public servers can be found at https://lavalink-list.appujet.site/
 
@@ -130,7 +135,35 @@ lavalink-password: "pleaseletmein"
 
 
 # --- Do Not Edit Below This Line ---
-version: "1.0.0"
+version: "${project.version}"
+```
+## Nodes.json File
+Nodes.json is a file that contains a list of Lavalink servers if you want to use more than one, if not you can use the standard config options.
+In the config file, you can set the `using-nodes-json-file` to `true` and provide the path to your `nodes.json` file.
+If you do that then you can omit the `lavalink-host`, `lavalink-port`, `lavalink-secure`, and `lavalink-password` fields.
+You can get single json configs from https://lavalink-list.appujet.site/non-ssl
+```yaml
+using-nodes-json-file: true
+nodes-json-file: "path/to/nodes.json"
+```
+### Example nodes.json
+```json
+[
+  {
+    "identifier": "Lavalink Server 1",
+    "password": "secret",
+    "host": "lava.example.com",
+    "port": 1234,
+    "secure": false
+  },
+  {
+    "identifier": "Lavalink Server 2",
+    "password": "pleaseletmein",
+    "host": "lava.somthig.else",
+    "port": 1234,
+    "secure": true
+  }
+]
 ```
 
 ## 🗺️ Roadmap

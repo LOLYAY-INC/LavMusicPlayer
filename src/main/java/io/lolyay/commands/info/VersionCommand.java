@@ -37,7 +37,8 @@ public class VersionCommand implements Command
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        event.reply(Emoji.SEARCH + "The bot is running version " + ConfigManager.getConfig("version") + " of LavMusicBot, \n **Github**: https://github.com/LOLYAY-INC/LavMusicBot").queue();
+        event.reply(Emoji.SEARCH.getCode() + "The bot is running version " + ConfigManager.getConfig("version") + " of LavMusicBot, \n **Github**: https://github.com/LOLYAY-INC/LavMusicBot").queue();
+        event.getHook().sendMessage("This server is connected to " + JdaMain.lavalinkClient.getOrCreateLink(event.getGuild().getIdLong()).getNode().getBaseUri()).queue();
 
     }
 }
