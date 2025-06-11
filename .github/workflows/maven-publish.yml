@@ -5,7 +5,7 @@ name: Build and Release with Changelog
 on:
   push:
     branches:
-      - main  # Triggers the workflow on a push to the master branch
+      - main  # Triggers the workflow on a push to the main branch
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 jobs:
@@ -31,16 +31,27 @@ jobs:
         java-version: '23'
         distribution: 'temurin'
 
-    # 3. Generate a version tag (e.g., v1.0.172)
-    - name: Generate version tag
+    # 3. Generate version number and tag
+    # We now generate two outputs: 'number' for Maven and 'tag' for GitHub Releases.
+    - name: Generate version
       id: version
-      run: echo "tag=v1.0.$(git rev-list --count HEAD)" >> $GITHUB_OUTPUT
+      run: |
+        VERSION_NUMBER="1.0.$(git rev-list --count HEAD)"
+        echo "number=$VERSION_NUMBER" >> $GITHUB_OUTPUT
+        echo "tag=v$VERSION_NUMBER" >> $GITHUB_OUTPUT
+        
+    # 4. Set project version in pom.xml
+    # This NEW step uses the Maven Versions Plugin to update the <version> tag in your pom.xml.
+    - name: Set project version
+      run: mvn versions:set -DnewVersion=${{ steps.version.outputs.number }} -DgenerateBackupPoms=false
 
-    # 4. Build the project with Maven
+    # 5. Build the project with Maven
+    # This step now runs AFTER the version has been updated in pom.xml.
+    # Maven will also filter settings.yml, injecting the new version.
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    # 5. Create a GitHub Release with an auto-generated changelog
+    # 6. Create a GitHub Release with an auto-generated changelog
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
@@ -49,11 +60,9 @@ jobs:
       with:
         tag_name: ${{ steps.version.outputs.tag }}
         release_name: Release ${{ steps.version.outputs.tag }}
-        # This is the magic part! It creates a release body with a list of
-        # commits and a "Full Changelog" link, just like you want.
         generate_release_notes: true
 
-    # 6. Find the compiled JAR file name and path
+    # 7. Find the compiled JAR file name and path
     - name: Get JAR filename
       id: get_jar
       run: |
@@ -61,7 +70,7 @@ jobs:
         echo "path=$JAR_FILE" >> $GITHUB_OUTPUT
         echo "name=$(basename $JAR_FILE)" >> $GITHUB_OUTPUT
 
-    # 7. Upload the JAR file as a release asset
+    # 8. Upload the JAR file as a release asset
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
