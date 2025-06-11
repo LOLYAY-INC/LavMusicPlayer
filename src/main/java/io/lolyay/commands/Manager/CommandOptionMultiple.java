@@ -8,6 +8,7 @@ public class CommandOptionMultiple implements CommandOptionType {
     private String name;
     private String description;
     private OptionType type;
+    private final boolean required;
     private KVPair<String, String>[] options;
 
     @SuppressWarnings("unchecked")
@@ -27,8 +28,9 @@ public class CommandOptionMultiple implements CommandOptionType {
         return pairs;
     }
 
-    public CommandOptionMultiple(String name, String description, KVPair<String, String>[] options, OptionType type) {
+    public CommandOptionMultiple(String name, String description, KVPair<String, String>[] options, OptionType type,boolean required) {
         this.name = name;
+        this.required = required;
         this.description = description;
         this.options = options;
         this.type = type;
@@ -67,5 +69,9 @@ public class CommandOptionMultiple implements CommandOptionType {
 
     public void setType(OptionType type) {
         this.type = type;
+    }
+
+    public boolean isRequired() {
+        return required;
     }
 }

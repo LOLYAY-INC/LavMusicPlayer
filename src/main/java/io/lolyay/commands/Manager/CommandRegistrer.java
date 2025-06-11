@@ -128,7 +128,7 @@ public class CommandRegistrer {
 
         SlashCommandData slash = Commands.slash(name, description);
         for (CommandOptionMultiple option : options) {
-            OptionData data = new OptionData(option.getType(), option.getName(), option.getDescription());
+            OptionData data = new OptionData(option.getType(), option.getName(), option.getDescription(),option.isRequired());
             for (KVPair<String, String> pair : option.getOptions()) {
                 data.addChoice(pair.getKey(), pair.getValue());
             }
