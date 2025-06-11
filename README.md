@@ -56,7 +56,7 @@ Here are all the available commands:
 | **/repeat `<mode>`** | Sets the repeat mode. Options: `SINGLE` (repeats the current song), `QUEUE` (repeats the queue), `OFF`. |
 | **/skip** | Skips the currently playing song and plays the next one in the queue. |
 | **/volume `<level>`** | Adjusts the player volume from 1 to 100. |
-
+***Note**: If you recive the Error **"Unknown Interaction"**, Restart your Discord Client with Ctrl+R*
 
 ***
 
