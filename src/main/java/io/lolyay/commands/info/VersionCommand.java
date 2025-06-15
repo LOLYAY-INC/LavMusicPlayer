@@ -1,14 +1,11 @@
 
 package io.lolyay.commands.info;
 
-import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
-import io.lolyay.config.ConfigLoader;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 
 
 public class VersionCommand implements Command
@@ -37,7 +34,9 @@ public class VersionCommand implements Command
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        event.reply(Emoji.SEARCH.getCode() + " The bot is running version " + ConfigManager.getConfig("version") + " of LavMusicBot, \n **Github**: https://github.com/LOLYAY-INC/LavMusicBot\n This server is connected to " + JdaMain.lavalinkClient.getOrCreateLink(event.getGuild().getIdLong()).getNode().getBaseUri()).queue();
+        event.reply(Emoji.SEARCH.getCode() + " The bot is running: " + ConfigManager.getConfig("version") + " of LavMusicBot \n " +
+                "**Github**: <https://github.com/LOLYAY-INC/LavMusicBot>\n " +
+                "**Get status of this server with /status!**").queue();
 
     }
 }
