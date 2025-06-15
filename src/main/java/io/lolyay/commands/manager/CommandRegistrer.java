@@ -1,7 +1,8 @@
 package io.lolyay.commands.manager;
 
 import io.lolyay.JdaMain;
-import io.lolyay.commands.info.*;
+import io.lolyay.commands.info.StatusCommand;
+import io.lolyay.commands.info.VersionCommand;
 import io.lolyay.commands.music.*;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
@@ -27,7 +28,8 @@ public class CommandRegistrer {
             new VersionCommand(),
             new ResumeCommand(),
             new PauseCommand(),
-            new StatusCommand()
+            new StatusCommand(),
+            new ChangeNodeCommand()
 
     };
 
