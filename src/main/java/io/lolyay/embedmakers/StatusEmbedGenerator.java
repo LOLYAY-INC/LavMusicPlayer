@@ -3,24 +3,41 @@ package io.lolyay.embedmakers;
 import io.lolyay.musicbot.GuildMusicManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 
+import java.awt.*;
+
 public class StatusEmbedGenerator {
     public static EmbedBuilder generate(GuildMusicManager musicManager) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(genTitle(musicManager));
         builder.addField("","**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**",false);
-        builder.addField("",getPosition(musicManager) + " of " + getLength(musicManager),false);
+        builder.addField("","**Queue:**",false);
+        builder.addField("",musicManager.getQueManager().getQueue().size() + " tracks left",false);
+        builder.addField("","**Repeat:**",false);
+        builder.addField("",musicManager.getRepeatMode().getEmoji() + " - " + musicManager.getRepeatMode().getUserFriendlyName(),false);
+        builder.addField("","**Volume:**",false);
+        builder.addField("",musicManager.getVolume() + " / 100",false);
         builder.setThumbnail(getImageURL(musicManager));
+        builder.setColor(genColor(musicManager.isPlaying(),musicManager.isPaused()));
         return builder;
     }
 
 
-    private static String genPreTitle(boolean isPlaying,boolean isPaused) {
+    private static String genPreTitle(boolean isPlaying, boolean isPaused) {
         if(isPaused)
             return "Paused";
         else if(isPlaying)
             return "Playing";
         else
             return "Stopped";
+    }
+
+    private static Color genColor(boolean isPlaying,boolean isPaused) {
+        if(isPaused)
+            return Color.YELLOW;
+        else if(isPlaying)
+            return Color.GREEN;
+        else
+            return Color.RED;
     }
 
     private static String genTitle(GuildMusicManager musicManager) {
