@@ -1,5 +1,7 @@
 package io.lolyay.events;
 
+import io.lolyay.JdaMain;
+import io.lolyay.config.ConfigManager;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -15,6 +17,10 @@ public class OnGuildVoiceUpdate extends ListenerAdapter {
         if(event.getChannelLeft().asVoiceChannel().getIdLong() == event.getGuild().getSelfMember().getVoiceState().getChannel().getIdLong()) {
             Logger.log("Alone in voice channel, leaving...");
             event.getJDA().getDirectAudioController().disconnect(event.getGuild());
+            if (ConfigManager.getConfigBool("clear-on-empty-channel")) {
+                JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).getQueManager().clear();
+                Logger.debug("Cleared queue");
+            }
         }
     }
 }

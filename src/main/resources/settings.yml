@@ -9,6 +9,9 @@ discord-bot-token: "YOUR_TOKEN_HERE"
 # Value must be between 1 and 100.
 default-volume: 10
 
+# Set this to true if you want to clear the queue when the voice-channel is empty ( aka everyone left and the bot is alone in the channel ).
+clear-on-empty-channel: true
+
 # --- Lavalink Config ---
 
 using-nodes-json-file: false # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false

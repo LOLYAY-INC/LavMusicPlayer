@@ -4,8 +4,8 @@ package io.lolyay.commands.music;
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
+import io.lolyay.embedmakers.StatusEmbedGenerator;
 import io.lolyay.musicbot.GuildMusicManager;
-import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -13,24 +13,23 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import org.jetbrains.annotations.NotNull;
 
-public class PlayCommand implements Command {
+public class ResumeQueueCommand implements Command {
 
     @Override
     public String getName() {
-        return "play";
+        return "resumequeue";
     }
 
     @Override
     public String getDescription() {
-        return "Plays a song from a given search!";
+        // You might want to update this if it's a fully functional command now
+        return "Joins the voice channel and resumes the queue where it last left off.";
     }
 
     @Override
     public CommandOption[] getOptions() {
-        return new CommandOption[]{new CommandOption("song", "The song's name or URL to play", OptionType.STRING, true)};
+        return null;
     }
 
     @Override
@@ -38,23 +37,11 @@ public class PlayCommand implements Command {
         return true;
     }
 
-    @NotNull
-    private static String getResponse(MusicAudioTrack track, boolean isPlayingNow, GuildMusicManager musicManager) {
-        String response;
-        if (isPlayingNow) {
-            response = Emoji.PLAY.getCode() + " Now Playing: **" + track.track().getInfo().getTitle() + "**";
-        } else {
-            int position = musicManager.getQueManager().getQueue().size();
-            response = Emoji.SUCCESS.getCode() + " Added to queue: **" + track.track().getInfo().getTitle() + "**"
-                    + "\n" + Emoji.MUSIC.getCode() + " Position: **#" + position + "**";
-        }
-        return response;
-    }
-
     @Override
     public void execute(SlashCommandInteractionEvent event) {
         final Member member = event.getMember();
         final Guild guild = event.getGuild();
+
 
         final GuildVoiceState memberVoiceState = member.getVoiceState();
         if (memberVoiceState == null || !memberVoiceState.inAudioChannel()) {
@@ -77,25 +64,20 @@ public class PlayCommand implements Command {
         event.deferReply().queue();
 
 
-        final String query = event.getOption("song").getAsString();
         final GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(guild.getIdLong());
 
-        JdaMain.playerManager.searchTrack(query, member,
-                // --- SUCCESS CALLBACK ---
-                (track) -> {
-                    member.getJDA().getDirectAudioController().connect(memberChannel);
-                    final boolean isPlayingNow = musicManager.getQueManager().isEmpty();
-                    musicManager.queueTrack(track);
+        if (!musicManager.isPlaying()) {
+            event.getHook().sendMessage(Emoji.ERROR.getCode() + " No Track is playing, couldn't resume!").queue();
+            return;
+        }
 
-                    String response = getResponse(track, isPlayingNow, musicManager);
-                    event.getHook().sendMessage(response).queue();
-                    //  event.getHook().sendMessageEmbeds(StatusEmbedGenerator.generate(musicManager).build()).queue();
-                },
-                // --- FAILURE CALLBACK ---
-                () -> {
-                    String response = Emoji.ERROR.getCode() + " Could not find any results for `" + query + "`.";
-                    event.getHook().sendMessage(response).queue();
-                }
-        );
+        if (musicManager.getQueManager().isEmpty()) {
+            event.getHook().sendMessage(Emoji.ERROR.getCode() + " Queue is empty!").queue();
+            return;
+        }
+
+        member.getJDA().getDirectAudioController().connect(memberChannel);
+        event.getHook().sendMessage(Emoji.SUCCESS.getCode() + " Resumed Playback!").queue();
+        event.getHook().sendMessageEmbeds(StatusEmbedGenerator.generate(musicManager).build()).queue();
     }
 }
