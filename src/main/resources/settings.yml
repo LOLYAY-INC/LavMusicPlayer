@@ -30,6 +30,19 @@ lavalink-secure: false
 # The password for your Lavalink server.
 lavalink-password: "pleaseletmein"
 
+# --- Permissions ---
+
+# Set this to true if you want to enable permissions
+permissions-enabled: false
+
+# Set this to true if you want to use a blacklist instead of a whitelist
+whitelist-acts-as-blacklist: false
+
+# The role IDs of the roles you want to allow to use the bot
+role-id-whitelist:
+  - "123123123"
+  - "456456456"
+
 
 # --- Do Not Edit Below This Line ---
 version: "${project.version}"

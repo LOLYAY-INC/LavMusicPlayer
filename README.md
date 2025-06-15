@@ -93,7 +93,7 @@ This guide is for running the bot using the pre-compiled releases. No developmen
     java -jar LavMusicBot-1.0.0.jar
     ```
     This time, the bot will read your configuration and connect to Discord. Congratulations, your bot is now online!
-
+    *Note: If you get Bad Audio on Mobile, That's an Issue with your Lavalink Server, as in my Testing turning the `resamplingQuality` of your Lavalink Server to `HIGH` fixed it.* 
 ---
 
 ### ⚙️ Configuration (settings.yml)
@@ -101,10 +101,6 @@ This guide is for running the bot using the pre-compiled releases. No developmen
 This `settings.yml` file will be automatically generated in the same folder as your `.jar` file after you run it for the first time. Open it and edit the values as needed.
 
 ```yaml
-# ---------------------------------- #
-#      LavMusicBot Config            #
-# ---------------------------------- #
-
 # Your discord bot token, get it from https://discord.com/developers/applications
 discord-bot-token: "YOUR_TOKEN_HERE"
 
@@ -114,8 +110,10 @@ default-volume: 10
 
 # --- Lavalink Config ---
 
-using-nodes-json-file: true # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
-nodes-json-file: "path/to/nodes.json" # The path to your nodes.json file
+# Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
+using-nodes-json-file: false
+# The path to your nodes.json file
+nodes-json-file: "C:\\path\\to\\nodes.json"
 
 # --- Lavalink Server Details (Only if you're not using a nodes.json file) ---
 # Get these from your Lavalink provider or your own server.
@@ -133,15 +131,45 @@ lavalink-secure: false
 # The password for your Lavalink server.
 lavalink-password: "pleaseletmein"
 
+# --- Permissions ---
 
-# --- Do Not Edit Below This Line ---
-version: "${project.version}"
+# Set this to true if you want to enable role-based permissions
+permissions-enabled: false
+
+# When enabled, the whitelist acts as a blacklist (deny list) instead of an allow list
+whitelist-acts-as-blacklist: false
+
+# List of role IDs that are allowed to use the bot (or denied if whitelist-acts-as-blacklist is true)
+role-id-whitelist:
+  - "123123123"  # Replace with your role ID
+  - "456456456"  # Add more role IDs as needed
 ```
+
+## Configuration Options
+
+### Basic Settings
+- `discord-bot-token`: Your Discord bot token from the [Discord Developer Portal](https://discord.com/developers/applications)
+- `default-volume`: Default volume level (1-100) for the bot when joining a new server
+
+### Lavalink Configuration
+- `using-nodes-json-file`: Set to `true` to use a nodes.json file for Lavalink configuration.
+- `nodes-json-file`: Path to your nodes.json file (if using nodes.json)
+- **OR**
+- `lavalink-host`: Hostname or IP of your Lavalink server
+- `lavalink-port`: Port of your Lavalink server
+- `lavalink-secure`: Set to `true` for SSL/TLS (`wss://`) connections
+- `lavalink-password`: Authentication password for your Lavalink server
+
+### Permission Settings
+- `permissions-enabled`: Enable/disable role-based permissions
+- `whitelist-acts-as-blacklist`: When enabled, the whitelist becomes a blacklist
+- `role-id-whitelist`: List of role IDs that are allowed (or denied) to use the bot
+
 ## Nodes.json File
 Nodes.json is a file that contains a list of Lavalink servers if you want to use more than one, if not you can use the standard config options.
 In the config file, you can set the `using-nodes-json-file` to `true` and provide the path to your `nodes.json` file.
 If you do that then you can omit the `lavalink-host`, `lavalink-port`, `lavalink-secure`, and `lavalink-password` fields.
-You can get single json configs from https://lavalink-list.appujet.site/non-ssl
+You can get single json config from https://lavalink-list.appujet.site/non-ssl
 ```yaml
 using-nodes-json-file: true
 nodes-json-file: "path/to/nodes.json"
@@ -190,4 +218,7 @@ If you have a suggestion that would make this better, please fork the repo and c
 *Note: I made this [Lavalink JSON to Java Converter](https://lolyay.dev/tools/lavalinkconverter/) to use with the JSON you get from: [The lavalink Server List](https://lavalink-list.appujet.site/)* 
 ## 📜 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for more information.
+LavMusicBot is released under the [Apache License 2.0](https://github.com/LOLYAY-INC/LavMusicBot/blob/main/LICENSE).
+
+
+*Yes I'm sorry, a bit of this Readme is AI generated, But its correct and accurate*
