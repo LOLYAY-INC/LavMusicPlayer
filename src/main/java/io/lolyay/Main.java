@@ -1,6 +1,8 @@
 package io.lolyay;
 
 import io.lolyay.config.ConfigLoader;
+import io.lolyay.config.guildconfig.GuildConfigLoader;
+import io.lolyay.config.guildconfig.GuildConfigManager;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
 
@@ -8,12 +10,22 @@ import java.io.FileNotFoundException;
 
 public class Main {
     public static void main(String[] args) {
+        // Add shutdown hook for graceful shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(Main::onShutdown));
+        
         parseArgs(args);
         Logger.log("Starting bot...");
+
         try {
             ConfigLoader.load();
         } catch (FileNotFoundException e) {
             Logger.err("Error creating / reading config file.");
+            System.exit(1);
+        }
+        try {
+            GuildConfigLoader.init();
+        } catch (Exception e) {
+            Logger.err("Error with Guild Config.");
             System.exit(1);
         }
         Logger.debug("Loading JDA...");
@@ -58,6 +70,18 @@ public class Main {
                 JdaMain.shouldRegisterCommands = false;
                 break;
             }
+        }
+    }
+
+    private static void onShutdown() {
+        try {
+            Logger.log("Shutting down bot...");
+            // Only save if GuildConfigManager is initialized
+            GuildConfigManager.saveGuildConfigCacheToFiles();
+
+            Logger.log("Shutdown complete");
+        } catch (Exception e) {
+            Logger.err("Error during shutdown: " + e.getMessage());
         }
     }
 }

@@ -9,7 +9,10 @@ public class StatusEmbedGenerator {
     public static EmbedBuilder generate(GuildMusicManager musicManager) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(genTitle(musicManager));
-        builder.addField("","**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**",false);
+        if (!musicManager.getQueManager().getQueue().isEmpty())
+            builder.addField("", "**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**", false);
+        else
+            builder.addField("", "**Queue is empty**", false);
         builder.addField("**Queue:**",musicManager.getQueManager().getQueue().size() + " tracks left",false);
         builder.addField("**Repeat:**",musicManager.getRepeatMode().getEmoji() + " - " + musicManager.getRepeatMode().getUserFriendlyName(),false);
         builder.addField("**Volume:**",musicManager.getVolume() + " / 100",false);
@@ -53,8 +56,6 @@ public class StatusEmbedGenerator {
     }
 
     private static String getTitle(GuildMusicManager musicManager) {
-        if(musicManager.getQueManager().getQueue().isEmpty())
-            return "Que Empty";
         return musicManager.getQueManager().getQueue().get(0).track().getInfo().getTitle();
     }
 

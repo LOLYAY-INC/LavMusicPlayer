@@ -7,7 +7,6 @@ import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.embedmakers.StatusEmbedGenerator;
 import io.lolyay.musicbot.GuildMusicManager;
-import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 public class StatusCommand implements Command {
