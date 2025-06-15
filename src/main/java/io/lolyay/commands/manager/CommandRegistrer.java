@@ -1,7 +1,7 @@
 package io.lolyay.commands.manager;
 
 import io.lolyay.JdaMain;
-import io.lolyay.commands.info.VersionCommand;
+import io.lolyay.commands.info.*;
 import io.lolyay.commands.music.*;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
@@ -26,7 +26,8 @@ public class CommandRegistrer {
             new StopCommand(),
             new VersionCommand(),
             new ResumeCommand(),
-            new PauseCommand()
+            new PauseCommand(),
+            new StatusCommand()
 
     };
 
@@ -62,6 +63,30 @@ public class CommandRegistrer {
         Logger.debug("Registered Commands");
         Logger.success("Bot is now Ready, You can use it now!");
 
+    }
+
+
+    public static void registerUnRegisterdCommands(){
+        commands.clear();
+        List<String> alreadyRegisteredCommands = JdaMain.jda.retrieveCommands().complete()
+                .stream()
+                .map(net.dv8tion.jda.api.interactions.commands.Command::getName)
+                .toList();
+
+        List<Command> toBeRegistered = Arrays.stream(commandsToBeRegistered)
+                .filter(command -> !alreadyRegisteredCommands.contains(command.getName()))
+                .toList();
+
+        for (Command command : toBeRegistered) {
+            Logger.debug("Registering Command: " + command.getName());
+            registerCommandImpl(command);
+        }
+
+        JdaMain.jda.updateCommands().addCommands(commands).complete();
+        registerCommandsToRun();
+
+        Logger.debug("Registered Commands");
+        Logger.success("Bot is now Ready, You can use it now!");
     }
 
     private static void clearGuildCommands(List<net.dv8tion.jda.api.interactions.commands.Command> commandList, Guild guild) {
@@ -149,6 +174,8 @@ public class CommandRegistrer {
         }*/
         return true;
     }
+
+
 
     public static ArrayList<KVPair<String, String>> getCommandsWithDescription() {
         ArrayList<KVPair<String, String>> commands = new ArrayList<>();

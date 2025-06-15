@@ -52,7 +52,12 @@ public class Main {
                 ConfigLoader.overWriteConfig = true;
                 break;
             }
-
+            case "-NO_REGISTER_COMMANDS":
+            {
+                Logger.warn("Registering commands...");
+                JdaMain.shouldRegisterCommands = false;
+                break;
+            }
         }
     }
 }

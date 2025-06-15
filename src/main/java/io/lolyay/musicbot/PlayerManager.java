@@ -13,7 +13,10 @@ import net.dv8tion.jda.api.entities.Member;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 
 public class PlayerManager {
@@ -52,6 +55,7 @@ public class PlayerManager {
      * @param failureCallback A function to be called when no track is found or an error occurs.
      */
     public void searchTrack(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback) {
+        // now its Normal Search -> YouTube Music search -> YouTube search
         long guildId = member.getGuild().getIdLong();
 
         // If the query isn't a URL, prefix it with "ytsearch:" to ensure a YouTube search.
@@ -93,7 +97,7 @@ public class PlayerManager {
                             successCallback.accept(track);
                         },
                         // No matches were found for the query
-                        () -> searchTrackWithYoutube(finalQuery,member,successCallback,failureCallback),
+                        () -> searchTrackWithYoutubeMusic(finalQuery,member,successCallback,failureCallback),
                         // The load failed with an exception
                         exception -> {
                             Logger.err("Error loading track: " + exception.getException().getMessage());
@@ -107,7 +111,7 @@ public class PlayerManager {
 
         // If the query isn't a URL, prefix it with "ytsearch:" to ensure a YouTube search.
         final String finalQuery = "ytsearch:" +  query;
-        Logger.debug("Couldnt Locate track, searching with youtube: " + query);
+        Logger.debug("Couldnt Locate track, searching with youtube (NOT A MUSIC SEARCH): " + query);
 
         lavaLinkClient.getOrCreateLink(guildId)
                 .loadItem(finalQuery)
@@ -146,6 +150,58 @@ public class PlayerManager {
                         },
                         // No matches were found for the query
                         failureCallback,
+                        // The load failed with an exception
+                        exception -> {
+                            Logger.log("Error loading track: " + exception.getException().getMessage());
+                            failureCallback.run();
+                        }
+                ));
+    }
+
+    private void searchTrackWithYoutubeMusic(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback) {
+        long guildId = member.getGuild().getIdLong();
+
+        // If the query isn't a URL, prefix it with "ytsearch:" to ensure a YouTube search.
+        final String finalQuery = "ytmsearch:" +  query;
+        Logger.debug("Couldnt Locate track, searching with youtube MUSIC: " + query);
+
+        lavaLinkClient.getOrCreateLink(guildId)
+                .loadItem(finalQuery)
+                .subscribe(new FunctionalLoadResultHandler(
+                        // A single track was loaded (e.g., from a direct URL)
+                        trackLoaded -> {
+                            Logger.log("Loaded single track: " + trackLoaded.getTrack().getInfo().getTitle());
+                            MusicAudioTrack track = createMusicAudioTrack(trackLoaded.getTrack(), member);
+                            successCallback.accept(track);
+                        },
+                        // A playlist was loaded
+                        playlistLoaded -> {
+                            // For this example, we'll just take the first track of the playlist.
+                            // In a real bot, you might want to queue all tracks.
+                            Track firstTrack = playlistLoaded.getTracks().getFirst();
+                            if (firstTrack != null) {
+                                Logger.log("Loaded playlist, taking first track: " + firstTrack.getInfo().getTitle());
+                                MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
+                                successCallback.accept(track);
+                            } else {
+                                failureCallback.run();
+                            }
+                        },
+                        // A search result was loaded
+                        searchResult -> {
+                            final List<Track> tracks = searchResult.getTracks();
+                            if (tracks.isEmpty()) {
+                                Logger.warn("Search returned no results for: " + finalQuery);
+                                failureCallback.run();
+                                return;
+                            }
+                            final Track firstTrack = tracks.getFirst();
+                            Logger.log("Loaded from search: " + firstTrack.getInfo().getTitle());
+                            MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
+                            successCallback.accept(track);
+                        },
+                        // No matches were found for the query
+                        () -> searchTrackWithYoutube(finalQuery,member,successCallback,failureCallback),
                         // The load failed with an exception
                         exception -> {
                             Logger.log("Error loading track: " + exception.getException().getMessage());
@@ -216,5 +272,37 @@ public class PlayerManager {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setVolume(volume)
                 .subscribe();
+    }
+
+    /**
+     * Gets the current position of the currently playing track in milliseconds.
+     *
+     * @param guildId The ID of the guild to get the position for
+     * @return A CompletableFuture that will be completed with the current position in milliseconds,
+     *         or -1 if no track is playing or an error occurs
+     */
+    public CompletableFuture<Long> getPosition(long guildId) {
+        CompletableFuture<Long> future = new CompletableFuture<>();
+        
+        lavaLinkClient.getOrCreateLink(guildId).getPlayer().subscribe(
+            player -> {
+                try {
+                    if (player != null && player.getTrack() != null) {
+                        future.complete(player.getTrack().getInfo().getPosition());
+                    } else {
+                        future.complete(-1L);
+                    }
+                } catch (Exception e) {
+                    Logger.err("Error getting track position: " + e.getMessage());
+                    future.complete(-1L);
+                }
+            },
+            error -> {
+                Logger.err("Error getting player: " + error.getMessage());
+                future.complete(-1L);
+            }
+        );
+        
+        return future;
     }
 }

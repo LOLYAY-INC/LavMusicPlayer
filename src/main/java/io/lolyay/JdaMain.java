@@ -17,6 +17,7 @@ public class JdaMain {
     public static JDABuilder builder;
     public static JDA jda;
     public static boolean debug = false;
+    public static boolean shouldRegisterCommands = true;
 
     public static PlayerManager playerManager;
     public static LavalinkClient lavalinkClient;
@@ -47,7 +48,10 @@ public class JdaMain {
 
         Logger.debug("JDA Built, Registering Commands...");
 
-        CommandRegistrer.register();
+        if (shouldRegisterCommands)
+            CommandRegistrer.register();
+        else
+            CommandRegistrer.registerCommandsToRun();
 
     }
 

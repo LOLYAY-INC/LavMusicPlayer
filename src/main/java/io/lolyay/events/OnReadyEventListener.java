@@ -8,6 +8,6 @@ import org.jetbrains.annotations.NotNull;
 public class OnReadyEventListener extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        Logger.log("Bot ready, connected to Discord!");
+        Logger.log("Bot connected to Discord!");
     }
 }

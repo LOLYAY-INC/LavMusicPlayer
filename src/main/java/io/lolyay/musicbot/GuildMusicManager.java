@@ -69,10 +69,12 @@ public class GuildMusicManager {
 
     public void pause() {
         playerManager.pause(guildId);
+        isPaused = true;
     }
 
     public void resume() {
         playerManager.resume(guildId);
+        isPaused = false;
     }
 
     public boolean isPlaying(){
@@ -82,6 +84,11 @@ public class GuildMusicManager {
     public boolean isPaused(){
         return isPaused;
     }
+
+    public long getPosition() throws Exception {
+        return playerManager.getPosition(guildId).get();
+    }
+
 
     /**
      * Skips the current track and plays the next one in the queue.
