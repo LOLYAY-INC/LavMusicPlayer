@@ -1,0 +1,37 @@
+[
+  {
+    "identifier": "INZEWORLD.COM (DE)",
+    "password": "saher.inzeworld.com",
+    "host": "lava.inzeworld.com",
+    "port": 3128,
+    "secure": false
+  },
+  {
+    "identifier": "CharlesNaig ",
+    "password": "NAIGLAVA-dash.techbyte.host",
+    "host": "lavahatry4.techbyte.host",
+    "port": 3000,
+    "secure": false
+  },
+  {
+    "identifier": "JM Lite LAVALINK",
+    "password": "jmlitelavalink",
+    "host": "46.202.82.164",
+    "port": 1027,
+    "secure": false
+  },
+  {
+    "identifier": "Felix Node2",
+    "password": "github.com/AxMilin",
+    "host": "node2.axmilin.in.th",
+    "port": 60285,
+    "secure": false
+  },
+  {
+    "identifier": "public-nonssl-lavalink.muzes.xyz",
+    "password": "+E1N6A5H,(~NL_Nf}fE)AL$Cn",
+    "host": "public-nonssl-lavalink.muzes.xyz",
+    "port": 40001,
+    "secure": false
+  }
+]
