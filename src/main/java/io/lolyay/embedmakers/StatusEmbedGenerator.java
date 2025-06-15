@@ -13,7 +13,8 @@ public class StatusEmbedGenerator {
         builder.addField("**Queue:**",musicManager.getQueManager().getQueue().size() + " tracks left",false);
         builder.addField("**Repeat:**",musicManager.getRepeatMode().getEmoji() + " - " + musicManager.getRepeatMode().getUserFriendlyName(),false);
         builder.addField("**Volume:**",musicManager.getVolume() + " / 100",false);
-        builder.setThumbnail(getImageURL(musicManager));
+        if(!musicManager.getQueManager().getQueue().isEmpty())
+            builder.setThumbnail(getImageURL(musicManager));
         builder.setColor(genColor(musicManager.isPlaying(),musicManager.isPaused()));
         return builder;
     }
@@ -52,6 +53,8 @@ public class StatusEmbedGenerator {
     }
 
     private static String getTitle(GuildMusicManager musicManager) {
+        if(musicManager.getQueManager().getQueue().isEmpty())
+            return "Que Empty";
         return musicManager.getQueManager().getQueue().get(0).track().getInfo().getTitle();
     }
 
