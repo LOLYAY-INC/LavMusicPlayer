@@ -16,20 +16,22 @@ import java.util.*;
 
 public class CommandRegistrer {
     private static final ArrayList<SlashCommandData> commands = new ArrayList<>();
-    private static final Map<String, Command> commandstorun = new HashMap<>();
+    private static final Map<String, Command> commandsToRun = new HashMap<>();
 
-    private static final Command[] commandstoberegistered = {
+    private static final Command[] commandsToBeRegistered = {
             new RepeatModeCommand(),
             new SkipCommand(),
             new VolumeCommand(),
             new PlayCommand(),
             new StopCommand(),
             new VersionCommand(),
+            new ResumeCommand(),
+            new PauseCommand()
 
     };
 
     public static void runCommand(String name, SlashCommandInteractionEvent event) {
-        Command command = commandstorun.get(name);
+        Command command = commandsToRun.get(name);
         if (command.requiresPermission() && !canRunCommand(Objects.requireNonNull(event.getMember()))) {
             event.reply("You don't have permission to use this command").setEphemeral(true).queue();
             return;
@@ -40,7 +42,7 @@ public class CommandRegistrer {
 
     public static void register(Guild guild) {
         commands.clear();
-        for (Command command : commandstoberegistered) {
+        for (Command command : commandsToBeRegistered) {
             registerCommandImpl(command);
         }
         clearGuildCommands(guild.retrieveCommands().complete(), guild);
@@ -50,7 +52,7 @@ public class CommandRegistrer {
 
     public static void register() { // Bot command
         commands.clear();
-        for (Command command : commandstoberegistered) {
+        for (Command command : commandsToBeRegistered) {
             registerCommandImpl(command);
         }
 
@@ -81,7 +83,7 @@ public class CommandRegistrer {
     }
 
     public static void registerCommandsToRun() {
-        for (Command command : commandstoberegistered) {
+        for (Command command : commandsToBeRegistered) {
             registerCommandToRunImpl(command);
         }
     }
@@ -105,7 +107,7 @@ public class CommandRegistrer {
     }
 
     private static void registerCommandToRunImpl(Command command) {
-        commandstorun.put(command.getName(), command);
+        commandsToRun.put(command.getName(), command);
     }
 
     private static SlashCommandData commandOptionBuilderImpl(Command command){
@@ -146,5 +148,13 @@ public class CommandRegistrer {
             }
         }*/
         return true;
+    }
+
+    public static ArrayList<KVPair<String, String>> getCommandsWithDescription() {
+        ArrayList<KVPair<String, String>> commands = new ArrayList<>();
+        for (Command command : commandsToRun.values()) {
+            commands.add(new KVPair<>(command.getName(), command.getDescription()));
+        }
+        return commands;
     }
 }
