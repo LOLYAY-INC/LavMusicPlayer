@@ -48,15 +48,21 @@ Don't want to bother with hosting it yourself? You can add the official instance
 
 ## 🎵 Commands
 
-Here are all the available commands:
+Here are all the available music commands:
 
-| Command | Description |
-| :--- | :--- |
-| **/play `<query>`** | Plays a song or adds it to the queue. The query can be a song name, YouTube URL, SoundCloud URL, etc. |
-| **/repeat `<mode>`** | Sets the repeat mode. Options: `SINGLE` (repeats the current song), `QUEUE` (repeats the queue), `OFF`. |
-| **/skip** | Skips the currently playing song and plays the next one in the queue. |
-| **/volume `<level>`** | Adjusts the player volume from 1 to 100. |
-***Note**: If you recive the Error **"Unknown Interaction"**, Restart your Discord Client with Ctrl+R*
+| Command               | Description                                                                                                             |
+|:----------------------|:------------------------------------------------------------------------------------------------------------------------|
+| **/play `<song>`**    | Plays a song or adds it to the queue. Can be a song name, YouTube URL, SoundCloud URL, etc.                             |
+| **/pause**            | Pauses the currently playing track.                                                                                     |
+| **/resume**           | Resumes playback if paused.                                                                                             |
+| **/stop**             | Stops playback and clears the queue.                                                                                    |
+| **/skip**             | Skips the current track and plays the next one in the queue.                                                            |
+| **/repeat `<mode>`**  | Sets the repeat mode. Options: `false/off` (no repeat), `true/all` (repeat queue), `one/single` (repeat current track). |
+| **/shuffle**          | Shuffles the current queue.                                                                                             |
+| **/volume `<1-150>`** | Sets the volume (1-150).                                                                                                |
+| **/changenode**       | Changes to a different Lavalink node.                                                                                   |
+
+***Note**: If you receive the error **"Unknown Interaction"**, try restarting your Discord client with Ctrl+R*
 
 ***
 
