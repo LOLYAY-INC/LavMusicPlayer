@@ -20,13 +20,17 @@ public class ConfigManager {
         return (boolean) configMap.get(key);
     }
 
+    public static Object getConfigRaw(String key) {
+        return configMap.get(key);
+    }
+
     public static void loadConfig(Map<String, Object> configMap) {
         ConfigManager.configMap = configMap;
         if (configMap.get("version") == null) {
             Logger.err("Config file is not valid or is empty.");
             System.exit(1);
         }
-        version = configMap.get("version").toString();
+        version = getConfig("version");
         Logger.debug("Config loaded, version: " + version);
         Logger.log("Loaded Config, Bot version is " + version);
     }

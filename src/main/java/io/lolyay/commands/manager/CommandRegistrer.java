@@ -4,6 +4,7 @@ import io.lolyay.JdaMain;
 import io.lolyay.commands.info.StatusCommand;
 import io.lolyay.commands.info.VersionCommand;
 import io.lolyay.commands.music.*;
+import io.lolyay.config.ConfigManager;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.entities.Guild;
@@ -228,12 +229,15 @@ public class CommandRegistrer {
     }
 
     private static boolean canRunCommand(Member member) {
-     /* WIP  for (Role role : member.getRoles()) {
-            if () {
-                return true;
+        ArrayList<String> adminRoles = (ArrayList<String>) ConfigManager.getConfigRaw("role-id-whitelist");
+        if (!ConfigManager.getConfigBool("permissions-enabled"))
+            return true;
+        for (String role : adminRoles) {
+            if (member.getRoles().contains(JdaMain.jda.getRoleById(role))) {
+                return !ConfigManager.getConfigBool("whitelist-acts-as-blacklist");
             }
-        }*/
-        return true;
+        }
+        return ConfigManager.getConfigBool("whitelist-acts-as-blacklist");
     }
 
 
