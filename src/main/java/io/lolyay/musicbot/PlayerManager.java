@@ -198,6 +198,20 @@ public class PlayerManager {
        // lavaLinkClient.getOrCreateLink(guildId).destroy();
     }
 
+    public void pause(long guildId) {
+        lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
+                .setPaused(true)
+                .subscribe();
+        // lavaLinkClient.getOrCreateLink(guildId).destroy();
+    }
+
+    public void resume(long guildId) {
+        lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
+                .setPaused(false)
+                .subscribe();
+        // lavaLinkClient.getOrCreateLink(guildId).destroy();
+    }
+
     public void setVolume(long guildId, int volume) {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setVolume(volume)

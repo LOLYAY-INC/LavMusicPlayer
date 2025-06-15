@@ -19,6 +19,7 @@ public class GuildMusicManager {
     private final QueManager queManager;
     private final long guildId;
     private long volume;
+    private boolean isPaused = false;
 
     // A flag to track the playing state to prevent race conditions.
     private volatile boolean isPlaying = false;
@@ -66,8 +67,20 @@ public class GuildMusicManager {
         playerManager.stop(guildId);
     }
 
+    public void pause() {
+        playerManager.pause(guildId);
+    }
+
+    public void resume() {
+        playerManager.resume(guildId);
+    }
+
     public boolean isPlaying(){
         return isPlaying;
+    }
+
+    public boolean isPaused(){
+        return isPaused;
     }
 
     /**
