@@ -3,6 +3,7 @@ package io.lolyay.musicbot;
 
 
 import io.lolyay.JdaMain;
+import io.lolyay.config.guildconfig.GuildConfig;
 import io.lolyay.musicbot.queue.QueManager;
 import io.lolyay.musicbot.queue.RepeatMode;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
@@ -19,17 +20,19 @@ public class GuildMusicManager {
     private final QueManager queManager;
     private final long guildId;
     private long volume;
+    private final GuildConfig config;
     private boolean isPaused = false;
 
     // A flag to track the playing state to prevent race conditions.
     private volatile boolean isPlaying = false;
 
-    public GuildMusicManager(PlayerManager playerManager, long guildId,long volume) {
+    public GuildMusicManager(PlayerManager playerManager, long guildId, GuildConfig config) {
         this.playerManager = playerManager;
         this.guildId = guildId;
-        this.queManager = new QueManager();
+        this.queManager = new QueManager(config);
         this.queManager.init(); // Load settings like repeat mode
-        this.volume = volume;
+        this.config = config;
+        this.volume = config.volume();
     }
 
     /**
@@ -39,6 +42,7 @@ public class GuildMusicManager {
     public void queueTrack(MusicAudioTrack track) {
         // queManager.queueTrack returns true if the queue was empty before adding.
         boolean shouldStart = queManager.queueTrack(track);
+        config.plays(config.plays() + 1);
         if (shouldStart) {
             startPlaying();
         }
@@ -81,6 +85,10 @@ public class GuildMusicManager {
         return isPlaying;
     }
 
+    public Long getGuildId() {
+        return guildId;
+    }
+
     public boolean isPaused(){
         return isPaused;
     }
@@ -99,6 +107,7 @@ public class GuildMusicManager {
         if (nextTrack != null) {
             isPlaying = true;
             playerManager.playTrack(nextTrack);
+            config.plays(config.plays() + 1);
             return currentrack;
         } else {
             // Skipped the last song, so stop everything.
@@ -118,6 +127,7 @@ public class GuildMusicManager {
         if (nextTrack != null) {
             // If there's a next track, play it. State remains isPlaying=true.
             playerManager.playTrack(nextTrack);
+            config.plays(config.plays() + 1);
         } else {
             // The queue is now empty, so we are no longer playing.
             this.isPlaying = false;
@@ -132,7 +142,12 @@ public class GuildMusicManager {
     public List<MusicAudioTrack> getQueue() { return queManager.getQueue(); }
     public void setRepeatMode(RepeatMode mode) { queManager.setRepeatMode(mode); }
     public RepeatMode getRepeatMode() { return queManager.getRepeatMode(); }
-    public void setVolume(long volume) { this.volume = volume; playerManager.setVolume(this.guildId, (int) volume); }
+
+    public void setVolume(long volume) {
+        this.volume = volume;
+        this.config.volume((int) volume);
+        playerManager.setVolume(this.guildId, (int) volume);
+    }
     public long getVolume() { return this.volume; }
     public QueManager getQueManager() { return queManager; }
 }

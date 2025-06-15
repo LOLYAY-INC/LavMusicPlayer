@@ -10,7 +10,7 @@ public final class GuildConfig {
     private RepeatMode repeatMode;
     private int volume;
     private int plays;
-    private JsonNode node;
+    private JsonNode node; //TODO
 
 
     public GuildConfig(String guildId, RepeatMode repeatMode, int volume, int plays, JsonNode node) {

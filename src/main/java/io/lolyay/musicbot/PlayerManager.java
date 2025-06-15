@@ -5,7 +5,7 @@ import dev.arbjerg.lavalink.client.LavalinkClient;
 import dev.arbjerg.lavalink.client.event.TrackEndEvent;
 import dev.arbjerg.lavalink.client.player.Track;
 import io.lolyay.JdaMain;
-import io.lolyay.config.ConfigManager;
+import io.lolyay.config.guildconfig.GuildConfigManager;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.entities.Member;
@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 
 public class PlayerManager {
@@ -41,7 +39,7 @@ public class PlayerManager {
     }
 
     public synchronized GuildMusicManager getGuildMusicManager(long guildId) {
-        return musicManagers.computeIfAbsent(guildId, id -> new GuildMusicManager(this, id, Long.parseLong(ConfigManager.getConfig("default-volume"))));
+        return musicManagers.computeIfAbsent(guildId, id -> new GuildMusicManager(this, id, GuildConfigManager.getGuildConfig(id.toString())));
     }
 
     /**

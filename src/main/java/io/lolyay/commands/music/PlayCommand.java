@@ -4,8 +4,8 @@ package io.lolyay.commands.music;
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
-import io.lolyay.embedmakers.StatusEmbedGenerator;
 import io.lolyay.musicbot.GuildMusicManager;
+import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayCommand implements Command {
 
@@ -36,6 +37,19 @@ public class PlayCommand implements Command {
     @Override
     public boolean requiresPermission() {
         return true; // As per your original code
+    }
+
+    @NotNull
+    private static String getResponse(MusicAudioTrack track, boolean isPlayingNow, GuildMusicManager musicManager) {
+        String response;
+        if (isPlayingNow) {
+            response = Emoji.PLAY.getCode() + " Now Playing: **" + track.track().getInfo().getTitle() + "**";
+        } else {
+            int position = musicManager.getQueManager().getQueue().size();
+            response = Emoji.SUCCESS.getCode() + " Added to queue: **" + track.track().getInfo().getTitle() + "**"
+                    + "\n" + Emoji.MUSIC.getCode() + " Position: **#" + position + "**";
+        }
+        return response;
     }
 
     @Override
@@ -76,16 +90,9 @@ public class PlayCommand implements Command {
                     final boolean isPlayingNow = musicManager.getQueManager().isEmpty();
                     musicManager.queueTrack(track);
 
-                    String response;
-                    if (isPlayingNow) {
-                        response = Emoji.PLAY.getCode() + " Now Playing: **" + track.track().getInfo().getTitle() + "**";
-                    } else {
-                        int position = musicManager.getQueManager().getQueue().size();
-                        response = Emoji.SUCCESS.getCode() + " Added to queue: **" + track.track().getInfo().getTitle() + "**"
-                                + "\n" + Emoji.MUSIC.getCode() + " Position: **#" + position + "**";
-                    }
+                    String response = getResponse(track, isPlayingNow, musicManager);
                     event.getHook().sendMessage(response).queue();
-                    event.getHook().sendMessageEmbeds(StatusEmbedGenerator.generate(musicManager).build()).queue();
+                    //  event.getHook().sendMessageEmbeds(StatusEmbedGenerator.generate(musicManager).build()).queue();
                 },
                 // --- FAILURE CALLBACK ---
                 () -> {

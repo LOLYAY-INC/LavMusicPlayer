@@ -1,5 +1,6 @@
 package io.lolyay.musicbot.queue;
 
+import io.lolyay.config.guildconfig.GuildConfig;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 
 import javax.annotation.Nullable;
@@ -15,16 +16,20 @@ import java.util.List;
  */
 public class QueManager {
 
-    // LinkedList is more efficient for frequent remove-from-start operations (like next/skip)
     private final List<MusicAudioTrack> queue = new LinkedList<>();
     private RepeatMode repeatMode = RepeatMode.OFF;
+    private final GuildConfig config;
+
+    public QueManager(GuildConfig config) {
+        this.config = config;
+    }
 
     /**
      * Initializes the QueManager, loading the repeat mode from settings.
      * This should be called once when the bot or GuildMusicManager is created.
      */
     public void init() {
-        this.repeatMode = RepeatMode.OFF;
+        this.repeatMode = config.repeatMode();
     }
     /**
      * Called when the current track finishes playing.
@@ -182,6 +187,7 @@ public class QueManager {
 
     public void setRepeatMode(RepeatMode repeatMode) {
         this.repeatMode = repeatMode;
+        this.config.repeatMode(repeatMode);
     }
 
     public RepeatMode getRepeatMode() {

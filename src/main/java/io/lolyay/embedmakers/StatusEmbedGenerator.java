@@ -1,5 +1,7 @@
 package io.lolyay.embedmakers;
 
+import io.lolyay.config.guildconfig.GuildConfig;
+import io.lolyay.config.guildconfig.GuildConfigManager;
 import io.lolyay.musicbot.GuildMusicManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 
@@ -8,6 +10,7 @@ import java.awt.*;
 public class StatusEmbedGenerator {
     public static EmbedBuilder generate(GuildMusicManager musicManager) {
         EmbedBuilder builder = new EmbedBuilder();
+        GuildConfig guildConfig = GuildConfigManager.getGuildConfig(musicManager.getGuildId().toString());
         builder.setTitle(genTitle(musicManager));
         if (!musicManager.getQueManager().getQueue().isEmpty())
             builder.addField("", "**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**", false);
@@ -15,7 +18,8 @@ public class StatusEmbedGenerator {
             builder.addField("", "**Queue is empty**", false);
         builder.addField("**Queue:**",musicManager.getQueManager().getQueue().size() + " tracks left",false);
         builder.addField("**Repeat:**",musicManager.getRepeatMode().getEmoji() + " - " + musicManager.getRepeatMode().getUserFriendlyName(),false);
-        builder.addField("**Volume:**",musicManager.getVolume() + " / 100",false);
+        builder.addField("**Volume:**", musicManager.getVolume() + " / 100 (Default: " + guildConfig.volume() + ")", false);
+        builder.addField("**Tracks played:**", String.valueOf(guildConfig.plays()), false);
         if(!musicManager.getQueManager().getQueue().isEmpty())
             builder.setThumbnail(getImageURL(musicManager));
         builder.setColor(genColor(musicManager.isPlaying(),musicManager.isPaused()));
