@@ -49,7 +49,7 @@ public class JdaMain {
         Logger.debug("JDA Built, Registering Commands...");
 
         if (shouldRegisterCommands)
-            CommandRegistrer.register();
+            CommandRegistrer.registerUnregisteredCommands();
         else
             CommandRegistrer.registerCommandsToRun();
 

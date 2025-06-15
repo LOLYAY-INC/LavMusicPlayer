@@ -10,12 +10,9 @@ public class StatusEmbedGenerator {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(genTitle(musicManager));
         builder.addField("","**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**",false);
-        builder.addField("","**Queue:**",false);
-        builder.addField("",musicManager.getQueManager().getQueue().size() + " tracks left",false);
-        builder.addField("","**Repeat:**",false);
-        builder.addField("",musicManager.getRepeatMode().getEmoji() + " - " + musicManager.getRepeatMode().getUserFriendlyName(),false);
-        builder.addField("","**Volume:**",false);
-        builder.addField("",musicManager.getVolume() + " / 100",false);
+        builder.addField("**Queue:**",musicManager.getQueManager().getQueue().size() + " tracks left",false);
+        builder.addField("**Repeat:**",musicManager.getRepeatMode().getEmoji() + " - " + musicManager.getRepeatMode().getUserFriendlyName(),false);
+        builder.addField("**Volume:**",musicManager.getVolume() + " / 100",false);
         builder.setThumbnail(getImageURL(musicManager));
         builder.setColor(genColor(musicManager.isPlaying(),musicManager.isPaused()));
         return builder;
@@ -58,18 +55,5 @@ public class StatusEmbedGenerator {
         return musicManager.getQueManager().getQueue().get(0).track().getInfo().getTitle();
     }
 
-    private static long getLength(GuildMusicManager musicManager) {
-        return musicManager.getQueManager().getQueue().get(0).track().getInfo().getLength();
-    }
-
-    private static long getPosition(GuildMusicManager musicManager) {
-        long position = 0;
-        try {
-            position = musicManager.getPosition();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return position;
-    }
 
 }

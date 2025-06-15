@@ -66,27 +66,75 @@ public class CommandRegistrer {
     }
 
 
-    public static void registerUnRegisterdCommands(){
-        commands.clear();
-        List<String> alreadyRegisteredCommands = JdaMain.jda.retrieveCommands().complete()
-                .stream()
-                .map(net.dv8tion.jda.api.interactions.commands.Command::getName)
-                .toList();
+    /**
+     * Registers only the commands that aren't already registered in Discord.
+     * This is more efficient than re-registering all commands.
+     */
+    public static void registerUnregisteredCommands() {
+        try {
+            // Get all currently registered command names
+            List<String> registeredCommandNames = JdaMain.jda.retrieveCommands().complete()
+                    .stream()
+                    .map(net.dv8tion.jda.api.interactions.commands.Command::getName)
+                    .toList();
 
-        List<Command> toBeRegistered = Arrays.stream(commandsToBeRegistered)
-                .filter(command -> !alreadyRegisteredCommands.contains(command.getName()))
-                .toList();
+            // Find commands that need to be registered
+            List<SlashCommandData> commandsToRegister = new ArrayList<>();
+            List<Command> commandsToAdd = new ArrayList<>();
 
-        for (Command command : toBeRegistered) {
-            Logger.debug("Registering Command: " + command.getName());
-            registerCommandImpl(command);
+            for (Command command : commandsToBeRegistered) {
+                if (!registeredCommandNames.contains(command.getName())) {
+                    Logger.debug("Command not found, will register: " + command.getName());
+                    
+                    // Create the command data
+                    SlashCommandData commandData = createCommandData(command);
+                    if (commandData != null) {
+                        commandsToRegister.add(commandData);
+                        commandsToAdd.add(command);
+                    }
+                }
+            }
+
+            // Register new commands if any
+            if (!commandsToRegister.isEmpty()) {
+                JdaMain.jda.updateCommands().addCommands(commandsToRegister).queue(
+                        success -> {
+                            Logger.success("Successfully registered " + commandsToRegister.size() + " new commands, Bot is now Ready, You can use it now!");
+                            // Only add to runtime commands after successful registration
+                            Arrays.stream(commandsToBeRegistered).forEach(CommandRegistrer::registerCommandToRunImpl);
+                        },
+                        error -> Logger.err("Failed to register commands: " + error.getMessage())
+                );
+            } else {
+                Arrays.stream(commandsToBeRegistered).forEach(CommandRegistrer::registerCommandToRunImpl);
+                Logger.debug("No new commands to register");
+                Logger.success("Bot is now Ready, You can use it now!");
+            }
+        } catch (Exception e) {
+            Logger.err("Error in registerUnregisteredCommands: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
 
-        JdaMain.jda.updateCommands().addCommands(commands).complete();
-        registerCommandsToRun();
-
-        Logger.debug("Registered Commands");
-        Logger.success("Bot is now Ready, You can use it now!");
+    /**
+     * Creates the SlashCommandData for a command
+     */
+    private static SlashCommandData createCommandData(Command command) {
+        try {
+            if (command.getOptions() == null) {
+                return Commands.slash(command.getName(), command.getDescription());
+            } else if (command.getOptions() instanceof CommandOption[]) {
+                return commandOptionBuilderImpl(command);
+            } else if (command.getOptions() instanceof CommandOptionMultiple[]) {
+                return commandOptionMultipleBuilderImpl(command);
+            } else {
+                Logger.warn("Command %s has invalid options type".formatted(command.getName()));
+                return null;
+            }
+        } catch (Exception e) {
+            Logger.err("Error creating command data for " + command.getName() + ": " + e.getMessage());
+            return null;
+        }
     }
 
     private static void clearGuildCommands(List<net.dv8tion.jda.api.interactions.commands.Command> commandList, Guild guild) {
