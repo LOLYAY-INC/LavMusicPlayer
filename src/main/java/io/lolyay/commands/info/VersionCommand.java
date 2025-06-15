@@ -29,7 +29,7 @@ public class VersionCommand implements Command
 
     @Override
     public boolean requiresPermission() {
-        return true;
+        return false;
     }
 
     @Override

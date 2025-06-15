@@ -29,7 +29,7 @@ public class StatusCommand implements Command {
 
     @Override
     public boolean requiresPermission() {
-        return true;
+        return false;
     }
 
     @Override
