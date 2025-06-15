@@ -99,6 +99,17 @@ public class CommandRegistrer {
 
             // Register new commands if any
             if (!commandsToRegister.isEmpty()) {
+                clearBotCommands(JdaMain.jda.retrieveCommands().complete());
+                commandsToRegister.clear();
+                commandsToAdd.clear();
+                for (Command command : commandsToBeRegistered) {
+                    SlashCommandData commandData = createCommandData(command);
+                    if (commandData != null) {
+                        commandsToRegister.add(commandData);
+                        commandsToAdd.add(command);
+                    }
+
+                }
                 JdaMain.jda.updateCommands().addCommands(commandsToRegister).queue(
                         success -> {
                             Logger.success("Successfully registered " + commandsToRegister.size() + " new commands, Bot is now Ready, You can use it now!");

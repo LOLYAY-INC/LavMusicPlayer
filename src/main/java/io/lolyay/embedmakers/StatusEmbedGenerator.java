@@ -1,5 +1,6 @@
 package io.lolyay.embedmakers;
 
+import io.lolyay.JdaMain;
 import io.lolyay.config.guildconfig.GuildConfig;
 import io.lolyay.config.guildconfig.GuildConfigManager;
 import io.lolyay.musicbot.GuildMusicManager;
@@ -15,11 +16,12 @@ public class StatusEmbedGenerator {
         if (!musicManager.getQueManager().getQueue().isEmpty())
             builder.addField("", "**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**", false);
         else
-            builder.addField("", "**Queue is empty**", false);
-        builder.addField("**Queue:**",musicManager.getQueManager().getQueue().size() + " tracks left",false);
-        builder.addField("**Repeat:**",musicManager.getRepeatMode().getEmoji() + " - " + musicManager.getRepeatMode().getUserFriendlyName(),false);
-        builder.addField("**Volume:**", musicManager.getVolume() + " / 100 (Default: " + guildConfig.volume() + ")", false);
-        builder.addField("**Tracks played:**", String.valueOf(guildConfig.plays()), false);
+            builder.addField("**Queue is empty**", "", true);
+        builder.addField("**Queue:**", musicManager.getQueManager().getQueue().size() + " tracks left", true);
+        builder.addField("**Repeat:**", musicManager.getRepeatMode().getEmoji() + " - " + musicManager.getRepeatMode().getUserFriendlyName(), true);
+        builder.addField("**Volume:**", musicManager.getVolume() + " / 100 (Default: " + guildConfig.volume() + ")", true);
+        builder.addField("**Tracks played:**", String.valueOf(guildConfig.plays()), true);
+        builder.addField("**Connected to:**", JdaMain.lavalinkClient.getOrCreateLink(musicManager.getGuildId()).getNode().getName(), true);
         if(!musicManager.getQueManager().getQueue().isEmpty())
             builder.setThumbnail(getImageURL(musicManager));
         builder.setColor(genColor(musicManager.isPlaying(),musicManager.isPaused()));
