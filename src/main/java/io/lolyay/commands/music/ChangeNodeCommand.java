@@ -44,6 +44,6 @@ public class ChangeNodeCommand implements Command {
                 Duration.ofSeconds(3)
         );
         Logger.log("Changed Node to " + nextNode.getBaseUri() + " for " + event.getGuild().getName() + " (" + event.getGuild().getIdLong() + ")");
-        event.reply(Emoji.SUCCESS.getCode() + " Changed Node to " + nextNode.getBaseUri()).queue();
+        event.reply(Emoji.SUCCESS.getCode() + " Changed Node to " + nextNode.getName()).queue();
     }
 }
