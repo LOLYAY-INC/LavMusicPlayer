@@ -4,6 +4,7 @@ package io.lolyay.commands.music;
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
+import io.lolyay.embedmakers.StatusEmbedGenerator;
 import io.lolyay.musicbot.GuildMusicManager;
 import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.Permission;
@@ -100,6 +101,7 @@ public class PlayCommand implements Command {
                     }
                     // Use the hook to send the final response
                     event.getHook().sendMessage(response).queue();
+                    event.getHook().sendMessageEmbeds(StatusEmbedGenerator.generate(musicManager).build()).queue();
                 },
                 // --- FAILURE CALLBACK ---
                 () -> {
