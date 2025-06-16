@@ -1,6 +1,8 @@
-***
+<p align="center">
+  <img src="https://cdn.lolyay.dev/img/lavmusicbot.png" alt="LavMusicBot Logo" width="150">
+</p>
 
-# Lava JDA Music Bot
+# LavMusicBot
 
 A simple yet powerful music bot for Discord, built with JDA and powered by Lavalink. It's designed to be lightweight, easy to use, and simple to self-host, providing high-quality audio playback for your server.
 
