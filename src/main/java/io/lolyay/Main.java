@@ -8,6 +8,8 @@ import io.lolyay.utils.Logger;
 
 import java.io.FileNotFoundException;
 
+import static io.lolyay.utils.update.UpdateChecker.checkForUpdates;
+
 public class Main {
     public static void main(String[] args) {
         // Add shutdown hook for graceful shutdown
@@ -28,6 +30,10 @@ public class Main {
             Logger.err("Error with Guild Config.");
             System.exit(1);
         }
+
+        Logger.debug("Checking for updates...");
+        checkForUpdates();
+
         Logger.debug("Loading JDA...");
         try {
             JdaMain.init();
