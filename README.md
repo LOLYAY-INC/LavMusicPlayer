@@ -45,6 +45,7 @@ Don't want to bother with hosting it yourself? You can add the official instance
 - **Queue Control:** Full queue system with options to repeat a single track or the entire queue.
 - **Easy to Configure:** A single `settings.yml` file makes configuration a breeze.
 - **Multi-Guild Support:** Works out of the box in multiple servers simultaneously.
+- **Auto-Leave:** The bot automatically leaves the voice channel when it's left alone.
 
 ## 🎵 Commands
 
@@ -58,9 +59,10 @@ Here are all the available music commands:
 | **/stop**             | Stops playback and clears the queue.                                                                                    |
 | **/skip**             | Skips the current track and plays the next one in the queue.                                                            |
 | **/repeat `<mode>`**  | Sets the repeat mode. Options: `false/off` (no repeat), `true/all` (repeat queue), `one/single` (repeat current track). |
-| **/shuffle**          | Shuffles the current queue.                                                                                             |
 | **/volume `<1-150>`** | Sets the volume (1-150).                                                                                                |
-| **/changenode**       | Changes to a different Lavalink node.                                                                                   |
+| **/status**           | Shows the current playback status and queue information.                                                                |
+| **/version**          | Displays the current version of the bot.                                                                                |
+| **/changenode**       | Changes to a different Lavalink node if using multiple nodes.                                                           |
 
 ***Note**: If you receive the error **"Unknown Interaction"**, try restarting your Discord client with Ctrl+R*
 
@@ -72,7 +74,7 @@ This guide is for running the bot using the pre-compiled releases. No developmen
 
 #### Prerequisites
 
-- **Java 23 or higher:** You need Java installed to run the `.jar` file.
+- **Java 17 or higher:** You need Java installed to run the `.jar` file.
 - **A running Lavalink Server:** This bot requires a connection to a Lavalink server. You can find public ones [here](https://lavalink-list.appujet.site/) or host your own.
 - **A Discord Bot Token:** Create a bot application in the [Discord Developer Portal](https://discord.com/developers/applications).
 
@@ -100,11 +102,25 @@ This guide is for running the bot using the pre-compiled releases. No developmen
     ```
     This time, the bot will read your configuration and connect to Discord. Congratulations, your bot is now online!
     *Note: If you get Bad Audio on Mobile, That's an Issue with your Lavalink Server, as in my Testing turning the `resamplingQuality` of your Lavalink Server to `HIGH` fixed it.* 
+
+5. **Command Line Arguments**
+   The bot supports several command line arguments:
+   ```
+   -DEBUG                    # Enables debug logging
+   -OVERWRITE_CONFIG         # Forces overwriting of the config file
+   -NO_REGISTER_COMMANDS     # Skips registering slash commands
+   ```
 ---
 
 ### ⚙️ Configuration (settings.yml)
 
 This `settings.yml` file will be automatically generated in the same folder as your `.jar` file after you run it for the first time. Open it and edit the values as needed.
+
+### Guild Configuration Storage
+
+The bot automatically creates a `guildconfigs` folder in the same directory as the jar file to store per-guild settings.
+Each server gets its own JSON file (using the guild ID as the filename) that preserves settings like volume level,
+repeat mode, and play count between bot restarts. These files are managed automatically and don't need manual editing.
 
 ```yaml
 # Your discord bot token, get it from https://discord.com/developers/applications
@@ -113,6 +129,10 @@ discord-bot-token: "YOUR_TOKEN_HERE"
 # The default volume of the bot when it starts playing in a new server.
 # Value must be between 1 and 100.
 default-volume: 10
+
+# Set this to true if you want to clear the queue when the voice-channel is empty
+# (when everyone leaves and the bot is alone in the channel).
+clear-on-empty-channel: true
 
 # --- Lavalink Config ---
 
@@ -150,7 +170,6 @@ role-id-whitelist:
   - "123123123"  # Replace with your role ID
   - "456456456"  # Add more role IDs as needed
 ```
-
 ## Configuration Options
 
 ### Basic Settings
@@ -221,7 +240,9 @@ If you have a suggestion that would make this better, please fork the repo and c
 4.  Push to the Branch (`git push origin feature/AmazingFeature`)
 5.  Open a Pull Request
 
-*Note: I made this [Lavalink JSON to Java Converter](https://lolyay.dev/tools/lavalinkconverter/) to use with the JSON you get from: [The lavalink Server List](https://lavalink-list.appujet.site/)* 
+*Note: I made this [Lavalink JSON to Java Converter](https://lolyay.dev/tools/lavalinkconverter/) to use with the JSON
+you get from: [The lavalink Server List](https://lavalink-list.appujet.site/non-ssl)
+
 ## 📜 License
 
 LavMusicBot is released under the [Apache License 2.0](https://github.com/LOLYAY-INC/LavMusicBot/blob/main/LICENSE).
