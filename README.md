@@ -76,7 +76,7 @@ This guide is for running the bot using the pre-compiled releases. No developmen
 
 #### Prerequisites
 
-- **Java 17 or higher:** You need Java installed to run the `.jar` file.
+- **Java 23 or higher:** You need Java installed to run the `.jar` file.
 - **A running Lavalink Server:** This bot requires a connection to a Lavalink server. You can find public ones [here](https://lavalink-list.appujet.site/) or host your own.
 - **A Discord Bot Token:** Create a bot application in the [Discord Developer Portal](https://discord.com/developers/applications).
 
