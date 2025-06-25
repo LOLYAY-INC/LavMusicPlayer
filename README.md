@@ -65,6 +65,7 @@ Here are all the available music commands:
 | **/status**           | Shows the current playback status and queue information.                                                                |
 | **/version**          | Displays the current version of the bot.                                                                                |
 | **/changenode**       | Changes to a different Lavalink node if using multiple nodes.                                                           |
+| **/lyrics**           | Shows you the lyrics of the currently playing song                                                                      |
 
 ***Note**: If you receive the error **"Unknown Interaction"**, try restarting your Discord client with Ctrl+R*
 
@@ -226,7 +227,7 @@ nodes-json-file: "path/to/nodes.json"
 Here are some of the features planned for future updates:
 
 - [x] **Auto-Leave:** The bot will automatically leave the voice channel after a configurable amount of time when it's left alone.
-- [ ] **/lyrics Command:** A new command to fetch and display the lyrics for the currently playing song.
+- [x] **/lyrics Command:** A new command to fetch and display the lyrics for the currently playing song.
 - [ ] **Single-Guild Mode:** An option in the config to restrict the bot to operate in only one server, simplifying permissions and setup for private use.
 - [ ] **DJ Role:** A configurable "DJ role" that can exclusively use music commands.
 
