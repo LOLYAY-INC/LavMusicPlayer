@@ -37,7 +37,7 @@ public class Main {
         Logger.debug("Loading JDA...");
         try {
             JdaMain.init();
-        }catch (Exception e){
+        } catch (Exception e) {
             Logger.err("Error while starting bot: ");
             e.printStackTrace();
         }

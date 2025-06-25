@@ -82,13 +82,11 @@ public class QueManager {
             return null;
         }
 
-        // Skipping always removes the head of the queue.
-        // If repeat all is on, the skipped track will not be re-added.
-        queue.removeFirst();
+        // Move the current track to the end of the queue
+        MusicAudioTrack currentTrack = queue.removeFirst();
+        queue.add(currentTrack);
 
-        if (queue.isEmpty()) {
-            return null;
-        }
+        // Return the new track at the head of the queue
         return queue.getFirst();
     }
 
