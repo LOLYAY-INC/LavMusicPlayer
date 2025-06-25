@@ -30,7 +30,8 @@ public class CommandRegistrer {
             new ResumeCommand(),
             new PauseCommand(),
             new StatusCommand(),
-            new ChangeNodeCommand()
+            new ChangeNodeCommand(),
+            new GetLyricsCommand()
 
     };
 
