@@ -1,0 +1,14 @@
+package io.lolyay.lyrics.getters;
+
+
+import io.lolyay.lyrics.records.Lyrics;
+
+import java.util.concurrent.CompletableFuture;
+
+public abstract class LyricsGetter {
+    public abstract String getSourceName();
+
+    public abstract boolean canGetLyrics(String songName);
+
+    public abstract CompletableFuture<Lyrics> getLyrics(String songName) throws Exception;
+}

@@ -12,12 +12,14 @@ default-volume: 10
 # Set this to true if you want to clear the queue when the voice-channel is empty ( aka everyone left and the bot is alone in the channel ).
 clear-on-empty-channel: true
 
-# --- Lavalink Config ---
+
 
 using-nodes-json-file: false # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
 nodes-json-file: "C:\\path\\to\\nodes.json" # The path to your nodes.json file
 
-# --- Lavalink Server Details (Only if you're not using a nodes.json file) ---
+# =======================
+# Lavalink Server Details (Only if you're not using a nodes.json file)
+# =======================
 # Get these from your Lavalink provider or your own server.
 # A list of public servers can be found at https://lavalink-list.appujet.site/
 
@@ -33,7 +35,10 @@ lavalink-secure: false
 # The password for your Lavalink server.
 lavalink-password: "pleaseletmein"
 
-# --- Permissions ---
+  # ============
+                     =============
+# Permissions Configuration
+# =========================
 
 # Set this to true if you want to enable permissions
 permissions-enabled: false
@@ -46,6 +51,26 @@ role-id-whitelist:
   - "123123123"
   - "456456456"
 
+
+# ====================
+# Lyrics Configuration
+# ====================
+# Enable or disable lyrics functionality
+# Set to 'true' to enable the /lyrics command
+lyrics-enabled: false
+
+# MusixMatch Authentication (Required for lyrics)
+# ---------------------------------------------
+# To use the lyrics feature, you need to provide a valid MusixMatch user token.
+# Here's how to get it:
+# 1. Sign up for a free account at https://www.musixmatch.com/
+# 2. Log in to your MusixMatch account in your web browser
+# 3. Open Developer Tools (F12 or right-click -> Inspect)
+# 4. Go to the 'Application' tab (or 'Storage' in Firefox)
+# 5. In the left sidebar, expand 'Cookies' and select 'https://www.musixmatch.com'
+# 6. Find the cookie named 'musixmatchUserToken'
+# 7. Copy the token value (a long string of characters) and paste it below
+musixmatch-user-cookie: "YOUR_MUSIXMATCH_USER_TOKEN"
 
 # --- Do Not Edit Below This Line ---
 version: "${project.version}"

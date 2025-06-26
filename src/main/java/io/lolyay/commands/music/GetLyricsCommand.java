@@ -4,10 +4,12 @@ package io.lolyay.commands.music;
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
+import io.lolyay.config.ConfigManager;
 import io.lolyay.embedmakers.LyricsEmbedGenerator;
-import io.lolyay.lyrics.CustomLyricsGetter;
+import io.lolyay.lyrics.getters.MusixMatchGetter;
 import io.lolyay.musicbot.GuildMusicManager;
 import io.lolyay.utils.Emoji;
+import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 public class GetLyricsCommand implements Command {
@@ -37,9 +39,19 @@ public class GetLyricsCommand implements Command {
     public void execute(SlashCommandInteractionEvent event) {
         GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong());
 
+        // DOESNT WORK (FIXED?)
+        //    event.reply(Emoji.ERROR.getCode() + " This Command is currently unavailable").queue();
+
+        if (!ConfigManager.getConfigBool("lyrics-enabled")) {
+            event.reply(Emoji.ERROR.getCode() + " Lyrics are currently disabled").queue();
+            return;
+        }
+
+
+
 
         event.deferReply().queue();
-        CustomLyricsGetter.getLyrics(musicManager.getQueue().getFirst().track().getInfo().getTitle()).thenAcceptAsync(
+        new MusixMatchGetter().getLyrics(musicManager.getQueue().getFirst().track().getInfo().getTitle()).thenAcceptAsync(
                 lyrics -> {
                     if (lyrics == null) {
                         event.getHook().sendMessage(Emoji.ERROR.getCode() + " No Lyrics found for this song").queue();
@@ -47,7 +59,12 @@ public class GetLyricsCommand implements Command {
                     }
                     event.getHook().sendMessageEmbeds(LyricsEmbedGenerator.generate(lyrics).build()).queue();
                 }
-        );
+        ).exceptionally((e) -> {
+            Logger.err("Error getting lyrics: " + e.getMessage());
+            event.getHook().sendMessage(Emoji.ERROR.getCode() + " Error getting lyrics: " + e.getMessage()).queue();
+            e.printStackTrace();
+            return null;
+        });
 
     }
 
