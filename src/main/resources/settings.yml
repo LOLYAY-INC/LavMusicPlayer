@@ -72,5 +72,14 @@ lyrics-enabled: false
 # 7. Copy the token value (a long string of characters) and paste it below
 musixmatch-user-cookie: "YOUR_MUSIXMATCH_USER_TOKEN"
 
+
+# Enable of disable the live lyrics feature, it highlights the current line playing, only works with musixmatch
+# I think this is the best feature
+live-lyrics-enabled: true
+
+# How many milliseconds to move the line earlier than the song, higher = line gets highlighted earlier
+live-lyrics-ping-compensation: 10
+
+
 # --- Do Not Edit Below This Line ---
 version: "${project.version}"

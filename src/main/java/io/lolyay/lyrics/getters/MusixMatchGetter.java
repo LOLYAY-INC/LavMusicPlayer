@@ -6,6 +6,7 @@ import io.lolyay.lyrics.LyricsNotFoundException;
 import io.lolyay.lyrics.Scraper;
 import io.lolyay.lyrics.records.Lyrics;
 import io.lolyay.lyrics.records.SearchLyrics;
+import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -15,6 +16,7 @@ import org.jsoup.select.Elements;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -69,7 +71,7 @@ public class MusixMatchGetter extends LyricsGetter {
         }
     }
 
-    private String parseLyricsDom(Document document) throws Exception {
+    private KVPair<String, String> parseLyricsDom(Document document) throws Exception {
         Element scriptElement = document.getElementById("__NEXT_DATA__");
 
         if (scriptElement == null) {
@@ -91,7 +93,7 @@ public class MusixMatchGetter extends LyricsGetter {
                     .getString("body");
 
 
-            return cleanLyrics(lyricsBody);
+            return new KVPair<>(cleanLyrics(lyricsBody), jsonData);
 
         } catch (org.json.JSONException e) {
             Logger.err("Failed to parse lyrics from JSON. The JSON structure might have changed. " + e.getMessage());
@@ -122,7 +124,7 @@ public class MusixMatchGetter extends LyricsGetter {
     }
 
     @Override
-    public CompletableFuture<Lyrics> getLyrics(String songName) {
+    public CompletableFuture<Lyrics> getLyrics(String songName, Timestamp startTime) {
         CompletableFuture<Lyrics> future = new CompletableFuture<>();
 
 
@@ -149,11 +151,11 @@ public class MusixMatchGetter extends LyricsGetter {
                 String lyricsUrl = searchResult.url();
                 String lyricsHtml = Scraper.getSiteHTML(lyricsUrl, getCookies());
                 Document lyricsDocument = Jsoup.parse(lyricsHtml, lyricsUrl);
-                String lyricsText = parseLyricsDom(lyricsDocument);
+                KVPair<String, String> lyricsTextAndLivePart = parseLyricsDom(lyricsDocument);
 
 
                 Logger.debug("Successfully parsed lyrics for %s from source %s.".formatted(songName, getSourceName()));
-                Lyrics finalLyrics = new Lyrics(searchResult, lyricsText, getSourceName());
+                Lyrics finalLyrics = new Lyrics(searchResult, lyricsTextAndLivePart.getKey(), getSourceName(), lyricsTextAndLivePart.getValue());
                 future.complete(finalLyrics);
 
             } catch (Exception e) {

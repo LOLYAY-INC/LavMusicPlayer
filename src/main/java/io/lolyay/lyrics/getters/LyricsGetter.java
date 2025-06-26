@@ -3,6 +3,7 @@ package io.lolyay.lyrics.getters;
 
 import io.lolyay.lyrics.records.Lyrics;
 
+import java.sql.Timestamp;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class LyricsGetter {
@@ -10,5 +11,5 @@ public abstract class LyricsGetter {
 
     public abstract boolean canGetLyrics(String songName);
 
-    public abstract CompletableFuture<Lyrics> getLyrics(String songName) throws Exception;
+    public abstract CompletableFuture<Lyrics> getLyrics(String songName, Timestamp startTime) throws Exception;
 }

@@ -7,6 +7,7 @@ import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.embedmakers.LyricsEmbedGenerator;
 import io.lolyay.lyrics.getters.MusixMatchGetter;
+import io.lolyay.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.musicbot.GuildMusicManager;
 import io.lolyay.utils.Emoji;
 import io.lolyay.utils.Logger;
@@ -47,17 +48,26 @@ public class GetLyricsCommand implements Command {
             return;
         }
 
+        if (musicManager.getQueue().isEmpty()) {
+            event.reply(Emoji.ERROR.getCode() + " Queue is empty").queue();
+            return;
+        }
 
 
 
         event.deferReply().queue();
-        new MusixMatchGetter().getLyrics(musicManager.getQueue().getFirst().track().getInfo().getTitle()).thenAcceptAsync(
+        new MusixMatchGetter().getLyrics(musicManager.getQueue().getFirst().track().getInfo().getTitle(), musicManager.getQueue().getFirst().startTime()).thenAcceptAsync(
                 lyrics -> {
                     if (lyrics == null) {
                         event.getHook().sendMessage(Emoji.ERROR.getCode() + " No Lyrics found for this song").queue();
                         return;
                     }
-                    event.getHook().sendMessageEmbeds(LyricsEmbedGenerator.generate(lyrics).build()).queue();
+                    SyncedLyricsPlayer player = SyncedLyricsPlayer.fromJson(lyrics.liveSection());
+                    event.getHook().sendMessageEmbeds(LyricsEmbedGenerator.generate(lyrics).build()).queue(message -> {
+                        if (ConfigManager.getConfigBool("live-lyrics-enabled")) {
+                            player.startPlayback(message, musicManager.getQueue().getFirst().startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
+                        }
+                    });
                 }
         ).exceptionally((e) -> {
             Logger.err("Error getting lyrics: " + e.getMessage());

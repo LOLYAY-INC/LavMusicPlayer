@@ -126,6 +126,10 @@ Each server gets its own JSON file (using the guild ID as the filename) that pre
 repeat mode, and play count between bot restarts. These files are managed automatically and don't need manual editing.
 
 ```yaml
+# ---------------------------------- #
+#      LavMusicBot Config            #
+# ---------------------------------- #
+
 # Your discord bot token, get it from https://discord.com/developers/applications
 discord-bot-token: "YOUR_TOKEN_HERE"
 
@@ -133,18 +137,17 @@ discord-bot-token: "YOUR_TOKEN_HERE"
 # Value must be between 1 and 100.
 default-volume: 10
 
-# Set this to true if you want to clear the queue when the voice-channel is empty
-# (when everyone leaves and the bot is alone in the channel).
+# Set this to true if you want to clear the queue when the voice-channel is empty ( aka everyone left and the bot is alone in the channel ).
 clear-on-empty-channel: true
 
-# --- Lavalink Config ---
 
-# Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
-using-nodes-json-file: false
-# The path to your nodes.json file
-nodes-json-file: "C:\\path\\to\\nodes.json"
 
-# --- Lavalink Server Details (Only if you're not using a nodes.json file) ---
+using-nodes-json-file: false # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
+nodes-json-file: "C:\\path\\to\\nodes.json" # The path to your nodes.json file
+
+# =======================
+# Lavalink Server Details (Only if you're not using a nodes.json file)
+# =======================
 # Get these from your Lavalink provider or your own server.
 # A list of public servers can be found at https://lavalink-list.appujet.site/
 
@@ -160,18 +163,54 @@ lavalink-secure: false
 # The password for your Lavalink server.
 lavalink-password: "pleaseletmein"
 
-# --- Permissions ---
+  # ============
+                     =============
+# Permissions Configuration
+# =========================
 
-# Set this to true if you want to enable role-based permissions
+# Set this to true if you want to enable permissions
 permissions-enabled: false
 
-# When enabled, the whitelist acts as a blacklist (deny list) instead of an allow list
+# Set this to true if you want to use a blacklist instead of a whitelist
 whitelist-acts-as-blacklist: false
 
-# List of role IDs that are allowed to use the bot (or denied if whitelist-acts-as-blacklist is true)
+# The role IDs of the roles you want to allow to use the bot
 role-id-whitelist:
-  - "123123123"  # Replace with your role ID
-  - "456456456"  # Add more role IDs as needed
+  - "123123123"
+  - "456456456"
+
+
+# ====================
+# Lyrics Configuration
+# ====================
+# Enable or disable lyrics functionality
+# Set to 'true' to enable the /lyrics command
+lyrics-enabled: false
+
+# MusixMatch Authentication (Required for lyrics)
+# ---------------------------------------------
+# To use the lyrics feature, you need to provide a valid MusixMatch user token.
+# Here's how to get it:
+# 1. Sign up for a free account at https://www.musixmatch.com/
+# 2. Log in to your MusixMatch account in your web browser
+# 3. Open Developer Tools (F12 or right-click -> Inspect)
+# 4. Go to the 'Application' tab (or 'Storage' in Firefox)
+# 5. In the left sidebar, expand 'Cookies' and select 'https://www.musixmatch.com'
+# 6. Find the cookie named 'musixmatchUserToken'
+# 7. Copy the token value (a long string of characters) and paste it below
+musixmatch-user-cookie: "YOUR_MUSIXMATCH_USER_TOKEN"
+
+
+# Enable of disable the live lyrics feature, it highlights the current line playing, only works with musixmatch
+# I think this is the best feature
+live-lyrics-enabled: true
+
+# How many milliseconds to move the line earlier than the song, higher = line gets highlighted earlier
+live-lyrics-ping-compensation: 10
+
+
+# --- Do Not Edit Below This Line ---
+version: "${project.version}"
 ```
 ## Configuration Options
 
@@ -192,6 +231,28 @@ role-id-whitelist:
 - `permissions-enabled`: Enable/disable role-based permissions
 - `whitelist-acts-as-blacklist`: When enabled, the whitelist becomes a blacklist
 - `role-id-whitelist`: List of role IDs that are allowed (or denied) to use the bot
+
+### Lyrics Configuration
+
+- `lyrics-enabled`: Enable/disable lyrics functionality
+- `musixmatch-user-cookie`: MusixMatch user token for lyrics
+- `live-lyrics-enabled`: Check [live lyrics](#live-lyrics)
+- `live-lyrics-ping-compensation`: Check [live lyrics](#live-lyrics)
+
+## Live Lyrics
+
+This feature highlights the current line playing, currently only works with MusixMatch.
+Doesn't work if you are repeating a song, only the first playback works for now.
+It's a great feature, check it out!
+
+### Ping Compensation
+
+The live lyrics feature highlights the current line playing, so it's important to make sure the line is highlighted at
+the right time.
+The `live-lyrics-ping-compensation` option allows you to adjust how many milliseconds to move the line earlier than the
+song, higher = line gets highlighted earlier.
+The default value is 10 milliseconds, which is a good balance between highlighting the line and not highlighting it too
+early.
 
 ## Nodes.json File
 Nodes.json is a file that contains a list of Lavalink servers if you want to use more than one, if not you can use the standard config options.
@@ -229,6 +290,7 @@ Here are some of the features planned for future updates:
 - [x] **Auto-Leave:** The bot will automatically leave the voice channel after a configurable amount of time when it's left alone.
 - [x] **/lyrics Command:** A new command to fetch and display the lyrics for the currently playing song. (Using
   MusixMatch)
+- [x] **Live Lyrics:** Highlight the current line of the song being played
 - [ ] **Single-Guild Mode:** An option in the config to restrict the bot to operate in only one server, simplifying permissions and setup for private use.
 - [ ] **DJ Role:** A configurable "DJ role" that can exclusively use music commands.
 
