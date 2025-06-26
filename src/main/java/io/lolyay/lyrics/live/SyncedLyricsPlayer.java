@@ -3,6 +3,8 @@ package io.lolyay.lyrics.live;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.lolyay.config.ConfigManager;
+import io.lolyay.utils.Emoji;
+import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -122,9 +124,13 @@ public class SyncedLyricsPlayer {
         this.message = message;
         this.songStartTimeMillis = songStartTimeMillis;
         this.isPaused = false;
-
-        parseAndLoadTrack(jsonString);
-        beginScheduling();
+        try {
+            parseAndLoadTrack(jsonString);
+            beginScheduling();
+        } catch (Exception e) {
+            Logger.err("Error starting synced lyrics: " + e.getMessage());
+            message.editMessage(Emoji.ERROR.getCode() + " Error starting synced lyrics (not supported for this track?").queue();
+        }
     }
 
     /**

@@ -78,7 +78,7 @@ musixmatch-user-cookie: "YOUR_MUSIXMATCH_USER_TOKEN"
 live-lyrics-enabled: true
 
 # How many milliseconds to move the line earlier than the song, higher = line gets highlighted earlier
-live-lyrics-ping-compensation: 10
+live-lyrics-ping-compensation: 5
 
 
 # --- Do Not Edit Below This Line ---

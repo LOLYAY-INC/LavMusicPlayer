@@ -65,7 +65,12 @@ public class GetLyricsCommand implements Command {
 
                     event.getHook().sendMessageEmbeds(LyricsEmbedGenerator.generate(lyrics).build()).queue(message -> {
                         if (ConfigManager.getConfigBool("live-lyrics-enabled")) {
-                            SyncedLyricsPlayer.start(message, lyrics.liveSection(), musicManager.getQueue().getFirst().startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
+                            try {
+                                SyncedLyricsPlayer.start(message, lyrics.liveSection(), musicManager.getQueue().getFirst().startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
+                            } catch (Exception e) {
+                                Logger.err("Error starting synced lyrics: " + e.getMessage());
+                                event.getHook().sendMessage(Emoji.ERROR.getCode() + " Error starting synced lyrics: " + e.getMessage()).queue();
+                            }
                         }
                     });
                 }

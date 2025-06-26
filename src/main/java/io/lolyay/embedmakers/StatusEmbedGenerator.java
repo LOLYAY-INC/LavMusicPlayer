@@ -1,6 +1,7 @@
 package io.lolyay.embedmakers;
 
 import io.lolyay.JdaMain;
+import io.lolyay.config.ConfigManager;
 import io.lolyay.config.guildconfig.GuildConfig;
 import io.lolyay.config.guildconfig.GuildConfigManager;
 import io.lolyay.musicbot.GuildMusicManager;
@@ -22,6 +23,7 @@ public class StatusEmbedGenerator {
         builder.addField("**Volume:**", musicManager.getVolume() + " / 100 (Default: " + guildConfig.volume() + ")", true);
         builder.addField("**Tracks played:**", String.valueOf(guildConfig.plays()), true);
         builder.addField("**Connected to:**", JdaMain.lavalinkClient.getOrCreateLink(musicManager.getGuildId()).getNode().getName(), true);
+        builder.addField("**Live lyrics:**", ConfigManager.getConfigBool("live-lyrics-enabled") ? "Enabled" : "Disabled", true);
         if(!musicManager.getQueManager().getQueue().isEmpty())
             builder.setThumbnail(getImageURL(musicManager));
         builder.setColor(genColor(musicManager.isPlaying(),musicManager.isPaused()));
