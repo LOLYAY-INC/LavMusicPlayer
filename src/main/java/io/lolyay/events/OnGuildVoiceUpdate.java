@@ -16,9 +16,9 @@ public class OnGuildVoiceUpdate extends ListenerAdapter {
         if(event.getChannelLeft().asVoiceChannel().getMembers().size() > 1) return;
         if(event.getChannelLeft().asVoiceChannel().getIdLong() == event.getGuild().getSelfMember().getVoiceState().getChannel().getIdLong()) {
             Logger.log("Alone in voice channel, leaving...");
-            event.getJDA().getDirectAudioController().disconnect(event.getGuild());
-            if (ConfigManager.getConfigBool("clear-on-empty-channel")) {
-                JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).getQueManager().clear();
+            //   event.getJDA().getDirectAudioController().disconnect(event.getGuild());
+            if (ConfigManager.getConfigBool("stop-on-empty-channel")) {
+                JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).stop();
                 Logger.debug("Cleared queue");
             }
         }

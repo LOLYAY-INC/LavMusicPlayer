@@ -65,7 +65,8 @@ Here are all the available music commands:
 | **/status**           | Shows the current playback status and queue information.                                                                |
 | **/version**          | Displays the current version of the bot.                                                                                |
 | **/changenode**       | Changes to a different Lavalink node if using multiple nodes.                                                           |
-| **/lyrics**           | Shows you the lyrics of the currently playing song (DEPRECATED) Doesn't work                                                                      |
+| **/lyrics**           | Shows you the lyrics of the currently playing song and starts live lyrics if avalible.                                  |
+| **/stoplive**         | Stops the Live Lyrics (if playing).                                                                                     |
 
 ***Note**: If you receive the error **"Unknown Interaction"**, try restarting your Discord client with Ctrl+R*
 
@@ -253,6 +254,11 @@ The `live-lyrics-ping-compensation` option allows you to adjust how many millise
 song, higher = line gets highlighted earlier.
 The default value is 10 milliseconds, which is a good balance between highlighting the line and not highlighting it too
 early.
+
+### The music is still out of sync?
+
+We rely on MusixMatch to get the lyrics, so it's possible that the lyrics are not in sync with the song.
+If the lyrics are too late or too early, try adjusting the `live-lyrics-ping-compensation` option.
 
 ## Nodes.json File
 Nodes.json is a file that contains a list of Lavalink servers if you want to use more than one, if not you can use the standard config options.

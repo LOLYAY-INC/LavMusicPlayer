@@ -9,8 +9,8 @@ discord-bot-token: "YOUR_TOKEN_HERE"
 # Value must be between 1 and 100.
 default-volume: 10
 
-# Set this to true if you want to clear the queue when the voice-channel is empty ( aka everyone left and the bot is alone in the channel ).
-clear-on-empty-channel: true
+# Should the bot stop playing music when the voice-channel is empty ( aka everyone left and the bot is alone in the channel )
+stop-on-empty-channel: true
 
 
 
