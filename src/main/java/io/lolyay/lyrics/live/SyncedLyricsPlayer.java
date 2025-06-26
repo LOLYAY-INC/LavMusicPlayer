@@ -10,182 +10,244 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * A self-managing class for synchronized lyrics playback.
+ * It handles multiple guilds simultaneously using a static manager pattern.
+ * You only need to interact with the public static methods.
+ */
 public class SyncedLyricsPlayer {
 
-    private final List<LyricData.LyricSection> sections;
+
+    private static final Map<Long, SyncedLyricsPlayer> activePlayers = new ConcurrentHashMap<>();
+    private Message message;
+    private ScheduledExecutorService scheduler;
+    private String title;
+    private String author;
+    private String source;
+    private boolean isPaused = false;
+    private long songStartTimeMillis;
+    private long pauseStartTimeMillis;
+    /**
+     * Private constructor to prevent manual instantiation.
+     */
+    private SyncedLyricsPlayer() {
+    }
     private final List<String> allLinesText = new ArrayList<>();
     private final List<TimedLyric> timedLines = new ArrayList<>();
 
-    // We'll extract these to build the embed
-    private final String title;
-    private final String author;
-    private final String source;
+    /**
+     * Starts or updates a lyrics playback session for a guild.
+     * If a session is already active for the guild, it transitions to the new track.
+     * Otherwise, it starts a new session.
+     *
+     * @param message             The message to display and edit lyrics on.
+     * @param jsonString          The JSON data for the track.
+     * @param songStartTimeMillis The System.currentTimeMillis() when the track started.
+     */
+    public static void start(Message message, String jsonString, long songStartTimeMillis) {
+        long guildId = message.getGuild().getIdLong();
 
-    // A scheduler to run tasks in the future without blocking
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        SyncedLyricsPlayer player = activePlayers.computeIfAbsent(guildId, id -> new SyncedLyricsPlayer());
+        player.loadAndPlay(message, jsonString, songStartTimeMillis);
+    }
 
-    private SyncedLyricsPlayer(List<LyricData.LyricSection> sections, String title, String author, String source) {
-        this.sections = sections;
-        this.title = title;
-        this.author = author;
-        this.source = source;
-        flattenLyrics();
+    public static void nextSong(long guildId, String jsonString, long songStartTimeMillis) {
+        SyncedLyricsPlayer player = activePlayers.get(guildId);
+        if (player == null) {
+            System.err.println("nextSong called for guild " + guildId + ", but no active player was found. Use start() first.");
+            return;
+        }
+
+        player.loadAndPlay(player.message, jsonString, songStartTimeMillis);
     }
 
     /**
-     * Parses the full JSON string and creates a SyncedLyricsPlayer instance.
+     * Stops the playback session for a given guild, deleting the message.
      *
-     * @param fullJsonString The complete JSON from your source.
-     * @return A new instance of SyncedLyricsPlayer.
+     * @param guildId The ID of the guild where playback should be stopped.
      */
-    public static SyncedLyricsPlayer fromJson(String fullJsonString) {
-        // Use org.json to navigate the complex path
+    public static void stop(long guildId) {
+        SyncedLyricsPlayer player = activePlayers.get(guildId);
+        if (player != null) {
+            player.performStop();
+        }
+    }
+
+    public static void pause(long guildId) {
+        SyncedLyricsPlayer player = activePlayers.get(guildId);
+        if (player != null && !player.isPaused) {
+            player.performPause();
+        }
+    }
+
+    public static void resume(long guildId) {
+        SyncedLyricsPlayer player = activePlayers.get(guildId);
+        if (player != null && player.isPaused) {
+            player.performResume();
+        }
+    }
+
+    public static boolean isPaused(long guildId) {
+        SyncedLyricsPlayer player = activePlayers.get(guildId);
+        return player != null && player.isPaused;
+    }
+
+    /**
+     * Checks if a lyrics session is currently active in a given guild.
+     *
+     * @param guildId The ID of the guild to check.
+     * @return true if a session is live, false otherwise.
+     */
+    public static boolean isLive(long guildId) {
+        return activePlayers.containsKey(guildId);
+    }
+
+    /**
+     * The main instance logic for loading and playing a track.
+     * This is called by the static start() method.
+     */
+    private void loadAndPlay(Message message, String jsonString, long songStartTimeMillis) {
+        if (this.scheduler != null && !this.scheduler.isShutdown()) {
+            this.scheduler.shutdownNow();
+        }
+
+        this.message = message;
+        this.songStartTimeMillis = songStartTimeMillis;
+        this.isPaused = false;
+
+        parseAndLoadTrack(jsonString);
+        beginScheduling();
+    }
+
+    /**
+     * The internal stop logic that cleans up resources and removes from the static map.
+     */
+    private void performStop() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdownNow();
+        }
+        if (message != null) {
+            long guildId = message.getGuild().getIdLong();
+            message.delete().queue();
+            activePlayers.remove(guildId);
+            System.out.println("Lyrics playback stopped for guild " + guildId);
+        }
+    }
+
+    private void performPause() {
+        this.isPaused = true;
+        this.pauseStartTimeMillis = System.currentTimeMillis();
+
+        if (this.scheduler != null && !this.scheduler.isShutdown()) {
+            this.scheduler.shutdownNow();
+        }
+
+
+        double elapsedTimeSeconds = (this.pauseStartTimeMillis - this.songStartTimeMillis) / 1000.0;
+        int lastHighlightIndex = -1;
+        for (TimedLyric timedLine : timedLines) {
+            if (timedLine.timestamp() <= elapsedTimeSeconds) {
+                lastHighlightIndex = timedLine.globalIndex();
+            } else {
+                break;
+            }
+        }
+        message.editMessageEmbeds(generateEmbedForLine(lastHighlightIndex)).queue();
+        System.out.println("Lyrics paused for guild " + message.getGuild().getIdLong());
+    }
+
+    /**
+     * Resumes playback by shifting the start time and re-scheduling future events.
+     */
+    private void performResume() {
+        long pauseDurationMillis = System.currentTimeMillis() - this.pauseStartTimeMillis;
+        this.songStartTimeMillis += pauseDurationMillis;
+        this.isPaused = false;
+
+
+        beginScheduling();
+        System.out.println("Lyrics resumed for guild " + message.getGuild().getIdLong());
+    }
+
+    private void parseAndLoadTrack(String fullJsonString) {
+        allLinesText.clear();
+        timedLines.clear();
+
         JSONObject root = new JSONObject(fullJsonString);
         JSONObject pageProps = root.getJSONObject("props").getJSONObject("pageProps");
         JSONObject trackData = pageProps.getJSONObject("data").getJSONObject("trackInfo").getJSONObject("data");
         JSONArray trackStructureList = trackData.getJSONArray("trackStructureList");
-
-        // Extract metadata for the embed
-        String songTitle = pageProps.getJSONObject("data").getJSONObject("trackInfo").getJSONObject("data").getJSONObject("track").getString("name");
-        String songAuthor = pageProps.getJSONObject("data").getJSONObject("trackInfo").getJSONObject("data").getJSONObject("track").getString("artistName");
-        String sourceUrl = pageProps.getJSONObject("data").getJSONObject("trackInfo").getJSONObject("data").getJSONObject("track").getString("vanityId");
-        String source = "musixmatch.com/" + sourceUrl;
-
-        // Use Gson to map the final array to our records
+        this.title = trackData.getJSONObject("track").getString("name");
+        this.author = trackData.getJSONObject("track").getString("artistName");
+        String sourceUrl = trackData.getJSONObject("track").getString("vanityId");
+        this.source = "musixmatch.com/" + sourceUrl;
         Gson gson = new Gson();
-        List<LyricData.LyricSection> parsedSections = gson.fromJson(
-                trackStructureList.toString(),
-                new TypeToken<List<LyricData.LyricSection>>() {
-                }.getType()
-        );
-
-        return new SyncedLyricsPlayer(parsedSections, songTitle, songAuthor, source);
+        List<LyricData.LyricSection> sections = gson.fromJson(trackStructureList.toString(), new TypeToken<List<LyricData.LyricSection>>() {
+        }.getType());
+        flattenLyrics(sections);
     }
 
-    /**
-     * Flattens the nested sections/lines into two simple lists:
-     * 1. allLinesText: A list of all lyric strings.
-     * 2. timedLines: A list of objects containing the timestamp and index for scheduling.
-     */
-    private void flattenLyrics() {
+    private void flattenLyrics(List<LyricData.LyricSection> sections) {
         AtomicInteger globalIndex = new AtomicInteger(0);
         for (LyricData.LyricSection section : sections) {
-            allLinesText.add("[" + section.title() + "]"); // Add section title like [verse]
-            globalIndex.getAndIncrement(); // This title counts as a "line" in the final display
-
+            allLinesText.add("[" + section.title() + "]");
+            globalIndex.getAndIncrement();
             for (LyricData.LyricLine line : section.lines()) {
-                // If a line is instrumental, it might not have text but will have time.
                 String text = (line.text() != null) ? line.text() : "♪ ♪ ♪";
                 allLinesText.add(text);
-
-                // Only schedule updates for lines that have a timestamp
                 if (line.time() != null) {
                     timedLines.add(new TimedLyric(line.time().total(), globalIndex.get()));
                 }
                 globalIndex.getAndIncrement();
             }
-            allLinesText.add(""); // Add a blank line between sections
+            allLinesText.add("");
             globalIndex.getAndIncrement();
         }
     }
 
-    /**
-     * Starts the synchronized lyric playback on a given Discord message.
-     * It first sends an initial message with all lyrics, then schedules updates to highlight each line.
-     *
-     * @param message The JDA Message object to edit.
-     */
-    public void startPlayback(Message message, long songStartTimeMillis) {
-        // 1. Calculate how long the song has already been playing.
+    private void beginScheduling() {
+        this.scheduler = Executors.newSingleThreadScheduledExecutor();
         long currentTimeMillis = System.currentTimeMillis();
-        double elapsedTimeSeconds = (currentTimeMillis - songStartTimeMillis) / 1000.0;
 
-        // 2. Find which line should be highlighted *right now*.
-        // We find the last lyric whose timestamp is before the current elapsed time.
+
+        double elapsedTimeSeconds = (currentTimeMillis - this.songStartTimeMillis) / 1000.0;
+
+
         int initialHighlightIndex = -1;
         for (TimedLyric timedLine : timedLines) {
             if (timedLine.timestamp() <= elapsedTimeSeconds) {
                 initialHighlightIndex = timedLine.globalIndex();
             } else {
-                // Since the list is sorted by time, we can stop once we pass the current time.
                 break;
             }
         }
-
-        // 3. Send the initial embed with the correct line already highlighted.
-        MessageEmbed initialEmbed = generateEmbedForLine(initialHighlightIndex);
-        message.editMessage("# LIVE:").queue();
-        message.editMessageEmbeds(initialEmbed).queue();
-
-        // 4. Schedule all *future* updates.
+        message.editMessageEmbeds(generateEmbedForLine(initialHighlightIndex)).queue();
         for (TimedLyric timedLine : timedLines) {
-            // The lyric's absolute target time in milliseconds from the song's start.
             long lyricTargetMillis = (long) (timedLine.timestamp() * 1000);
-
-            // The delay from *now* until the lyric should be highlighted.
-            long delayMillis = (songStartTimeMillis + lyricTargetMillis) - currentTimeMillis;
-
-            if (delayMillis > 0) { // Only schedule future events
-                Runnable updateTask = () -> {
-                    MessageEmbed updatedEmbed = generateEmbedForLine(timedLine.globalIndex());
-                    message.editMessageEmbeds(updatedEmbed).queue(null, (error) -> {
-                        System.err.println("Failed to edit message (it may have been deleted). Stopping playback.");
-                        stop();
-                    });
-                };
-                scheduler.schedule(updateTask, delayMillis, TimeUnit.MILLISECONDS);
+            long delayMillis = (this.songStartTimeMillis + lyricTargetMillis) - currentTimeMillis;
+            if (delayMillis > 0) {
+                scheduler.schedule(() -> message.editMessageEmbeds(generateEmbedForLine(timedLine.globalIndex())).queue(null, (error) -> performStop()), delayMillis, TimeUnit.MILLISECONDS);
             }
         }
 
-        // 5. Schedule a final task to un-highlight everything and shut down.
-        if (!timedLines.isEmpty()) {
-            double lastTimestamp = timedLines.get(timedLines.size() - 1).timestamp();
-            long finalTargetMillis = (long) ((lastTimestamp + 5) * 1000); // 5 seconds after last line
-            long finalDelay = (songStartTimeMillis + finalTargetMillis) - currentTimeMillis;
-
-            if (finalDelay > 0) {
-                scheduler.schedule(() -> {
-                    message.editMessageEmbeds(generateEmbedForLine(-1)).queue(null, e -> {
-                    });
-                    stop();
-                }, finalDelay, TimeUnit.MILLISECONDS);
-            } else {
-                // If the song is already over, just stop immediately.
-                stop();
-            }
-        } else {
-            stop();
-        }
     }
 
-    /**
-     * Stops all scheduled playback tasks and shuts down the scheduler.
-     */
-    public void stop() {
-        if (!scheduler.isShutdown()) {
-            scheduler.shutdownNow();
-            System.out.println("Lyrics playback stopped and scheduler shut down.");
-        }
-    }
-
-    /**
-     * Generates the entire MessageEmbed for a specific state of the playback.
-     * It re-uses the logic from your provided LyricsEmbedGenerator.
-     *
-     * @param highlightedIndex The index of the line to highlight with bold markdown. -1 for no highlight.
-     * @return The generated MessageEmbed.
-     */
     private MessageEmbed generateEmbedForLine(int highlightedIndex) {
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(this.title + " by " + this.author);
-        builder.setFooter(this.source);
+        String currentTitle = this.title;
 
-        // Build the full lyrics string with the current line highlighted
+        if (this.isPaused) {
+            currentTitle += " [PAUSED]";
+        }
+        builder.setTitle(currentTitle + " by " + this.author);
+        builder.setFooter(this.source);
         StringBuilder contentBuilder = new StringBuilder();
         for (int i = 0; i < allLinesText.size(); i++) {
             if (i == highlightedIndex) {
@@ -194,20 +256,15 @@ public class SyncedLyricsPlayer {
                 contentBuilder.append(allLinesText.get(i)).append("\n");
             }
         }
-
-        // --- Logic adapted from your LyricsEmbedGenerator ---
         final int MAX_FIELD_LENGTH = 1023;
         final String INVISIBLE_SEPARATOR = "\u200B";
-
         String fullContent = contentBuilder.toString();
         if (fullContent.length() <= MAX_FIELD_LENGTH) {
             builder.setDescription(fullContent);
         } else {
-            // If content is too long for the description, split it into fields
             String[] lines = fullContent.split("\n");
             StringBuilder currentField = new StringBuilder();
             boolean isFirstField = true;
-
             for (String line : lines) {
                 if (currentField.length() + line.length() + 1 > MAX_FIELD_LENGTH) {
                     builder.addField(isFirstField ? "" : INVISIBLE_SEPARATOR, currentField.toString().trim(), false);
@@ -220,7 +277,6 @@ public class SyncedLyricsPlayer {
                 builder.addField(isFirstField ? "" : INVISIBLE_SEPARATOR, currentField.toString().trim(), false);
             }
         }
-
         return builder.build();
     }
 

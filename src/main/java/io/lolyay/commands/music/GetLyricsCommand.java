@@ -62,10 +62,10 @@ public class GetLyricsCommand implements Command {
                         event.getHook().sendMessage(Emoji.ERROR.getCode() + " No Lyrics found for this song").queue();
                         return;
                     }
-                    SyncedLyricsPlayer player = SyncedLyricsPlayer.fromJson(lyrics.liveSection());
+
                     event.getHook().sendMessageEmbeds(LyricsEmbedGenerator.generate(lyrics).build()).queue(message -> {
                         if (ConfigManager.getConfigBool("live-lyrics-enabled")) {
-                            player.startPlayback(message, musicManager.getQueue().getFirst().startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
+                            SyncedLyricsPlayer.start(message, lyrics.liveSection(), musicManager.getQueue().getFirst().startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
                         }
                     });
                 }

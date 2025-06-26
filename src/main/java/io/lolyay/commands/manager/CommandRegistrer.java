@@ -31,7 +31,8 @@ public class CommandRegistrer {
             new PauseCommand(),
             new StatusCommand(),
             new ChangeNodeCommand(),
-            new GetLyricsCommand()
+            new GetLyricsCommand(),
+            new StopLiveLyricsCommand()
 
     };
 
