@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigManager {
-    private static Map<String, Object> configMap = new HashMap<>();
+    protected static Map<String, Object> configMap = new HashMap<>();
     private static String version;
 
     public static String getConfig(String key) {
@@ -43,7 +43,6 @@ public class ConfigManager {
             System.exit(1);
         }
         version = getConfig("version");
-        Logger.debug("Config loaded, version: " + version);
-        Logger.log("Loaded Config, Bot version is " + version);
+        Logger.log("Loaded Config, Config version is " + version);
     }
 }
