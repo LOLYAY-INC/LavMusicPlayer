@@ -5,6 +5,7 @@ import dev.arbjerg.lavalink.client.LavalinkClient;
 import dev.arbjerg.lavalink.client.event.TrackEndEvent;
 import dev.arbjerg.lavalink.client.player.Track;
 import io.lolyay.JdaMain;
+import io.lolyay.config.ConfigManager;
 import io.lolyay.config.guildconfig.GuildConfigManager;
 import io.lolyay.lyrics.getters.MusixMatchGetter;
 import io.lolyay.lyrics.live.SyncedLyricsPlayer;
@@ -253,7 +254,7 @@ public class PlayerManager {
                         } catch (Exception ex) {
                             throw new RuntimeException(ex);
                         }
-                        SyncedLyricsPlayer.nextSong(guildId, jsonstring, track.startTime().getTime());
+                        SyncedLyricsPlayer.nextSong(guildId, jsonstring, track.startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
                         Logger.debug("Next song for lyrics!");
                     }
                 });

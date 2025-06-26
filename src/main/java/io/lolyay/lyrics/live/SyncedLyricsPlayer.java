@@ -2,6 +2,7 @@ package io.lolyay.lyrics.live;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import io.lolyay.config.ConfigManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -168,7 +169,7 @@ public class SyncedLyricsPlayer {
      */
     private void performResume() {
         long pauseDurationMillis = System.currentTimeMillis() - this.pauseStartTimeMillis;
-        this.songStartTimeMillis += pauseDurationMillis;
+        this.songStartTimeMillis += pauseDurationMillis + Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")) * 3L;
         this.isPaused = false;
 
 
