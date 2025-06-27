@@ -15,7 +15,7 @@ public class StatusEmbedGenerator {
         GuildConfig guildConfig = GuildConfigManager.getGuildConfig(musicManager.getGuildId().toString());
         builder.setTitle(genTitle(musicManager));
         if (!musicManager.getQueManager().getQueue().isEmpty())
-            builder.addField("", "**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**", false);
+            builder.addField("", "**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**" + "(" + musicManager.getQueManager().getQueue().get(0).track().getInfo().getIsrc() + ")", false);
         else
             builder.addField("**Queue is empty**", "", true);
         builder.addField("**Queue:**", musicManager.getQueManager().getQueue().size() + " tracks left", true);

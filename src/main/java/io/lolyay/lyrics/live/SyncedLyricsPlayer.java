@@ -1,292 +1,263 @@
 package io.lolyay.lyrics.live;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import io.lolyay.config.ConfigManager;
-import io.lolyay.utils.Emoji;
+import io.lolyay.lyrics.getters.GetLyrics;
+import io.lolyay.lyrics.records.live.LiveData;
+import io.lolyay.lyrics.records.live.LiveLyrics;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import java.util.concurrent.*;
 
-/**
- * A self-managing class for synchronized lyrics playback.
- * It handles multiple guilds simultaneously using a static manager pattern.
- * You only need to interact with the public static methods.
- */
+
 public class SyncedLyricsPlayer {
 
+    private static final Map<Long, GuildLyricsPlayer> activePlayers = new ConcurrentHashMap<>();
+    private static final Map<String, LiveData> globalLyricsCache = new ConcurrentHashMap<>();
+    private static final Set<String> globalPendingSongs = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private static final Map<Long, SyncedLyricsPlayer> activePlayers = new ConcurrentHashMap<>();
-    private Message message;
-    private ScheduledExecutorService scheduler;
-    private String title;
-    private String author;
-    private String source;
-    private boolean isPaused = false;
-    private long songStartTimeMillis;
-    private long pauseStartTimeMillis;
-    /**
-     * Private constructor to prevent manual instantiation.
-     */
-    private SyncedLyricsPlayer() {
-    }
-    private final List<String> allLinesText = new ArrayList<>();
-    private final List<TimedLyric> timedLines = new ArrayList<>();
-
-    /**
-     * Starts or updates a lyrics playback session for a guild.
-     * If a session is already active for the guild, it transitions to the new track.
-     * Otherwise, it starts a new session.
-     *
-     * @param message             The message to display and edit lyrics on.
-     * @param jsonString          The JSON data for the track.
-     * @param songStartTimeMillis The System.currentTimeMillis() when the track started.
-     */
-    public static void start(Message message, String jsonString, long songStartTimeMillis) {
-        long guildId = message.getGuild().getIdLong();
-
-        SyncedLyricsPlayer player = activePlayers.computeIfAbsent(guildId, id -> new SyncedLyricsPlayer());
-        player.loadAndPlay(message, jsonString, songStartTimeMillis);
+    public static void start(long guildId, Message message) {
+        GuildLyricsPlayer player = activePlayers.computeIfAbsent(guildId, id -> new GuildLyricsPlayer());
+        Logger.debug("Starting lyrics session for guild " + guildId);
+        player.setMessage(message);
     }
 
-    public static void nextSong(long guildId, String jsonString, long songStartTimeMillis) {
-        SyncedLyricsPlayer player = activePlayers.get(guildId);
-        if (player == null) {
-            System.err.println("nextSong called for guild " + guildId + ", but no active player was found. Use start() first.");
+    public static void willBeAvailable(String songName) {
+        globalPendingSongs.add(songName);
+    }
+
+    public static void precacheSong(String songName) {
+        if (globalLyricsCache.containsKey(songName)) {
+            CompletableFuture.completedFuture(null);
             return;
         }
 
-        player.loadAndPlay(player.message, jsonString, songStartTimeMillis);
+        Logger.debug("Precaching lyrics for: " + songName);
+        CompletableFuture<LiveLyrics> lyricsFuture = GetLyrics.getLyricsGetterForLive().getLiveLyrics(songName);
+
+        lyricsFuture.thenAccept(lyrics -> {
+            if (lyrics != null && lyrics.liveData() != null) {
+                try {
+                    LiveData liveData = lyrics.liveData();
+                    globalLyricsCache.put(songName, liveData);
+                    Logger.debug("Successfully cached and parsed lyrics for: " + songName);
+                } catch (Exception e) {
+                    Logger.err("Failed to parse live lyrics for " + songName + ": " + e.getMessage());
+                    globalPendingSongs.remove(songName);
+                }
+            } else {
+                Logger.warn("Could not retrieve live lyrics for caching: " + songName);
+                globalPendingSongs.remove(songName);
+            }
+        }).exceptionally(ex -> {
+            Logger.err("Exception during lyrics precaching for " + songName + ": " + ex.getMessage());
+            globalPendingSongs.remove(songName);
+            return null;
+        });
     }
 
-    /**
-     * Stops the playback session for a given guild, deleting the message.
-     *
-     * @param guildId The ID of the guild where playback should be stopped.
-     */
+
+    public static void nextSong(long guildId, String songName, long songStartTimeMillis) {
+        GuildLyricsPlayer player = activePlayers.get(guildId);
+        if (player == null) {
+            Logger.warn("nextSong called for guild " + guildId + " without an active session. Call start() first.");
+            return;
+        }
+        player.playSong(songName, songStartTimeMillis);
+    }
+
+    public static void setPaused(long guildId, boolean isPaused, long timestamp) {
+        GuildLyricsPlayer player = activePlayers.get(guildId);
+        if (player != null) {
+            player.setPausedState(isPaused, timestamp);
+        }
+    }
+
     public static void stop(long guildId) {
-        SyncedLyricsPlayer player = activePlayers.get(guildId);
+        GuildLyricsPlayer player = activePlayers.remove(guildId);
         if (player != null) {
             player.performStop();
         }
     }
 
-    public static void pause(long guildId) {
-        SyncedLyricsPlayer player = activePlayers.get(guildId);
-        if (player != null && !player.isPaused) {
-            player.performPause();
-        }
-    }
-
-    public static void resume(long guildId) {
-        SyncedLyricsPlayer player = activePlayers.get(guildId);
-        if (player != null && player.isPaused) {
-            player.performResume();
-        }
-    }
-
-    public static boolean isPaused(long guildId) {
-        SyncedLyricsPlayer player = activePlayers.get(guildId);
-        return player != null && player.isPaused;
-    }
-
-    /**
-     * Checks if a lyrics session is currently active in a given guild.
-     *
-     * @param guildId The ID of the guild to check.
-     * @return true if a session is live, false otherwise.
-     */
     public static boolean isLive(long guildId) {
         return activePlayers.containsKey(guildId);
     }
 
-    /**
-     * The main instance logic for loading and playing a track.
-     * This is called by the static start() method.
-     */
-    private void loadAndPlay(Message message, String jsonString, long songStartTimeMillis) {
-        if (this.scheduler != null && !this.scheduler.isShutdown()) {
-            this.scheduler.shutdownNow();
+    private static class GuildLyricsPlayer {
+        private final List<String> allLinesText = new ArrayList<>();
+        private final List<LiveData.TimedLyric> timedLines = new ArrayList<>();
+        private Message message;
+        private ScheduledExecutorService scheduler;
+        private boolean isPaused = false;
+        private long songStartTimeMillis;
+        private long pauseTimeMillis;
+        private String title;
+        private String author;
+        private String source;
+
+        public void setMessage(Message message) {
+            this.message = message;
         }
 
-        this.message = message;
-        this.songStartTimeMillis = songStartTimeMillis;
-        this.isPaused = false;
-        try {
-            parseAndLoadTrack(jsonString);
+        public void playSong(String songName, long songStartTimeMillis) {
+            if (this.message == null) {
+                Logger.err("Cannot play song: Message object is not set. Call start() first.");
+                return;
+            }
+
+            LiveData liveData = globalLyricsCache.get(songName);
+
+            if (liveData != null) {
+                globalPendingSongs.remove(songName);
+                proceedWithPlayback(liveData, songStartTimeMillis);
+            } else if (globalPendingSongs.contains(songName)) {
+                Logger.debug("Lyrics for '" + songName + "' not cached yet, waiting...");
+                schedulePlayAttempt(songName, songStartTimeMillis, 5);
+            } else {
+                Logger.err("Error: Lyrics for '" + songName + "' are not cached and were not marked as pending.");
+                message.editMessageEmbeds(new EmbedBuilder().setDescription("Could not find lyrics for this track.").build()).queue();
+            }
+        }
+
+        private void schedulePlayAttempt(String songName, long startTime, int retriesLeft) {
+            if (retriesLeft <= 0) {
+                Logger.err("Gave up waiting for lyrics for '" + songName + "'.");
+                globalPendingSongs.remove(songName);
+                if (message != null) {
+                    message.editMessageEmbeds(new EmbedBuilder().setDescription("Could not find lyrics for this track (timeout).").build()).queue();
+                }
+                return;
+            }
+
+            ScheduledExecutorService waiter = Executors.newSingleThreadScheduledExecutor();
+            waiter.schedule(() -> {
+                LiveData liveData = globalLyricsCache.get(songName);
+                if (liveData != null) {
+                    Logger.debug("Lyrics for '" + songName + "' became available. Playing now.");
+                    globalPendingSongs.remove(songName);
+                    proceedWithPlayback(liveData, startTime);
+                } else {
+                    schedulePlayAttempt(songName, startTime, retriesLeft - 1);
+                }
+                waiter.shutdown();
+            }, 1, TimeUnit.SECONDS);
+        }
+
+        private void proceedWithPlayback(LiveData liveData, long songStartTimeMillis) {
+            if (this.scheduler != null && !this.scheduler.isShutdown()) {
+                this.scheduler.shutdownNow();
+            }
+
+            this.songStartTimeMillis = songStartTimeMillis;
+            this.isPaused = false;
+
+            this.title = liveData.title();
+            this.author = liveData.author();
+            this.source = liveData.source();
+
+            this.allLinesText.clear();
+            this.allLinesText.addAll(liveData.allLinesText());
+
+            this.timedLines.clear();
+            this.timedLines.addAll(liveData.timedLines());
+
             beginScheduling();
-        } catch (Exception e) {
-            Logger.err("Error starting synced lyrics: " + e.getMessage());
-            message.editMessage(Emoji.ERROR.getCode() + " Error starting synced lyrics (not supported for this track?").queue();
-        }
-    }
-
-    /**
-     * The internal stop logic that cleans up resources and removes from the static map.
-     */
-    private void performStop() {
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdownNow();
-        }
-        if (message != null) {
-            long guildId = message.getGuild().getIdLong();
-            message.delete().queue();
-            activePlayers.remove(guildId);
-            System.out.println("Lyrics playback stopped for guild " + guildId);
-        }
-    }
-
-    private void performPause() {
-        this.isPaused = true;
-        this.pauseStartTimeMillis = System.currentTimeMillis();
-
-        if (this.scheduler != null && !this.scheduler.isShutdown()) {
-            this.scheduler.shutdownNow();
         }
 
+        public void setPausedState(boolean shouldBePaused, long timestamp) {
+            if (this.isPaused == shouldBePaused) return;
 
-        double elapsedTimeSeconds = (this.pauseStartTimeMillis - this.songStartTimeMillis) / 1000.0;
-        int lastHighlightIndex = -1;
-        for (TimedLyric timedLine : timedLines) {
-            if (timedLine.timestamp() <= elapsedTimeSeconds) {
-                lastHighlightIndex = timedLine.globalIndex();
-            } else {
-                break;
-            }
-        }
-        message.editMessageEmbeds(generateEmbedForLine(lastHighlightIndex)).queue();
-        System.out.println("Lyrics paused for guild " + message.getGuild().getIdLong());
-    }
+            this.isPaused = shouldBePaused;
 
-    /**
-     * Resumes playback by shifting the start time and re-scheduling future events.
-     */
-    private void performResume() {
-        long pauseDurationMillis = System.currentTimeMillis() - this.pauseStartTimeMillis;
-        this.songStartTimeMillis += pauseDurationMillis + Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")) * 3L;
-        this.isPaused = false;
-
-
-        beginScheduling();
-        System.out.println("Lyrics resumed for guild " + message.getGuild().getIdLong());
-    }
-
-    private void parseAndLoadTrack(String fullJsonString) {
-        allLinesText.clear();
-        timedLines.clear();
-
-        JSONObject root = new JSONObject(fullJsonString);
-        JSONObject pageProps = root.getJSONObject("props").getJSONObject("pageProps");
-        JSONObject trackData = pageProps.getJSONObject("data").getJSONObject("trackInfo").getJSONObject("data");
-        JSONArray trackStructureList = trackData.getJSONArray("trackStructureList");
-        this.title = trackData.getJSONObject("track").getString("name");
-        this.author = trackData.getJSONObject("track").getString("artistName");
-        String sourceUrl = trackData.getJSONObject("track").getString("vanityId");
-        this.source = "musixmatch.com/" + sourceUrl;
-        Gson gson = new Gson();
-        List<LyricData.LyricSection> sections = gson.fromJson(trackStructureList.toString(), new TypeToken<List<LyricData.LyricSection>>() {
-        }.getType());
-        flattenLyrics(sections);
-    }
-
-    private void flattenLyrics(List<LyricData.LyricSection> sections) {
-        AtomicInteger globalIndex = new AtomicInteger(0);
-        for (LyricData.LyricSection section : sections) {
-            allLinesText.add("[" + section.title() + "]");
-            globalIndex.getAndIncrement();
-            for (LyricData.LyricLine line : section.lines()) {
-                String text = (line.text() != null) ? line.text() : "♪ ♪ ♪";
-                allLinesText.add(text);
-                if (line.time() != null) {
-                    timedLines.add(new TimedLyric(line.time().total(), globalIndex.get()));
+            if (shouldBePaused) {
+                this.pauseTimeMillis = timestamp;
+                if (this.scheduler != null && !this.scheduler.isShutdown()) {
+                    this.scheduler.shutdownNow();
                 }
-                globalIndex.getAndIncrement();
-            }
-            allLinesText.add("");
-            globalIndex.getAndIncrement();
-        }
-    }
-
-    private void beginScheduling() {
-        this.scheduler = Executors.newSingleThreadScheduledExecutor();
-        long currentTimeMillis = System.currentTimeMillis();
-
-
-        double elapsedTimeSeconds = (currentTimeMillis - this.songStartTimeMillis) / 1000.0;
-
-
-        int initialHighlightIndex = -1;
-        for (TimedLyric timedLine : timedLines) {
-            if (timedLine.timestamp() <= elapsedTimeSeconds) {
-                initialHighlightIndex = timedLine.globalIndex();
+                double elapsedTimeSeconds = (this.pauseTimeMillis - this.songStartTimeMillis) / 1000.0;
+                message.editMessageEmbeds(generateEmbedForLine(findLastHighlightedIndex(elapsedTimeSeconds))).queue();
+                Logger.debug("Lyrics paused for guild " + message.getGuild().getIdLong());
             } else {
-                break;
-            }
-        }
-        message.editMessageEmbeds(generateEmbedForLine(initialHighlightIndex)).queue();
-        for (TimedLyric timedLine : timedLines) {
-            long lyricTargetMillis = (long) (timedLine.timestamp() * 1000);
-            long delayMillis = (this.songStartTimeMillis + lyricTargetMillis) - currentTimeMillis;
-            if (delayMillis > 0) {
-                scheduler.schedule(() -> message.editMessageEmbeds(generateEmbedForLine(timedLine.globalIndex())).queue(null, (error) -> performStop()), delayMillis, TimeUnit.MILLISECONDS);
+                long pauseDurationMillis = timestamp - this.pauseTimeMillis;
+                this.songStartTimeMillis += pauseDurationMillis;
+                beginScheduling();
+                Logger.debug("Lyrics resumed for guild " + message.getGuild().getIdLong());
             }
         }
 
-    }
-
-    private MessageEmbed generateEmbedForLine(int highlightedIndex) {
-        EmbedBuilder builder = new EmbedBuilder();
-        String currentTitle = this.title;
-
-        if (this.isPaused) {
-            currentTitle += " [PAUSED]";
+        public void performStop() {
+            if (scheduler != null && !scheduler.isShutdown()) {
+                scheduler.shutdownNow();
+            }
+            if (message != null) {
+                message.delete().queue(null, (error) -> Logger.warn("Failed to delete lyrics message, it might have been deleted already."));
+            }
+            Logger.debug("Lyrics playback stopped for guild " + message.getGuild().getIdLong());
         }
-        builder.setTitle(currentTitle + " by " + this.author);
-        builder.setFooter(this.source);
-        StringBuilder contentBuilder = new StringBuilder();
-        for (int i = 0; i < allLinesText.size(); i++) {
-            if (i == highlightedIndex) {
-                contentBuilder.append("**").append(allLinesText.get(i)).append("**").append("\n");
-            } else {
-                contentBuilder.append(allLinesText.get(i)).append("\n");
+
+        private void beginScheduling() {
+            this.scheduler = Executors.newSingleThreadScheduledExecutor();
+            long currentTimeMillis = System.currentTimeMillis();
+            double elapsedTimeSeconds = (currentTimeMillis - this.songStartTimeMillis) / 1000.0;
+
+            int initialHighlightIndex = findLastHighlightedIndex(elapsedTimeSeconds);
+            message.editMessageEmbeds(generateEmbedForLine(initialHighlightIndex)).queue();
+
+            for (LiveData.TimedLyric timedLine : timedLines) {
+                long lyricTargetMillis = (long) (timedLine.timestamp() * 1000);
+                long delayMillis = (this.songStartTimeMillis + lyricTargetMillis) - currentTimeMillis;
+
+                if (delayMillis > 0) {
+                    scheduler.schedule(() -> {
+                        if (!isPaused) {
+                            message.editMessageEmbeds(generateEmbedForLine(timedLine.globalIndex())).queue(null, (error) -> performStop());
+                        }
+                    }, delayMillis, TimeUnit.MILLISECONDS);
+                }
             }
         }
-        final int MAX_FIELD_LENGTH = 1023;
-        final String INVISIBLE_SEPARATOR = "\u200B";
-        String fullContent = contentBuilder.toString();
-        if (fullContent.length() <= MAX_FIELD_LENGTH) {
+
+        private int findLastHighlightedIndex(double elapsedTimeSeconds) {
+            int lastHighlightIndex = -1;
+            for (LiveData.TimedLyric timedLine : timedLines) {
+                if (timedLine.timestamp() <= elapsedTimeSeconds) {
+                    lastHighlightIndex = timedLine.globalIndex();
+                } else {
+                    break;
+                }
+            }
+            return lastHighlightIndex;
+        }
+
+        private MessageEmbed generateEmbedForLine(int highlightedIndex) {
+            EmbedBuilder builder = new EmbedBuilder();
+            String currentTitle = this.title + " by " + this.author;
+            if (this.isPaused) {
+                currentTitle += " [PAUSED]";
+            }
+            builder.setTitle(currentTitle);
+            builder.setFooter(this.source);
+
+            StringBuilder contentBuilder = new StringBuilder();
+            for (int i = 0; i < allLinesText.size(); i++) {
+                String line = allLinesText.get(i);
+                if (i == highlightedIndex) {
+                    contentBuilder.append("**").append(line.isEmpty() ? " " : line).append("**").append("\n");
+                } else {
+                    contentBuilder.append(line.isEmpty() ? " " : line).append("\n");
+                }
+            }
+
+            String fullContent = contentBuilder.toString();
+            if (fullContent.length() > 4000) {
+                fullContent = fullContent.substring(0, 4000) + "...";
+            }
             builder.setDescription(fullContent);
-        } else {
-            String[] lines = fullContent.split("\n");
-            StringBuilder currentField = new StringBuilder();
-            boolean isFirstField = true;
-            for (String line : lines) {
-                if (currentField.length() + line.length() + 1 > MAX_FIELD_LENGTH) {
-                    builder.addField(isFirstField ? "" : INVISIBLE_SEPARATOR, currentField.toString().trim(), false);
-                    isFirstField = false;
-                    currentField.setLength(0);
-                }
-                currentField.append(line).append("\n");
-            }
-            if (!currentField.isEmpty()) {
-                builder.addField(isFirstField ? "" : INVISIBLE_SEPARATOR, currentField.toString().trim(), false);
-            }
-        }
-        return builder.build();
-    }
 
-    private record TimedLyric(double timestamp, int globalIndex) {
+            return builder.build();
+        }
     }
 }

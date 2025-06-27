@@ -1,13 +1,20 @@
 package io.lolyay.lyrics.getters;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.lyrics.LyricsNotFoundException;
 import io.lolyay.lyrics.Scraper;
 import io.lolyay.lyrics.records.Lyrics;
 import io.lolyay.lyrics.records.SearchLyrics;
+import io.lolyay.lyrics.records.live.LiveData;
+import io.lolyay.lyrics.records.live.LiveLyrics;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,13 +23,15 @@ import org.jsoup.select.Elements;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MusixMatchGetter extends LyricsGetter {
+public class MusixMatchGetter extends LyricsGetterLiveAble {
     private static final String searchUrlBase = "https://www.musixmatch.com/search?query=%s";
 
     private String getSearchUrl(String songName) {
@@ -124,7 +133,7 @@ public class MusixMatchGetter extends LyricsGetter {
     }
 
     @Override
-    public CompletableFuture<Lyrics> getLyrics(String songName, Timestamp startTime) {
+    public CompletableFuture<Lyrics> getLyrics(String songName) {
         CompletableFuture<Lyrics> future = new CompletableFuture<>();
 
 
@@ -155,7 +164,7 @@ public class MusixMatchGetter extends LyricsGetter {
 
 
                 Logger.debug("Successfully parsed lyrics for %s from source %s.".formatted(songName, getSourceName()));
-                Lyrics finalLyrics = new Lyrics(searchResult, lyricsTextAndLivePart.getKey(), getSourceName(), lyricsTextAndLivePart.getValue());
+                Lyrics finalLyrics = new Lyrics(searchResult, lyricsTextAndLivePart.getKey(), getSourceName());
                 future.complete(finalLyrics);
 
             } catch (Exception e) {
@@ -169,5 +178,110 @@ public class MusixMatchGetter extends LyricsGetter {
         JdaMain.scheduledTasksManager.startDelayedTask(new Thread(scrapingTask), 100, TimeUnit.MILLISECONDS);
 
         return future;
+    }
+
+    @Override
+    public CompletableFuture<LiveLyrics> getLiveLyrics(String songName) {
+        CompletableFuture<LiveLyrics> future = new CompletableFuture<>();
+
+
+        Runnable scrapingTask = () -> {
+            try {
+                Logger.debug("Starting lyrics fetch for song: '{}'".replace("{}", songName));
+
+
+                String searchUrl = getSearchUrl(songName);
+                String searchHtml = Scraper.getSiteHTML(searchUrl, getCookies());
+                Document searchDocument = Jsoup.parse(searchHtml, searchUrl);
+                SearchLyrics searchResult = processSearchResultsDom(searchDocument);
+
+
+                if (searchResult == null || searchResult.url() == null || searchResult.url().isEmpty()) {
+                    Logger.debug("No valid search result found for '{}'.".replace("{}", songName));
+
+                    throw new LyricsNotFoundException(searchResult == null ? new SearchLyrics(null, songName, null) : searchResult, getSourceName());
+                }
+
+                Logger.debug("Found potential match for '{}': {}".replace("{}", songName).replace("{}", searchResult.toString()));
+
+
+                String lyricsUrl = searchResult.url();
+                String lyricsHtml = Scraper.getSiteHTML(lyricsUrl, getCookies());
+                Document lyricsDocument = Jsoup.parse(lyricsHtml, lyricsUrl);
+                KVPair<String, String> lyricsTextAndLivePart = parseLyricsDom(lyricsDocument);
+
+
+                Logger.debug("Successfully parsed lyrics for %s from source %s.".formatted(songName, getSourceName()));
+                LiveLyrics finalLyrics = new LiveLyrics(searchResult, lyricsTextAndLivePart.getKey(), getSourceName(), parse(lyricsTextAndLivePart.getValue()));
+                future.complete(finalLyrics);
+
+            } catch (Exception e) {
+
+                Logger.err("Error while fetching lyrics for %s from source %s: %s".formatted(songName, getSourceName(), e.getMessage()));
+                future.completeExceptionally(e);
+            }
+        };
+
+
+        JdaMain.scheduledTasksManager.startDelayedTask(new Thread(scrapingTask), 10, TimeUnit.MILLISECONDS);
+
+        return future;
+    }
+
+
+    // SYNCED LYRICS
+
+    public LiveData parse(String fullJsonString) throws JSONException, JsonSyntaxException {
+        JSONObject root = new JSONObject(fullJsonString);
+        JSONObject pageProps = root.getJSONObject("props").getJSONObject("pageProps");
+        JSONObject trackData = pageProps.getJSONObject("data").getJSONObject("trackInfo").getJSONObject("data");
+        JSONArray trackStructureList = trackData.getJSONArray("trackStructureList");
+
+        String title = trackData.getJSONObject("track").getString("name");
+        String author = trackData.getJSONObject("track").getString("artistName");
+        String source = "musixmatch.com/lyrics/" + trackData.getJSONObject("track").getString("vanityId");
+
+        Gson gson = new Gson();
+        List<LyricData.LyricSection> sections = gson.fromJson(trackStructureList.toString(), new TypeToken<List<LyricData.LyricSection>>() {
+        }.getType());
+
+        List<String> allLinesText = new ArrayList<>();
+        List<LiveData.TimedLyric> timedLines = new ArrayList<>();
+        flattenLyrics(sections, allLinesText, timedLines);
+
+        return new LiveData(title, author, source, allLinesText, timedLines);
+    }
+
+    private void flattenLyrics(List<LyricData.LyricSection> sections, List<String> allLinesText, List<LiveData.TimedLyric> timedLines) {
+        AtomicInteger globalIndex = new AtomicInteger(0);
+        for (LyricData.LyricSection section : sections) {
+            if (section.title() != null && !section.title().isEmpty()) {
+                allLinesText.add("[" + section.title() + "]");
+                globalIndex.getAndIncrement();
+            }
+            if (section.lines() != null) {
+                for (LyricData.LyricLine line : section.lines()) {
+                    String text = (line.text() != null && !line.text().isEmpty()) ? line.text() : "♪";
+                    allLinesText.add(text);
+                    if (line.time() != null) {
+                        timedLines.add(new LiveData.TimedLyric(line.time().total(), globalIndex.get()));
+                    }
+                    globalIndex.getAndIncrement();
+                }
+            }
+            allLinesText.add("");
+            globalIndex.getAndIncrement();
+        }
+    }
+
+    private record LyricData() {
+        record LyricSection(String title, List<LyricLine> lines) {
+        }
+
+        record LyricLine(String text, LyricTime time) {
+        }
+
+        record LyricTime(double total) {
+        }
     }
 }

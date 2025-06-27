@@ -4,6 +4,7 @@ package io.lolyay.commands.music;
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
+import io.lolyay.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.musicbot.GuildMusicManager;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Emoji;
@@ -84,6 +85,7 @@ public class PlayCommand implements Command {
                 // --- SUCCESS CALLBACK ---
                 (track) -> {
                     member.getJDA().getDirectAudioController().connect(memberChannel);
+                    SyncedLyricsPlayer.precacheSong(track.track().getInfo().getTitle());
                     final boolean isPlayingNow = musicManager.getQueManager().isEmpty();
                     musicManager.queueTrack(track);
 

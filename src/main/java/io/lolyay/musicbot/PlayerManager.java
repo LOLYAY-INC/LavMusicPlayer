@@ -7,7 +7,6 @@ import dev.arbjerg.lavalink.client.player.Track;
 import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.config.guildconfig.GuildConfigManager;
-import io.lolyay.lyrics.getters.MusixMatchGetter;
 import io.lolyay.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Logger;
@@ -15,7 +14,6 @@ import net.dv8tion.jda.api.entities.Member;
 
 import java.net.URI;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -248,13 +246,7 @@ public class PlayerManager {
                 .subscribe((e) -> {
                     track.startTime(new Timestamp(System.currentTimeMillis()));
                     if (SyncedLyricsPlayer.isLive(guildId)) {
-                        String jsonstring;
-                        try {
-                            jsonstring = new MusixMatchGetter().getLyrics(track.track().getInfo().getTitle(), Timestamp.from(Instant.now())).get().liveSection();
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        SyncedLyricsPlayer.nextSong(guildId, jsonstring, track.startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
+                        SyncedLyricsPlayer.nextSong(guildId, track.track().getInfo().getTitle(), track.startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
                         Logger.debug("Next song for lyrics!");
                     }
                 });
@@ -271,14 +263,14 @@ public class PlayerManager {
     public void pause(long guildId) {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setPaused(true)
-                .subscribe(e -> SyncedLyricsPlayer.pause(guildId));
+                .subscribe(e -> SyncedLyricsPlayer.setPaused(guildId, true, System.currentTimeMillis()));
 
     }
 
     public void resume(long guildId) {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setPaused(false)
-                .subscribe(e -> SyncedLyricsPlayer.resume(guildId));
+                .subscribe(e -> SyncedLyricsPlayer.setPaused(guildId, false, System.currentTimeMillis()));
 
     }
 
