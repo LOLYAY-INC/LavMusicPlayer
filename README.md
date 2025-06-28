@@ -243,7 +243,6 @@ version: "${project.version}"
 ## Live Lyrics
 
 This feature highlights the current line playing, currently only works with MusixMatch.
-Doesn't work if you are repeating a song, only the first playback works for now.
 It's a great feature, check it out!
 
 ### Ping Compensation
