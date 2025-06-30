@@ -42,6 +42,7 @@ public class SyncedLyricsPlayer {
                 try {
                     LiveData liveData = lyrics.liveData();
                     globalLyricsCache.put(songName, liveData);
+                    globalPendingSongs.remove(songName);
                     Logger.debug("Successfully cached and parsed lyrics for: " + songName);
                 } catch (Exception e) {
                     Logger.err("Failed to parse live lyrics for " + songName + ": " + e.getMessage());

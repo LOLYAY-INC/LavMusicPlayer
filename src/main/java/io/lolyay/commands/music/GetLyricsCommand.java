@@ -41,8 +41,6 @@ public class GetLyricsCommand implements Command {
         GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong());
 
         // DOESNT WORK (FIXED?)
-        //    event.reply(Emoji.ERROR.getCode() + " This Command is currently unavailable").queue();
-
         if (!ConfigManager.getConfigBool("lyrics-enabled")) {
             event.reply(Emoji.ERROR.getCode() + " Lyrics are currently disabled").queue();
             return;
@@ -67,6 +65,7 @@ public class GetLyricsCommand implements Command {
                         if (ConfigManager.getConfigBool("live-lyrics-enabled")) {
                             try {
                                 SyncedLyricsPlayer.start(event.getGuild().getIdLong(), message);
+                                SyncedLyricsPlayer.nextSong(message.getGuildIdLong(), musicManager.getQueue().getFirst().track().getInfo().getTitle(), musicManager.getQueue().getFirst().startTime().getTime());
                             } catch (Exception e) {
                                 Logger.err("Error starting synced lyrics: " + e.getMessage());
                                 event.getHook().sendMessage(Emoji.ERROR.getCode() + " Error starting synced lyrics: " + e.getMessage()).queue();
