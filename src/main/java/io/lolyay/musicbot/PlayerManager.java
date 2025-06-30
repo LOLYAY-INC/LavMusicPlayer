@@ -244,9 +244,9 @@ public class PlayerManager {
                 .setTrack(track.track())
                 .setVolume((int) getGuildMusicManager(guildId).getVolume())
                 .subscribe((e) -> {
-                    track.startTime(new Timestamp(System.currentTimeMillis()));
+                    track.startTime(new Timestamp(track.startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation"))));
                     if (SyncedLyricsPlayer.isLive(guildId)) {
-                        SyncedLyricsPlayer.nextSong(guildId, track.track().getInfo().getTitle(), track.startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
+                        SyncedLyricsPlayer.nextSong(guildId, track.track().getInfo().getTitle(), track.startTime().getTime());
                         Logger.debug("Next song for lyrics!");
                     }
                 });

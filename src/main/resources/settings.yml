@@ -10,6 +10,7 @@ discord-bot-token: "YOUR_TOKEN_HERE"
 default-volume: 10
 
 # Should the bot stop playing music when the voice-channel is empty ( aka everyone left and the bot is alone in the channel )
+# Set to "false" to enable 24/7 music
 stop-on-empty-channel: true
 
 using-nodes-json-file: false # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
