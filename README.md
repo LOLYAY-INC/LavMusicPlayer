@@ -241,6 +241,7 @@ version: "${project.version}"
 - `live-lyrics-ping-compensation`: Check [live lyrics](#live-lyrics)
 
 ## Live Lyrics
+# BETA ONLY
 
 This feature highlights the current line playing, currently only works with MusixMatch.
 It's a great feature, check it out!
