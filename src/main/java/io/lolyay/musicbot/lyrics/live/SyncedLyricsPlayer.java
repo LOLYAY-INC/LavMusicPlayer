@@ -265,7 +265,7 @@ public class SyncedLyricsPlayer {
             for (int i = 0; i < allLinesText.size(); i++) {
                 String line = allLinesText.get(i);
                 if (i == highlightedIndex) {
-                    contentBuilder.append("**").append(line.isEmpty() ? " " : line).append("**").append("\n");
+                    contentBuilder.append("**").append(line.isEmpty() ? " " : line).append("  <-**").append("\n");
                 } else {
                     contentBuilder.append(line.isEmpty() ? " " : line).append("\n");
                 }
