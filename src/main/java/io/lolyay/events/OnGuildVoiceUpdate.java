@@ -2,13 +2,13 @@ package io.lolyay.events;
 
 import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
+import io.lolyay.customevents.EventListener;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-public class OnGuildVoiceUpdate extends ListenerAdapter {
-    @Override
+public class OnGuildVoiceUpdate {
+    @EventListener
     public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
         if(event.getChannelLeft() == null) return;
         if(event.getGuild().getSelfMember().getVoiceState() == null) return;

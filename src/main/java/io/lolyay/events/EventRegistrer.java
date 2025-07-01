@@ -1,20 +1,12 @@
 package io.lolyay.events;
 
 import io.lolyay.JdaMain;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class EventRegistrer {
     public static void register() {
-        registerImpl(new OnReadyEventListener());
-        registerImpl(new OnSlashCommandInteractionEventListener());
-        registerImpl(new OnGuildVoiceUpdate());
-
-    }
-
-
-
-    private static <T extends ListenerAdapter> void registerImpl(T listener) {
-        JdaMain.builder.addEventListeners(listener);
+        JdaMain.eventBus.register(new OnReadyEventListener());
+        JdaMain.eventBus.register(new OnSlashCommandInteractionEventListener());
+        JdaMain.eventBus.register(new OnGuildVoiceUpdate());
 
     }
 }
