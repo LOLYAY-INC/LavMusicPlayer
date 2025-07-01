@@ -1,4 +1,4 @@
-package io.lolyay.lyrics.getters;
+package io.lolyay.lyrics.getters.impl;
 
 
 import io.lolyay.lyrics.records.Lyrics;

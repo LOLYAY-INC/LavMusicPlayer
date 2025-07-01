@@ -4,7 +4,8 @@ import dev.arbjerg.lavalink.client.Helpers;
 import dev.arbjerg.lavalink.client.LavalinkClient;
 import io.lolyay.commands.manager.CommandRegistrer;
 import io.lolyay.config.ConfigManager;
-import io.lolyay.events.EventRegistrer;
+import io.lolyay.customevents.EventBus;
+import io.lolyay.events.JdaEventsToBusEvents;
 import io.lolyay.musicbot.LavaLinkSetup;
 import io.lolyay.musicbot.PlayerManager;
 import io.lolyay.utils.Logger;
@@ -21,8 +22,8 @@ public class JdaMain {
 
     public static PlayerManager playerManager;
     public static LavalinkClient lavalinkClient;
-
     public static Scheduler scheduledTasksManager = new Scheduler();
+    public static EventBus eventBus = new EventBus();
 
     public static void init() throws InterruptedException {
         builder = JDABuilder.createDefault(ConfigManager.getConfig("discord-bot-token"), GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_EXPRESSIONS,GatewayIntent.SCHEDULED_EVENTS);
@@ -30,7 +31,8 @@ public class JdaMain {
 
         builder.setStatus(OnlineStatus.ONLINE);
 
-        EventRegistrer.register();
+        //Deprecated now Eventbus: EventRegistrer.register();
+        builder.addEventListeners(new JdaEventsToBusEvents(eventBus));
         Logger.debug("Registering events...");
 
         lavalinkClient = LavaLinkSetup.setup(Long.parseLong(String.valueOf(Helpers.getUserIdFromToken(ConfigManager.getConfig("discord-bot-token")))), builder);

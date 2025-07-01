@@ -1,6 +1,6 @@
 package io.lolyay.lyrics.live;
 
-import io.lolyay.lyrics.getters.GetLyrics;
+import io.lolyay.lyrics.getters.LyricsGetterManager;
 import io.lolyay.lyrics.records.live.LiveData;
 import io.lolyay.lyrics.records.live.LiveLyrics;
 import io.lolyay.utils.Logger;
@@ -35,7 +35,7 @@ public class SyncedLyricsPlayer {
         }
 
         Logger.debug("Precaching lyrics for: " + songName);
-        CompletableFuture<LiveLyrics> lyricsFuture = GetLyrics.getLyricsGetterForLive().getLiveLyrics(songName);
+        CompletableFuture<LiveLyrics> lyricsFuture = LyricsGetterManager.getLyricsGetterForLive().getLiveLyrics(songName);
 
         lyricsFuture.thenAccept(lyrics -> {
             if (lyrics != null && lyrics.liveData() != null) {

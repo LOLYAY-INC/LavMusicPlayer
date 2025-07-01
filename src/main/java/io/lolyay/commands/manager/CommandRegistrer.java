@@ -38,6 +38,7 @@ public class CommandRegistrer {
 
     public static void runCommand(String name, SlashCommandInteractionEvent event) {
         Command command = commandsToRun.get(name);
+
         if (command.requiresPermission() && !canRunCommand(Objects.requireNonNull(event.getMember()))) {
             event.reply("You don't have permission to use this command").setEphemeral(true).queue();
             return;

@@ -7,6 +7,7 @@ import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.lyrics.LyricsNotFoundException;
 import io.lolyay.lyrics.Scraper;
+import io.lolyay.lyrics.getters.impl.LyricsGetterLiveAble;
 import io.lolyay.lyrics.records.Lyrics;
 import io.lolyay.lyrics.records.SearchLyrics;
 import io.lolyay.lyrics.records.live.LiveData;
