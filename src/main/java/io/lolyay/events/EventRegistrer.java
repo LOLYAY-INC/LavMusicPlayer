@@ -7,6 +7,7 @@ public class EventRegistrer {
         JdaMain.eventBus.register(new OnReadyEventListener());
         JdaMain.eventBus.register(new OnSlashCommandInteractionEventListener());
         JdaMain.eventBus.register(new OnGuildVoiceUpdate());
+        JdaMain.eventBus.register(new OnTrackEnd());
 
     }
 }

@@ -1,12 +1,10 @@
 package io.lolyay.musicbot;
 
 import dev.arbjerg.lavalink.client.LavalinkClient;
-import dev.arbjerg.lavalink.client.event.TrackEndEvent;
 import dev.arbjerg.lavalink.client.player.Track;
 import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.config.guildconfig.GuildConfigManager;
-import io.lolyay.customevents.events.music.TrackEndedEvent;
 import io.lolyay.customevents.events.music.TrackStartedEvent;
 import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
@@ -20,32 +18,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class PlayerManager {
+    private final Map<Long, GuildMusicManager> musicManagers;
     private final LavalinkClient lavaLinkClient;
-    private final Map<Long, GuildMusicManager> musicManagers = new ConcurrentHashMap<>();
 
     public PlayerManager(LavalinkClient lavaLinkClient) {
         this.lavaLinkClient = lavaLinkClient;
-        this.setupEventListeners();
-    }
-
-    private void setupEventListeners() {
-        lavaLinkClient.on(TrackEndEvent.class).subscribe(event -> {
-            GuildMusicManager musicManager = musicManagers.get(event.getGuildId());
-
-            JdaMain.eventBus.post(new TrackEndedEvent(musicManager.getQueue().getFirst(), event.getEndReason(), event.getGuildId(), event.getNode()));
-
-            if (event.getEndReason().getMayStartNext())
-                musicManager.onTrackEnd();
-            else
-                musicManager.getQueManager().clear();
-
-        });
+        this.musicManagers = new ConcurrentHashMap<>();
     }
 
     public synchronized GuildMusicManager getGuildMusicManager(long guildId) {
-        return musicManagers.computeIfAbsent(guildId, id -> new GuildMusicManager(this, id, GuildConfigManager.getGuildConfig(id.toString())));
+        return musicManagers.computeIfAbsent(guildId, (key) -> new GuildMusicManager(this, key, GuildConfigManager.getGuildConfig(Long.toString(key))));
     }
-
 
     @Deprecated
     public void searchTrack(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback, Runnable notFoundCallback) {
@@ -86,7 +69,6 @@ public class PlayerManager {
             return false;
         }
     }
-
 
     public void playTrack(MusicAudioTrack track) {
         long guildId = track.userData().dcGuildId();
@@ -141,26 +123,26 @@ public class PlayerManager {
      */
     public CompletableFuture<Long> getPosition(long guildId) {
         CompletableFuture<Long> future = new CompletableFuture<>();
-        
+
         lavaLinkClient.getOrCreateLink(guildId).getPlayer().subscribe(
-            player -> {
-                try {
-                    if (player != null && player.getTrack() != null) {
-                        future.complete(player.getTrack().getInfo().getPosition());
-                    } else {
+                player -> {
+                    try {
+                        if (player != null && player.getTrack() != null) {
+                            future.complete(player.getTrack().getInfo().getPosition());
+                        } else {
+                            future.complete(-1L);
+                        }
+                    } catch (Exception e) {
+                        Logger.err("Error getting track position: " + e.getMessage());
                         future.complete(-1L);
                     }
-                } catch (Exception e) {
-                    Logger.err("Error getting track position: " + e.getMessage());
+                },
+                error -> {
+                    Logger.err("Error getting player: " + error.getMessage());
                     future.complete(-1L);
                 }
-            },
-            error -> {
-                Logger.err("Error getting player: " + error.getMessage());
-                future.complete(-1L);
-            }
         );
-        
+
         return future;
     }
 }

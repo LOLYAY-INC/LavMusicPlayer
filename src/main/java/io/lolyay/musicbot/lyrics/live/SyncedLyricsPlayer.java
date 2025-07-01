@@ -11,7 +11,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import java.util.*;
 import java.util.concurrent.*;
 
-
+/**
+ * This class is responsible for playing live lyrics in a Discord guild.
+ */
 public class SyncedLyricsPlayer {
 
     private static final Map<Long, GuildLyricsPlayer> activePlayers = new ConcurrentHashMap<>();
@@ -59,7 +61,6 @@ public class SyncedLyricsPlayer {
         });
     }
 
-
     public static void nextSong(long guildId, String songName, long songStartTimeMillis) {
         GuildLyricsPlayer player = activePlayers.get(guildId);
         if (player == null) {
@@ -67,6 +68,13 @@ public class SyncedLyricsPlayer {
             return;
         }
         player.playSong(songName, songStartTimeMillis);
+    }
+
+    public static void adjustStartTime(long guildId, long newStartTimeMillis) {
+        GuildLyricsPlayer player = activePlayers.get(guildId);
+        if (player != null) {
+            player.adjustStartTime(newStartTimeMillis);
+        }
     }
 
     public static void setPaused(long guildId, boolean isPaused, long timestamp) {
@@ -186,6 +194,17 @@ public class SyncedLyricsPlayer {
                 this.songStartTimeMillis += pauseDurationMillis;
                 beginScheduling();
                 Logger.debug("Lyrics resumed for guild " + message.getGuild().getIdLong());
+            }
+        }
+
+        public void adjustStartTime(long newStartTimeMillis) {
+            if (this.songStartTimeMillis == newStartTimeMillis) return;
+            this.songStartTimeMillis = newStartTimeMillis;
+            if (!isPaused) {
+                if (this.scheduler != null && !this.scheduler.isShutdown()) {
+                    this.scheduler.shutdownNow();
+                }
+                beginScheduling();
             }
         }
 

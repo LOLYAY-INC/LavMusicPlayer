@@ -1,5 +1,6 @@
 package io.lolyay.customevents;
 
+import dev.arbjerg.lavalink.client.event.ClientEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 
 import java.lang.reflect.InvocationTargetException;
@@ -60,6 +61,10 @@ public class EventBus {
     }
 
     public void postJda(GenericEvent event) {
+        dispatchEvent(event);
+    }
+
+    public void postLavaLink(ClientEvent event) {
         dispatchEvent(event);
     }
 

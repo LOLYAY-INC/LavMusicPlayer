@@ -2,7 +2,9 @@ package io.lolyay.musicbot;
 
 import dev.arbjerg.lavalink.client.LavalinkClient;
 import dev.arbjerg.lavalink.client.NodeOptions;
+import dev.arbjerg.lavalink.client.event.ClientEvent;
 import dev.arbjerg.lavalink.libraries.jda.JDAVoiceUpdateListener;
+import io.lolyay.JdaMain;
 import io.lolyay.LavaLinkPenaltyProvider;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.config.jsonnodes.NodesJsonManager;
@@ -46,6 +48,7 @@ public class LavaLinkSetup {
         }
 
         lavaLinkClient.getLoadBalancer().addPenaltyProvider(new LavaLinkPenaltyProvider());
+        lavaLinkClient.on(ClientEvent.class).subscribe(JdaMain.eventBus::postLavaLink);
 
     }
 
