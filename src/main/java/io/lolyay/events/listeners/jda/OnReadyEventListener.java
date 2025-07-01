@@ -1,4 +1,4 @@
-package io.lolyay.events;
+package io.lolyay.events.listeners.jda;
 
 import io.lolyay.customevents.EventListener;
 import io.lolyay.utils.Logger;

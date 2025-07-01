@@ -1,6 +1,10 @@
 package io.lolyay.events;
 
 import io.lolyay.JdaMain;
+import io.lolyay.events.listeners.jda.OnGuildVoiceUpdate;
+import io.lolyay.events.listeners.jda.OnReadyEventListener;
+import io.lolyay.events.listeners.jda.OnSlashCommandInteractionEventListener;
+import io.lolyay.events.listeners.lavalink.OnTrackEnd;
 
 public class EventRegistrer {
     public static void register() {

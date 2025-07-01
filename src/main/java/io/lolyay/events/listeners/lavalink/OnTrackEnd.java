@@ -1,4 +1,4 @@
-package io.lolyay.events;
+package io.lolyay.events.listeners.lavalink;
 
 import dev.arbjerg.lavalink.client.event.TrackEndEvent;
 import io.lolyay.JdaMain;
