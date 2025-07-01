@@ -1,4 +1,4 @@
-package io.lolyay.lyrics;
+package io.lolyay.musicbot.lyrics;
 
 import java.net.URI;
 import java.net.http.HttpClient;

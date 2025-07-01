@@ -1,4 +1,4 @@
-package io.lolyay.lyrics.records.live;
+package io.lolyay.musicbot.lyrics.records.live;
 
 import java.util.List;
 

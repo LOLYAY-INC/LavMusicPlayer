@@ -1,11 +1,12 @@
 package io.lolyay.commands.music;
 
-
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
-import io.lolyay.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.musicbot.GuildMusicManager;
+import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
+import io.lolyay.musicbot.search.GlobalSearchManager;
+import io.lolyay.musicbot.search.PlaylistData;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.Permission;
@@ -16,6 +17,8 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public class PlayCommand implements Command {
 
@@ -77,13 +80,13 @@ public class PlayCommand implements Command {
 
         event.deferReply().queue();
 
-
         final String query = event.getOption("song").getAsString();
         final GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(guild.getIdLong());
 
-        JdaMain.playerManager.searchTrack(query, member,
-                // --- SUCCESS CALLBACK ---
-                (track) -> {
+        new GlobalSearchManager().searchWithDefaultOrder(query, Optional.of(member), (search) -> {
+            switch (search.result().getStatus()) {
+                case SUCCESS -> {
+                    MusicAudioTrack track = search.track().get();
                     member.getJDA().getDirectAudioController().connect(memberChannel);
                     SyncedLyricsPlayer.precacheSong(track.track().getInfo().getTitle());
                     final boolean isPlayingNow = musicManager.getQueManager().isEmpty();
@@ -91,13 +94,31 @@ public class PlayCommand implements Command {
 
                     String response = getResponse(track, isPlayingNow, musicManager);
                     event.getHook().sendMessage(response).queue();
-                    //  event.getHook().sendMessageEmbeds(StatusEmbedGenerator.generate(musicManager).build()).queue();
-                },
-                // --- FAILURE CALLBACK ---
-                () -> {
+                }
+                case PLAYLIST -> {
+                    PlaylistData playlistData = search.playlistData();
+                    member.getJDA().getDirectAudioController().connect(memberChannel);
+
+                    MusicAudioTrack track = playlistData.selectedTrack();
+                    SyncedLyricsPlayer.precacheSong(track.track().getInfo().getTitle());
+
+                    final boolean isPlayingNow = musicManager.getQueManager().isEmpty();
+
+                    musicManager.queueTrack(track);
+
+                    String response = getResponse(track, isPlayingNow, musicManager);
+                    event.getHook().sendMessage(response).queue();
+
+                }
+                case NOT_FOUND -> {
                     String response = Emoji.ERROR.getCode() + " Could not find any results for `" + query + "`.";
                     event.getHook().sendMessage(response).queue();
                 }
-        );
+                case ERROR -> {
+                    String response = Emoji.ERROR.getCode() + " An error occurred: `" + search.result().getMessage() + "`";
+                    event.getHook().sendMessage(response).queue();
+                }
+            }
+        }, guild.getIdLong());
     }
 }

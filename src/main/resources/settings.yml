@@ -13,6 +13,13 @@ default-volume: 10
 # Set to "false" to enable 24/7 music
 stop-on-empty-channel: true
 
+
+# if a playlist gets loaded, should the whole playlist be added to the queue?
+# set to "false" to only add the first song
+# set to "true" to add the whole playlist
+add-full-playlists-to-queue: false
+
+
 using-nodes-json-file: false # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
 nodes-json-file: "C:\\path\\to\\nodes.json" # The path to your nodes.json file
 

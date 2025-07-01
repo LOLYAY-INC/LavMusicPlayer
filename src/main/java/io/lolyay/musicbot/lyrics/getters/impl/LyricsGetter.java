@@ -1,7 +1,7 @@
-package io.lolyay.lyrics.getters.impl;
+package io.lolyay.musicbot.lyrics.getters.impl;
 
 
-import io.lolyay.lyrics.records.Lyrics;
+import io.lolyay.musicbot.lyrics.records.Lyrics;
 
 import java.util.concurrent.CompletableFuture;
 

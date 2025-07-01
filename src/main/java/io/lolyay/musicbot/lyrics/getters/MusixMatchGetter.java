@@ -1,17 +1,17 @@
-package io.lolyay.lyrics.getters;
+package io.lolyay.musicbot.lyrics.getters;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
-import io.lolyay.lyrics.LyricsNotFoundException;
-import io.lolyay.lyrics.Scraper;
-import io.lolyay.lyrics.getters.impl.LyricsGetterLiveAble;
-import io.lolyay.lyrics.records.Lyrics;
-import io.lolyay.lyrics.records.SearchLyrics;
-import io.lolyay.lyrics.records.live.LiveData;
-import io.lolyay.lyrics.records.live.LiveLyrics;
+import io.lolyay.musicbot.lyrics.LyricsNotFoundException;
+import io.lolyay.musicbot.lyrics.Scraper;
+import io.lolyay.musicbot.lyrics.getters.impl.LyricsGetterLiveAble;
+import io.lolyay.musicbot.lyrics.records.Lyrics;
+import io.lolyay.musicbot.lyrics.records.SearchLyrics;
+import io.lolyay.musicbot.lyrics.records.live.LiveData;
+import io.lolyay.musicbot.lyrics.records.live.LiveLyrics;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
 import org.json.JSONArray;

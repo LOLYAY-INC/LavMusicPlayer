@@ -30,26 +30,7 @@ public class EventBus {
         listeners.values().forEach(list -> list.removeIf(reg -> reg.listener.equals(listener)));
     }
 
-    public boolean post(Event event) {
-        List<RegisteredListener> registered = listeners.get(event.getClass());
-        if (registered != null) {
-            for (RegisteredListener registration : registered) {
-                try {
-                    registration.method.invoke(registration.listener, event);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        if (event instanceof CancellableEvent) {
-            return !((CancellableEvent) event).isCancelled();
-        }
-
-        return true;
-    }
-
-    public void postJda(GenericEvent event) {
+    private void dispatchEvent(Object event) {
         for (Map.Entry<Class<?>, List<RegisteredListener>> entry : listeners.entrySet()) {
             if (entry.getKey().isAssignableFrom(event.getClass())) {
                 for (RegisteredListener registration : entry.getValue()) {
@@ -61,6 +42,25 @@ public class EventBus {
                 }
             }
         }
+    }
+
+    public boolean post(Event event) {
+        dispatchEvent(event);
+
+        if (event instanceof CancellableEvent) {
+            return !((CancellableEvent) event).isCancelled();
+        }
+
+        return true;
+    }
+
+    public <T> T postAndGet(T event) {
+        dispatchEvent(event);
+        return event;
+    }
+
+    public void postJda(GenericEvent event) {
+        dispatchEvent(event);
     }
 
     private static class RegisteredListener {

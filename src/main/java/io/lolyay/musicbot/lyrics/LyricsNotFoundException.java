@@ -1,6 +1,6 @@
-package io.lolyay.lyrics;
+package io.lolyay.musicbot.lyrics;
 
-import io.lolyay.lyrics.records.SearchLyrics;
+import io.lolyay.musicbot.lyrics.records.SearchLyrics;
 
 public class LyricsNotFoundException extends RuntimeException {
     public LyricsNotFoundException(SearchLyrics message,

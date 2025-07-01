@@ -61,4 +61,8 @@ public class MusicAudioTrack {
                 ", userData=" + userData +
                 ']';
     }
+
+    public static MusicAudioTrack fromTrack(Track track, RequestorData userData) {
+        return new MusicAudioTrack(track, userData);
+    }
 }

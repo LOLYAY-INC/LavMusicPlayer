@@ -3,6 +3,8 @@ package io.lolyay;
 import io.lolyay.config.ConfigLoader;
 import io.lolyay.config.guildconfig.GuildConfigLoader;
 import io.lolyay.config.guildconfig.GuildConfigManager;
+import io.lolyay.customevents.events.lifecycle.PreInitEvent;
+import io.lolyay.events.EventRegistrer;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
 
@@ -14,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
         // Add shutdown hook for graceful shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(Main::onShutdown));
-        
+
         parseArgs(args);
         Logger.log("Starting bot...");
 
@@ -36,6 +38,9 @@ public class Main {
 
         Logger.debug("Loading JDA...");
         try {
+            EventRegistrer.register();
+
+            JdaMain.eventBus.post(new PreInitEvent());
             JdaMain.init();
         } catch (Exception e) {
             Logger.err("Error while starting bot: ");

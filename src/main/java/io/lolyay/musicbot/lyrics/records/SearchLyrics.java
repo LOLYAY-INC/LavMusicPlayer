@@ -1,4 +1,4 @@
-package io.lolyay.lyrics.records;
+package io.lolyay.musicbot.lyrics.records;
 
 public record SearchLyrics(String url, String title, String author) {
     @Override

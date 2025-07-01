@@ -1,8 +1,8 @@
-package io.lolyay.lyrics.live;
+package io.lolyay.musicbot.lyrics.live;
 
-import io.lolyay.lyrics.getters.LyricsGetterManager;
-import io.lolyay.lyrics.records.live.LiveData;
-import io.lolyay.lyrics.records.live.LiveLyrics;
+import io.lolyay.musicbot.lyrics.getters.LyricsGetterManager;
+import io.lolyay.musicbot.lyrics.records.live.LiveData;
+import io.lolyay.musicbot.lyrics.records.live.LiveLyrics;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;

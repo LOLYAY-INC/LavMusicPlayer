@@ -3,7 +3,7 @@ package io.lolyay.commands.music;
 
 import io.lolyay.commands.manager.Command;
 import io.lolyay.commands.manager.CommandOption;
-import io.lolyay.lyrics.live.SyncedLyricsPlayer;
+import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.utils.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 

@@ -1,20 +1,19 @@
 package io.lolyay.musicbot;
 
-import dev.arbjerg.lavalink.client.FunctionalLoadResultHandler;
 import dev.arbjerg.lavalink.client.LavalinkClient;
 import dev.arbjerg.lavalink.client.event.TrackEndEvent;
 import dev.arbjerg.lavalink.client.player.Track;
 import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.config.guildconfig.GuildConfigManager;
-import io.lolyay.lyrics.live.SyncedLyricsPlayer;
+import io.lolyay.customevents.events.music.TrackEndedEvent;
+import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,12 +31,14 @@ public class PlayerManager {
     private void setupEventListeners() {
         lavaLinkClient.on(TrackEndEvent.class).subscribe(event -> {
             GuildMusicManager musicManager = musicManagers.get(event.getGuildId());
-            if (musicManager != null && event.getEndReason().getMayStartNext()) {
+
+            JdaMain.eventBus.post(new TrackEndedEvent(musicManager.getQueue().getFirst(), event.getEndReason(), event.getGuildId(), event.getNode()));
+
+            if (event.getEndReason().getMayStartNext())
                 musicManager.onTrackEnd();
-            } else {
-                assert musicManager != null;
+            else
                 musicManager.getQueManager().clear();
-            }
+
         });
     }
 
@@ -45,170 +46,19 @@ public class PlayerManager {
         return musicManagers.computeIfAbsent(guildId, id -> new GuildMusicManager(this, id, GuildConfigManager.getGuildConfig(id.toString())));
     }
 
-    /**
-     * Asynchronously searches for a track.
-     * This method does not return a track directly. Instead, it accepts callbacks
-     * that will be executed upon completion.
-     *
-     * @param query           The search query or URL.
-     * @param member          The member who requested the track.
-     * @param successCallback A function to be called when a track is successfully found.
-     * @param failureCallback A function to be called when no track is found or an error occurs.
-     */
-    public void searchTrack(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback) {
 
-        long guildId = member.getGuild().getIdLong();
-
-
-        final String finalQuery = query;
-
-        lavaLinkClient.getOrCreateLink(guildId)
-                .loadItem(finalQuery)
-                .subscribe(new FunctionalLoadResultHandler(
-
-                        trackLoaded -> {
-                            Logger.log("Loaded single track: " + trackLoaded.getTrack().getInfo().getTitle());
-                            MusicAudioTrack track = createMusicAudioTrack(trackLoaded.getTrack(), member);
-                            successCallback.accept(track);
-                        },
-
-                        playlistLoaded -> {
-
-
-                            Track firstTrack = playlistLoaded.getTracks().getFirst();
-                            if (firstTrack != null) {
-                                Logger.log("Loaded playlist, taking first track: " + firstTrack.getInfo().getTitle());
-                                MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
-                                successCallback.accept(track);
-                            } else {
-                                failureCallback.run();
-                            }
-                        },
-
-                        searchResult -> {
-                            final List<Track> tracks = searchResult.getTracks();
-                            if (tracks.isEmpty()) {
-                                Logger.warn("Search returned no results for: " + finalQuery);
-                                failureCallback.run();
-                                return;
-                            }
-                            final Track firstTrack = tracks.getFirst();
-                            Logger.log("Loaded from search: " + firstTrack.getInfo().getTitle());
-                            MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
-                            successCallback.accept(track);
-                        },
-
-                        () -> searchTrackWithYoutubeMusic(finalQuery,member,successCallback,failureCallback),
-
-                        exception -> {
-                            Logger.err("Error loading track: " + exception.getException().getMessage());
-                            failureCallback.run();
-                        }
-                ));
+    @Deprecated
+    public void searchTrack(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback, Runnable notFoundCallback) {
     }
 
-    private void searchTrackWithYoutube(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback) {
-        long guildId = member.getGuild().getIdLong();
+    @Deprecated
+    private void searchTrackWithYoutube(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback, Runnable notFoundCallback) {
 
-
-        final String finalQuery = "ytsearch:" +  query;
-        Logger.debug("Couldn't Locate track on Youtube Music, Searching with youtube: " + query);
-
-        lavaLinkClient.getOrCreateLink(guildId)
-                .loadItem(finalQuery)
-                .subscribe(new FunctionalLoadResultHandler(
-
-                        trackLoaded -> {
-                            Logger.log("Loaded single track: " + trackLoaded.getTrack().getInfo().getTitle());
-                            MusicAudioTrack track = createMusicAudioTrack(trackLoaded.getTrack(), member);
-                            successCallback.accept(track);
-                        },
-
-                        playlistLoaded -> {
-
-
-                            Track firstTrack = playlistLoaded.getTracks().getFirst();
-                            if (firstTrack != null) {
-                                Logger.log("Loaded playlist, taking first track: " + firstTrack.getInfo().getTitle());
-                                MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
-                                successCallback.accept(track);
-                            } else {
-                                failureCallback.run();
-                            }
-                        },
-
-                        searchResult -> {
-                            final List<Track> tracks = searchResult.getTracks();
-                            if (tracks.isEmpty()) {
-                                Logger.warn("Search returned no results for: " + finalQuery);
-                                failureCallback.run();
-                                return;
-                            }
-                            final Track firstTrack = tracks.getFirst();
-                            Logger.log("Loaded from search: " + firstTrack.getInfo().getTitle());
-                            MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
-                            successCallback.accept(track);
-                        },
-
-                        failureCallback,
-
-                        exception -> {
-                            Logger.log("Error loading track: " + exception.getException().getMessage());
-                            failureCallback.run();
-                        }
-                ));
     }
 
-    private void searchTrackWithYoutubeMusic(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback) {
-        long guildId = member.getGuild().getIdLong();
+    @Deprecated
+    private void searchTrackWithYoutubeMusic(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback, Runnable notFoundCallback) {
 
-
-        final String finalQuery = "ytmsearch:" +  query;
-        Logger.debug("Couldn't normally Locate track, Searching with youtube music: " + query);
-
-        lavaLinkClient.getOrCreateLink(guildId)
-                .loadItem(finalQuery)
-                .subscribe(new FunctionalLoadResultHandler(
-
-                        trackLoaded -> {
-                            Logger.log("Loaded single track: " + trackLoaded.getTrack().getInfo().getTitle());
-                            MusicAudioTrack track = createMusicAudioTrack(trackLoaded.getTrack(), member);
-                            successCallback.accept(track);
-                        },
-
-                        playlistLoaded -> {
-
-
-                            Track firstTrack = playlistLoaded.getTracks().getFirst();
-                            if (firstTrack != null) {
-                                Logger.log("Loaded playlist, taking first track: " + firstTrack.getInfo().getTitle());
-                                MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
-                                successCallback.accept(track);
-                            } else {
-                                failureCallback.run();
-                            }
-                        },
-
-                        searchResult -> {
-                            final List<Track> tracks = searchResult.getTracks();
-                            if (tracks.isEmpty()) {
-                                Logger.warn("Search returned no results for: " + finalQuery);
-                                failureCallback.run();
-                                return;
-                            }
-                            final Track firstTrack = tracks.getFirst();
-                            Logger.log("Loaded from search: " + firstTrack.getInfo().getTitle());
-                            MusicAudioTrack track = createMusicAudioTrack(firstTrack, member);
-                            successCallback.accept(track);
-                        },
-
-                        () -> searchTrackWithYoutube(finalQuery,member,successCallback,failureCallback),
-
-                        exception -> {
-                            Logger.log("Error loading track: " + exception.getException().getMessage());
-                            failureCallback.run();
-                        }
-                ));
     }
 
     /**

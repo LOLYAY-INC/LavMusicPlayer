@@ -1,4 +1,4 @@
-package io.lolyay.customevents.events;
+package io.lolyay.customevents.events.commands;
 
 import io.lolyay.commands.manager.Command;
 import io.lolyay.customevents.CancellableEvent;

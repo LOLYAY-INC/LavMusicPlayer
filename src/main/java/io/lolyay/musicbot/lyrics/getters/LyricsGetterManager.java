@@ -1,7 +1,7 @@
-package io.lolyay.lyrics.getters;
+package io.lolyay.musicbot.lyrics.getters;
 
-import io.lolyay.lyrics.getters.impl.LyricsGetter;
-import io.lolyay.lyrics.getters.impl.LyricsGetterLiveAble;
+import io.lolyay.musicbot.lyrics.getters.impl.LyricsGetter;
+import io.lolyay.musicbot.lyrics.getters.impl.LyricsGetterLiveAble;
 
 import java.util.ArrayList;
 import java.util.List;
