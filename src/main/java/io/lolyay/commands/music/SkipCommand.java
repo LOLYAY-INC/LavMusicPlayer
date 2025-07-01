@@ -34,6 +34,11 @@ public class SkipCommand implements Command {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
+        if (!JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).isPlaying()) {
+            event.reply(Emoji.ERROR.getCode() + " No Track is playing, couldn't skip!").queue();
+            return;
+        }
+
         MusicAudioTrack currentTrack = JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).skip();
         if(currentTrack == null)
             event.reply(Emoji.SUCCESS.getCode() + " No more Tracks to play, stopping!").queue();

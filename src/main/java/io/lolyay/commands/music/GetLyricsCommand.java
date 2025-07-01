@@ -65,7 +65,7 @@ public class GetLyricsCommand implements Command {
                         if (ConfigManager.getConfigBool("live-lyrics-enabled")) {
                             try {
                                 SyncedLyricsPlayer.start(event.getGuild().getIdLong(), message);
-                                SyncedLyricsPlayer.nextSong(message.getGuildIdLong(), musicManager.getQueue().getFirst().track().getInfo().getTitle(), musicManager.getQueue().getFirst().startTime().getTime());
+                                SyncedLyricsPlayer.nextSong(message.getGuildIdLong(), musicManager.getQueue().getFirst().track().getInfo().getTitle(), musicManager.getQueue().getFirst().startTime());
                             } catch (Exception e) {
                                 Logger.err("Error starting synced lyrics: " + e.getMessage());
                                 event.getHook().sendMessage(Emoji.ERROR.getCode() + " Error starting synced lyrics: " + e.getMessage()).queue();

@@ -7,13 +7,13 @@ import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.config.guildconfig.GuildConfigManager;
 import io.lolyay.customevents.events.music.TrackEndedEvent;
+import io.lolyay.customevents.events.music.TrackStartedEvent;
 import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.net.URI;
-import java.sql.Timestamp;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -94,10 +94,12 @@ public class PlayerManager {
                 .setTrack(track.track())
                 .setVolume((int) getGuildMusicManager(guildId).getVolume())
                 .subscribe((e) -> {
-                    track.startTime(new Timestamp(track.startTime().getTime() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation"))));
+                    JdaMain.eventBus.post(new TrackStartedEvent(track, guildId, lavaLinkClient.getOrCreateLink(guildId).getNode()));
+                    track.startTime(System.currentTimeMillis() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
+                    Logger.debug("Set StartTime for track of guild " + guildId + " to " + track.startTime());
                     if (SyncedLyricsPlayer.isLive(guildId)) {
-                        SyncedLyricsPlayer.nextSong(guildId, track.track().getInfo().getTitle(), track.startTime().getTime());
-                        Logger.debug("Next song for lyrics!");
+                        SyncedLyricsPlayer.nextSong(guildId, track.track().getInfo().getTitle(), track.startTime());
+                        Logger.debug("Next song for lyrics player of guild " + guildId + " set!");
                     }
                 });
     }

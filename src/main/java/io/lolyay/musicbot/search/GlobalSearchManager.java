@@ -8,6 +8,7 @@ import io.lolyay.musicbot.RequestorData;
 import io.lolyay.musicbot.search.searchers.*;
 import io.lolyay.musicbot.search.searchorders.YoutubeSearchOrder;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
+import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class GlobalSearchManager {
         PreSearchEvent.SearchEventResult override = JdaMain.eventBus.postAndGet(new PreSearchEvent(guildId, query, callback, member.orElse(null))).getOverride();
 
         if (override != null) {
+            Logger.debug("Search override: " + override.getStatus());
             switch (override.getStatus()) {
                 case NOT_FOUND -> {
                     callback.accept(Search.wasNotFound(Search.SearchResult.NOT_FOUND("Search was not found (override)"), "System", query));

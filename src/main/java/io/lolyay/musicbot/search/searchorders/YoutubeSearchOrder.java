@@ -14,7 +14,10 @@ import java.util.function.Consumer;
 
 public class YoutubeSearchOrder {
     public static void doSearch(String query, Optional<Member> member, Consumer<Search> callback, long guildId, Link link, GuildMusicManager guildMusicManager) {
-        doFirstSearch(query, member, callback, guildId, link, guildMusicManager);
+        if (query.startsWith("http"))
+            doFirstSearch(query, member, callback, guildId, link, guildMusicManager);
+        else
+            doSecondSearch(query, member, callback, guildId, link, guildMusicManager);
     }
 
     private static void doFirstSearch(String query, Optional<Member> member, Consumer<Search> callback, long guildId, Link link, GuildMusicManager guildMusicManager) {
@@ -28,7 +31,7 @@ public class YoutubeSearchOrder {
     }
 
     private static void doSecondSearch(String query, Optional<Member> member, Consumer<Search> callback, long guildId, Link link, GuildMusicManager guildMusicManager) {
-        new YoutubeMusicSearcher(link, guildMusicManager).search(query, member, search -> {
+        new YoutubeMusicSearcher(link, guildMusicManager).search("ytmsearch:" + query, member, search -> {
             if (!search.result().isSuccess()) {
                 doThirdSearch(query, member, callback, guildId, link, guildMusicManager);
             } else {
@@ -38,8 +41,8 @@ public class YoutubeSearchOrder {
     }
 
     private static void doThirdSearch(String query, Optional<Member> member, Consumer<Search> callback, long guildId, Link link, GuildMusicManager guildMusicManager) {
-        new YoutubeSearcher(link, guildMusicManager).search(query, member, search -> {
-            if (!search.result().isSuccess()) {
+        new YoutubeSearcher(link, guildMusicManager).search("ytsearch:" + query, member, search -> {
+            if (!search.result().isSuccess() && query.contains(":")) {
                 doFourthSearch(query, member, callback, guildId, link, guildMusicManager);
             } else {
                 callback.accept(search);

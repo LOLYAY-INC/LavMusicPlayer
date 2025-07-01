@@ -3,13 +3,12 @@ package io.lolyay.musicbot.tracks;
 import dev.arbjerg.lavalink.client.player.Track;
 import io.lolyay.musicbot.RequestorData;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
 public class MusicAudioTrack {
     private Track track;
     private RequestorData userData;
-    private Timestamp startTime;
+    private long startTime;
 
     public MusicAudioTrack(Track track, RequestorData userData) {
         this.track = track;
@@ -24,12 +23,12 @@ public class MusicAudioTrack {
         this.track = track;
     }
 
-    public Timestamp startTime() {
+    public long startTime() {
         return startTime;
     }
 
-    public void startTime(Timestamp startTime) {
-        this.startTime = startTime;
+    public void startTime(long timestamp) {
+        this.startTime = timestamp;
     }
 
     public RequestorData userData() {
