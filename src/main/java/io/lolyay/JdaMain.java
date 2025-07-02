@@ -1,7 +1,5 @@
 package io.lolyay;
 
-import dev.arbjerg.lavalink.client.Helpers;
-import dev.arbjerg.lavalink.client.LavalinkClient;
 import io.lolyay.commands.manager.CommandRegistrer;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.customevents.EventBus;
@@ -9,8 +7,10 @@ import io.lolyay.customevents.events.commands.CommandsRegistredEvent;
 import io.lolyay.customevents.events.lifecycle.BotReadyEvent;
 import io.lolyay.customevents.events.lifecycle.PreJdaBuildEvent;
 import io.lolyay.events.JdaEventsToBusEvents;
-import io.lolyay.musicbot.LavaLinkSetup;
-import io.lolyay.musicbot.PlayerManager;
+import io.lolyay.musicbot.backendswapper.AbstractPlayerManager;
+import io.lolyay.musicbot.backendswapper.client.ClientInitializer;
+import io.lolyay.musicbot.backendswapper.lavaplayer.LavaInitializer;
+import io.lolyay.musicbot.backendswapper.structs.ENVIRONMENT;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -24,8 +24,8 @@ public class JdaMain {
     public static boolean debug = false;
     public static boolean shouldRegisterCommands = true;
 
-    public static PlayerManager playerManager;
-    public static LavalinkClient lavalinkClient;
+    public static AbstractPlayerManager playerManager;
+    public static ENVIRONMENT environment;
     public static Scheduler scheduledTasksManager = new Scheduler();
     public static EventBus eventBus = new EventBus();
 
@@ -42,8 +42,18 @@ public class JdaMain {
         builder.addEventListeners(new JdaEventsToBusEvents(eventBus));
         Logger.debug("Registering events...");
 
-        lavalinkClient = LavaLinkSetup.setup(Long.parseLong(String.valueOf(Helpers.getUserIdFromToken(ConfigManager.getConfig("discord-bot-token")))), builder);
-        playerManager = new PlayerManager(lavalinkClient);
+        if (ConfigManager.getConfig("operating-mode").equalsIgnoreCase("lavaplayer")) {
+            environment = ENVIRONMENT.LAVALINK;
+            Logger.debug("Using LavaPlayer Backend...");
+            new LavaInitializer().init();
+        } else if (ConfigManager.getConfig("operating-mode").equalsIgnoreCase("backendswapper")) {
+            environment = ENVIRONMENT.CLIENT;
+            Logger.debug("Using BackendSwapper Backend...");
+            new ClientInitializer().init();
+        } else {
+            Logger.err("Unknown Operating Mode: " + ConfigManager.getConfig("operating-mode"));
+            System.exit(1);
+        }
 
         Logger.log("Music Bot Setup Complete");
 

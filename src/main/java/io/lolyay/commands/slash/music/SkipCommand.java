@@ -43,8 +43,7 @@ public class SkipCommand extends Command {
         if(currentTrack == null)
             event.reply(Emoji.SUCCESS.getCode() + " No more Tracks to play, stopping!").queue();
         else
-            event.reply(Emoji.SUCCESS.getCode() + " Skipped: **" + currentTrack.track().getInfo()
-                    .getTitle() + "** (Requested by " + currentTrack.userData().userName() + " )").queue();
+            event.reply(Emoji.SUCCESS.getCode() + " Skipped: **" + currentTrack.trackInfo().title() + "** (Requested by " + currentTrack.userData().userName() + " )").queue();
 
     }
 }

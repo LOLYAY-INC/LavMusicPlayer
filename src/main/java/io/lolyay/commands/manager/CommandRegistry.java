@@ -10,7 +10,6 @@ import java.util.List;
 public class CommandRegistry {
     public static List<Command> getCommands() {
         return Arrays.asList(
-                new ChangeNodeCommand(),
                 new GetLyricsCommand(),
                 new PauseCommand(),
                 new PlayCommand(),

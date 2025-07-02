@@ -22,12 +22,22 @@ add-full-playlists-to-queue: false
 #The bot supports discords built in / command system, you can set an additional prefix for normal text commands here:
 command-prefix: "."
 
+# =======================
+# The Bot can Operate in 2 modes:
+# 1. Using one or mode(nodes.json file) Lavalink servers that need to be ran seperately
+# 2. Using an Integrated Lavaplayer, wich means you can SKIP THIS SECTION
+# =======================
+operating-mode: lavaplayer # Either lavaplayer for using an integrated Lavaplayer or nodes to be using a Lavalink Server
+
+
+# =======================
+# Lavalink Server Configuration ( Only used if you are using a Lavalink Server and not an Integrated Lavaplayer )
+# =======================
+
 using-nodes-json-file: false # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
 nodes-json-file: "C:\\path\\to\\nodes.json" # The path to your nodes.json file
 
-# =======================
-# Lavalink Server Details (Only if you're not using a nodes.json file)
-# =======================
+
 # Get these from your Lavalink provider or your own server.
 # A list of public servers can be found at https://lavalink-list.appujet.site/
 
@@ -42,6 +52,20 @@ lavalink-secure: false
 
 # The password for your Lavalink server.
 lavalink-password: "pleaseletmein"
+
+
+# =======================
+# Lavalink Server Configuration ( Only used if you are using an Integrated Lavaplayer )
+# =======================
+
+# After starting the bot for the first time, you will be asked to open a browser window and log into your youtube account. Then it will output the refresh token in console.
+# If you dont want to do the whole oauth process again, you can just copy the refresh token from the console output and paste it here.
+youtube-oauth-refresh-token: ""
+
+
+
+
+
 
 # =========================
 # Permissions Configuration

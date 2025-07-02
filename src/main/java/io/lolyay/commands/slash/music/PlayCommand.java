@@ -6,7 +6,6 @@ import io.lolyay.commands.manager.CommandContext;
 import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.musicbot.GuildMusicManager;
 import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
-import io.lolyay.musicbot.search.GlobalSearchManager;
 import io.lolyay.musicbot.search.PlaylistData;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Emoji;
@@ -46,10 +45,10 @@ public class PlayCommand extends Command {
     private static String getResponse(MusicAudioTrack track, boolean isPlayingNow, GuildMusicManager musicManager) {
         String response;
         if (isPlayingNow) {
-            response = Emoji.PLAY.getCode() + " Now Playing: **" + track.track().getInfo().getTitle() + "**";
+            response = Emoji.PLAY.getCode() + " Now Playing: **" + track.trackInfo().title() + "**";
         } else {
             int position = musicManager.getQueManager().getQueue().size();
-            response = Emoji.SUCCESS.getCode() + " Added to queue: **" + track.track().getInfo().getTitle() + "**"
+            response = Emoji.SUCCESS.getCode() + " Added to queue: **" + track.trackInfo().title() + "**"
                     + "\n" + Emoji.MUSIC.getCode() + " Position: **#" + position + "**";
         }
         return response;
@@ -83,12 +82,12 @@ public class PlayCommand extends Command {
         final String query = context.getOption("song").getAsString();
         final GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(guild.getIdLong());
 
-        new GlobalSearchManager().searchWithDefaultOrder(query, Optional.of(member), (search) -> {
+        JdaMain.playerManager.searchWithDefaultOrder(query, Optional.of(member), (search) -> {
             switch (search.result().getStatus()) {
                 case SUCCESS -> {
                     MusicAudioTrack track = search.track().get();
                     member.getJDA().getDirectAudioController().connect(memberChannel);
-                    SyncedLyricsPlayer.precacheSong(track.track().getInfo().getTitle());
+                    SyncedLyricsPlayer.precacheSong(track.trackInfo().title());
                     final boolean isPlayingNow = musicManager.getQueManager().isEmpty();
                     musicManager.queueTrack(track);
 
@@ -100,7 +99,7 @@ public class PlayCommand extends Command {
                     member.getJDA().getDirectAudioController().connect(memberChannel);
 
                     MusicAudioTrack track = playlistData.selectedTrack();
-                    SyncedLyricsPlayer.precacheSong(track.track().getInfo().getTitle());
+                    SyncedLyricsPlayer.precacheSong(track.trackInfo().title());
 
                     final boolean isPlayingNow = musicManager.getQueManager().isEmpty();
 

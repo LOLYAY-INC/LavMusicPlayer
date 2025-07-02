@@ -1,6 +1,5 @@
 package io.lolyay.embedmakers;
 
-import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.config.guildconfig.GuildConfig;
 import io.lolyay.config.guildconfig.GuildConfigManager;
@@ -15,14 +14,13 @@ public class StatusEmbedGenerator {
         GuildConfig guildConfig = GuildConfigManager.getGuildConfig(musicManager.getGuildId().toString());
         builder.setTitle(genTitle(musicManager));
         if (!musicManager.getQueManager().getQueue().isEmpty())
-            builder.addField("", "**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**" + "(" + musicManager.getQueManager().getQueue().get(0).track().getInfo().getIsrc() + ")", false);
+            builder.addField("", "**" + getTitle(musicManager) + "** by **" + getArtist(musicManager) + "**", false);
         else
             builder.addField("**Queue is empty**", "", true);
         builder.addField("**Queue:**", musicManager.getQueManager().getQueue().size() + " tracks left", true);
         builder.addField("**Repeat:**", musicManager.getRepeatMode().getEmoji() + " - " + musicManager.getRepeatMode().getUserFriendlyName(), true);
         builder.addField("**Volume:**", musicManager.getVolume() + " / 100 (Default: " + guildConfig.volume() + ")", true);
         builder.addField("**Tracks played:**", String.valueOf(guildConfig.plays()), true);
-        builder.addField("**Connected to:**", JdaMain.lavalinkClient.getOrCreateLink(musicManager.getGuildId()).getNode().getName(), true);
         builder.addField("**Live lyrics:**", ConfigManager.getConfigBool("live-lyrics-enabled") ? "Enabled" : "Disabled", true);
         if(!musicManager.getQueManager().getQueue().isEmpty())
             builder.setThumbnail(getImageURL(musicManager));
@@ -52,19 +50,19 @@ public class StatusEmbedGenerator {
     private static String genTitle(GuildMusicManager musicManager) {
         if(musicManager.getQueManager().getQueue().isEmpty())
             return genPreTitle(false,false);
-        return genPreTitle(true,musicManager.isPaused()) + ": " + musicManager.getQueManager().getQueue().get(0).track().getInfo().getTitle();
+        return genPreTitle(true, musicManager.isPaused()) + ": " + musicManager.getQueManager().getQueue().getFirst().trackInfo().title();
     }
 
     private static String getImageURL(GuildMusicManager musicManager) {
-        return musicManager.getQueManager().getQueue().get(0).track().getInfo().getArtworkUrl();
+        return musicManager.getQueManager().getQueue().getFirst().trackInfo().artWorkUrl();
     }
 
     private static String getArtist(GuildMusicManager musicManager) {
-        return musicManager.getQueManager().getQueue().get(0).track().getInfo().getAuthor();
+        return musicManager.getQueManager().getQueue().getFirst().trackInfo().author();
     }
 
     private static String getTitle(GuildMusicManager musicManager) {
-        return musicManager.getQueManager().getQueue().get(0).track().getInfo().getTitle();
+        return musicManager.getQueManager().getQueue().getFirst().trackInfo().title();
     }
 
 

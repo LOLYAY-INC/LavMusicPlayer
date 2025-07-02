@@ -1,5 +1,6 @@
-package io.lolyay.musicbot;
+package io.lolyay.musicbot.backendswapper.client;
 
+import dev.arbjerg.lavalink.client.Helpers;
 import dev.arbjerg.lavalink.client.LavalinkClient;
 import dev.arbjerg.lavalink.client.NodeOptions;
 import dev.arbjerg.lavalink.client.event.ClientEvent;
@@ -14,7 +15,16 @@ import net.dv8tion.jda.api.JDABuilder;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class LavaLinkSetup {
+import static io.lolyay.JdaMain.builder;
+
+public class ClientInitializer extends io.lolyay.musicbot.backendswapper.Initializer {
+    @Override
+    public void init() {
+        LavalinkClient lavalinkClient = setup(
+                Helpers.getUserIdFromToken(ConfigManager.getConfig("discord-bot-token")), builder);
+        JdaMain.playerManager = new ClientPlayerManager(lavalinkClient);
+    }
+
     public static LavalinkClient setup(long botId, JDABuilder jdaBuilder) {
         LavalinkClient lavaLinkClient = new LavalinkClient(botId);
 
@@ -55,5 +65,4 @@ public class LavaLinkSetup {
     private static String getConProtocol(){
         return Objects.equals(ConfigManager.getConfig("lavalink-secure"), "true") ? "wss://" : "ws://";
     }
-
 }

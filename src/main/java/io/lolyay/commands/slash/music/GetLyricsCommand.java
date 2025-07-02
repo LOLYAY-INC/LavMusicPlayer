@@ -56,7 +56,7 @@ public class GetLyricsCommand extends Command {
 
 
         event.deferReply(false);
-        new MusixMatchGetter().getLyrics(musicManager.getQueue().getFirst().track().getInfo().getTitle()).thenAcceptAsync(
+        new MusixMatchGetter().getLyrics(musicManager.getQueue().getFirst().trackInfo().title()).thenAcceptAsync(
                 lyrics -> {
                     if (lyrics == null) {
                         event.reply(Emoji.ERROR.getCode() + " No Lyrics found for this song").queue();
@@ -68,7 +68,7 @@ public class GetLyricsCommand extends Command {
                         if (ConfigManager.getConfigBool("live-lyrics-enabled")) {
                             try {
                                 SyncedLyricsPlayer.start(event.getGuild().getIdLong(), sentMessage);
-                                SyncedLyricsPlayer.nextSong(sentMessage.getGuildIdLong(), musicManager.getQueue().getFirst().track().getInfo().getTitle(), musicManager.getQueue().getFirst().startTime());
+                                SyncedLyricsPlayer.nextSong(sentMessage.getGuildIdLong(), musicManager.getQueue().getFirst().trackInfo().title(), musicManager.getQueue().getFirst().startTime());
                             } catch (Exception e) {
                                 Logger.err("Error starting synced lyrics: " + e.getMessage());
                                 event.reply(Emoji.ERROR.getCode() + " Error starting synced lyrics: " + e.getMessage()).queue();

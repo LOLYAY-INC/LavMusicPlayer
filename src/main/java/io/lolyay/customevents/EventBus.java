@@ -1,5 +1,6 @@
 package io.lolyay.customevents;
 
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEvent;
 import dev.arbjerg.lavalink.client.event.ClientEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 
@@ -65,6 +66,10 @@ public class EventBus {
     }
 
     public void postLavaLink(ClientEvent event) {
+        dispatchEvent(event);
+    }
+
+    public void postLavaLink(AudioEvent event) {
         dispatchEvent(event);
     }
 

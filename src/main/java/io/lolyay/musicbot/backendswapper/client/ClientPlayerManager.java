@@ -1,4 +1,4 @@
-package io.lolyay.musicbot;
+package io.lolyay.musicbot.backendswapper.client;
 
 import dev.arbjerg.lavalink.client.LavalinkClient;
 import dev.arbjerg.lavalink.client.player.Track;
@@ -6,30 +6,42 @@ import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.config.guildconfig.GuildConfigManager;
 import io.lolyay.customevents.events.music.TrackStartedEvent;
+import io.lolyay.musicbot.GuildMusicManager;
+import io.lolyay.musicbot.RequestorData;
+import io.lolyay.musicbot.backendswapper.AbstractPlayerManager;
+import io.lolyay.musicbot.backendswapper.client.search.ClientSearchManager;
 import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
+import io.lolyay.musicbot.search.Search;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Logger;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class PlayerManager {
+public class ClientPlayerManager extends AbstractPlayerManager {
     private final Map<Long, GuildMusicManager> musicManagers;
-    private final LavalinkClient lavaLinkClient;
+    public final LavalinkClient lavaLinkClient;
 
-    public PlayerManager(LavalinkClient lavaLinkClient) {
+    public ClientPlayerManager(LavalinkClient lavaLinkClient) {
         this.lavaLinkClient = lavaLinkClient;
         this.musicManagers = new ConcurrentHashMap<>();
     }
 
+    @Override
+    public void searchWithDefaultOrder(String query, Optional<Member> member, Consumer<Search> callback, long guildId) {
+        new ClientSearchManager(guildId).searchWithDefaultOrder(query, member, callback, guildId);
+    }
+
+    @Override
     public synchronized GuildMusicManager getGuildMusicManager(long guildId) {
         return musicManagers.computeIfAbsent(guildId, (key) -> new GuildMusicManager(this, key, GuildConfigManager.getGuildConfig(Long.toString(key))));
     }
 
+    @Override
     @Deprecated
     public void searchTrack(String query, Member member, Consumer<MusicAudioTrack> successCallback, Runnable failureCallback, Runnable notFoundCallback) {
     }
@@ -70,6 +82,7 @@ public class PlayerManager {
         }
     }
 
+    @Override
     public void playTrack(MusicAudioTrack track) {
         long guildId = track.userData().dcGuildId();
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
@@ -80,12 +93,13 @@ public class PlayerManager {
                     track.startTime(System.currentTimeMillis() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
                     Logger.debug("Set StartTime for track of guild " + guildId + " to " + track.startTime());
                     if (SyncedLyricsPlayer.isLive(guildId)) {
-                        SyncedLyricsPlayer.nextSong(guildId, track.track().getInfo().getTitle(), track.startTime());
+                        SyncedLyricsPlayer.nextSong(guildId, track.trackInfo().title(), track.startTime());
                         Logger.debug("Next song for lyrics player of guild " + guildId + " set!");
                     }
                 });
     }
 
+    @Override
     public void stop(long guildId) {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setTrack(null)
@@ -94,6 +108,7 @@ public class PlayerManager {
 
     }
 
+    @Override
     public void pause(long guildId) {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setPaused(true)
@@ -101,6 +116,7 @@ public class PlayerManager {
 
     }
 
+    @Override
     public void resume(long guildId) {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setPaused(false)
@@ -108,41 +124,10 @@ public class PlayerManager {
 
     }
 
+    @Override
     public void setVolume(long guildId, int volume) {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setVolume(volume)
                 .subscribe();
-    }
-
-    /**
-     * Gets the current position of the currently playing track in milliseconds.
-     *
-     * @param guildId The ID of the guild to get the position for
-     * @return A CompletableFuture that will be completed with the current position in milliseconds,
-     *         or -1 if no track is playing or an error occurs
-     */
-    public CompletableFuture<Long> getPosition(long guildId) {
-        CompletableFuture<Long> future = new CompletableFuture<>();
-
-        lavaLinkClient.getOrCreateLink(guildId).getPlayer().subscribe(
-                player -> {
-                    try {
-                        if (player != null && player.getTrack() != null) {
-                            future.complete(player.getTrack().getInfo().getPosition());
-                        } else {
-                            future.complete(-1L);
-                        }
-                    } catch (Exception e) {
-                        Logger.err("Error getting track position: " + e.getMessage());
-                        future.complete(-1L);
-                    }
-                },
-                error -> {
-                    Logger.err("Error getting player: " + error.getMessage());
-                    future.complete(-1L);
-                }
-        );
-
-        return future;
     }
 }

@@ -3,6 +3,7 @@ package io.lolyay.musicbot;
 
 import io.lolyay.JdaMain;
 import io.lolyay.config.guildconfig.GuildConfig;
+import io.lolyay.musicbot.backendswapper.AbstractPlayerManager;
 import io.lolyay.musicbot.queue.QueManager;
 import io.lolyay.musicbot.queue.RepeatMode;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public class GuildMusicManager {
 
-    private final PlayerManager playerManager;
+    private final AbstractPlayerManager playerManager;
     private final QueManager queManager;
     private final long guildId;
     private long volume;
@@ -25,7 +26,7 @@ public class GuildMusicManager {
     // A flag to track the playing state to prevent race conditions.
     private volatile boolean isPlaying = false;
 
-    public GuildMusicManager(PlayerManager playerManager, long guildId, GuildConfig config) {
+    public GuildMusicManager(AbstractPlayerManager playerManager, long guildId, GuildConfig config) {
         this.playerManager = playerManager;
         this.guildId = guildId;
         this.queManager = new QueManager(config);
@@ -92,9 +93,6 @@ public class GuildMusicManager {
         return isPaused;
     }
 
-    public long getPosition() throws Exception {
-        return playerManager.getPosition(guildId).get();
-    }
 
 
     /**

@@ -1,8 +1,8 @@
 package io.lolyay.customevents.events.search;
 
 import io.lolyay.customevents.Event;
+import io.lolyay.musicbot.search.AbstractSearcher;
 import io.lolyay.musicbot.search.Search;
-import io.lolyay.musicbot.search.searchers.AbstractSearcher;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import net.dv8tion.jda.api.entities.Member;
 

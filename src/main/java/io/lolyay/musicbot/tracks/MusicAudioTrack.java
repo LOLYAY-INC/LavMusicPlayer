@@ -1,5 +1,6 @@
 package io.lolyay.musicbot.tracks;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.arbjerg.lavalink.client.player.Track;
 import io.lolyay.musicbot.RequestorData;
 
@@ -7,12 +8,29 @@ import java.util.Objects;
 
 public class MusicAudioTrack {
     private Track track;
+    private TrackInfo trackInfo;
+    private AudioTrack audioTrack;
     private RequestorData userData;
     private long startTime;
 
     public MusicAudioTrack(Track track, RequestorData userData) {
         this.track = track;
+        this.trackInfo = new TrackInfo(track.getInfo().getTitle(), track.getInfo().getAuthor(), track.getInfo().getArtworkUrl());
         this.userData = userData;
+    }
+
+    public MusicAudioTrack(AudioTrack track, RequestorData userData) {
+        this.audioTrack = track;
+        this.trackInfo = new TrackInfo(track.getInfo().title, track.getInfo().author, track.getInfo().artworkUrl);
+        this.userData = userData;
+    }
+
+    public static MusicAudioTrack fromTrack(AudioTrack track, RequestorData userData) {
+        return new MusicAudioTrack(track, userData);
+    }
+
+    public TrackInfo trackInfo() {
+        return trackInfo;
     }
 
     public Track track() {
@@ -21,6 +39,14 @@ public class MusicAudioTrack {
 
     public void track(Track track) {
         this.track = track;
+    }
+
+    public void trackInfo(TrackInfo trackInfo) {
+        this.trackInfo = trackInfo;
+    }
+
+    public AudioTrack audioTrack() {
+        return audioTrack;
     }
 
     public long startTime() {
@@ -63,5 +89,9 @@ public class MusicAudioTrack {
 
     public static MusicAudioTrack fromTrack(Track track, RequestorData userData) {
         return new MusicAudioTrack(track, userData);
+    }
+
+    public void audioTrack(AudioTrack audioTrack) {
+        this.audioTrack = audioTrack;
     }
 }
