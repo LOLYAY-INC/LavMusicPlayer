@@ -2,6 +2,7 @@ package io.lolyay.events;
 
 import io.lolyay.JdaMain;
 import io.lolyay.events.listeners.jda.OnGuildVoiceUpdate;
+import io.lolyay.events.listeners.jda.OnMessageEvent;
 import io.lolyay.events.listeners.jda.OnReadyEventListener;
 import io.lolyay.events.listeners.jda.OnSlashCommandInteractionEventListener;
 import io.lolyay.events.listeners.lavalink.OnTrackEnd;
@@ -12,6 +13,7 @@ public class EventRegistrer {
         JdaMain.eventBus.register(new OnSlashCommandInteractionEventListener());
         JdaMain.eventBus.register(new OnGuildVoiceUpdate());
         JdaMain.eventBus.register(new OnTrackEnd());
+        JdaMain.eventBus.register(new OnMessageEvent());
 
     }
 }

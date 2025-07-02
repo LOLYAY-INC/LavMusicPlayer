@@ -1,16 +1,16 @@
 package io.lolyay.commands.manager;
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+public abstract class Command {
+    public abstract String getName();
 
-public interface Command {
-    public String getName();
-    public String getDescription();
+    public abstract String getDescription();
 
-    public CommandOptionType[] getOptions();
-    public default boolean requiresPermission(){
+    public abstract CommandOptionType[] getOptions();
+
+    public boolean requiresPermission() {
         return true;
     }
 
-    public void execute(SlashCommandInteractionEvent event);
+    public abstract void execute(CommandContext context);
 
 }

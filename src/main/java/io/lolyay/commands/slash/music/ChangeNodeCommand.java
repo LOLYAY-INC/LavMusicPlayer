@@ -1,19 +1,19 @@
 
-package io.lolyay.commands.music;
+package io.lolyay.commands.slash.music;
 
 
 import dev.arbjerg.lavalink.client.LavalinkNode;
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandContext;
 import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.utils.Emoji;
 import io.lolyay.utils.Logger;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.time.Duration;
 import java.util.Random;
 
-public class ChangeNodeCommand implements Command {
+public class ChangeNodeCommand extends Command {
 
 
     @Override
@@ -37,7 +37,7 @@ public class ChangeNodeCommand implements Command {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(CommandContext event) {
         LavalinkNode nextNode = JdaMain.lavalinkClient.getNodes().get(new Random().nextInt(JdaMain.lavalinkClient.getNodes().size()));
         JdaMain.lavalinkClient.getOrCreateLink(event.getGuild().getIdLong()).transferNode$lavalink_client(
                 nextNode,

@@ -1,9 +1,6 @@
 package io.lolyay.commands.manager;
 
 import io.lolyay.JdaMain;
-import io.lolyay.commands.info.StatusCommand;
-import io.lolyay.commands.info.VersionCommand;
-import io.lolyay.commands.music.*;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
@@ -20,21 +17,7 @@ public class CommandRegistrer {
     private static final ArrayList<SlashCommandData> commands = new ArrayList<>();
     private static final Map<String, Command> commandsToRun = new HashMap<>();
 
-    private static final Command[] commandsToBeRegistered = {
-            new RepeatModeCommand(),
-            new SkipCommand(),
-            new VolumeCommand(),
-            new PlayCommand(),
-            new StopCommand(),
-            new VersionCommand(),
-            new ResumeCommand(),
-            new PauseCommand(),
-            new StatusCommand(),
-            new ChangeNodeCommand(),
-            new GetLyricsCommand(),
-            new StopLiveLyricsCommand()
-
-    };
+    private static final Command[] commandsToBeRegistered = CommandRegistry.getCommands().toArray(new Command[0]);
 
     public static void runCommand(String name, SlashCommandInteractionEvent event) {
         Command command = commandsToRun.get(name);
@@ -43,7 +26,7 @@ public class CommandRegistrer {
             event.reply("You don't have permission to use this command").setEphemeral(true).queue();
             return;
         }
-        command.execute(event);
+        command.execute(CommandContext.of(event));
 
     }
 
@@ -231,7 +214,7 @@ public class CommandRegistrer {
         return slash;
     }
 
-    private static boolean canRunCommand(Member member) {
+    public static boolean canRunCommand(Member member) {
         ArrayList<String> adminRoles = (ArrayList<String>) ConfigManager.getConfigRaw("role-id-whitelist");
         if (!ConfigManager.getConfigBool("permissions-enabled"))
             return true;

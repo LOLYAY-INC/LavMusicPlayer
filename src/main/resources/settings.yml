@@ -19,6 +19,8 @@ stop-on-empty-channel: true
 # set to "true" to add the whole playlist
 add-full-playlists-to-queue: false
 
+#The bot supports discords built in / command system, you can set an additional prefix for normal text commands here:
+command-prefix: "."
 
 using-nodes-json-file: false # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
 nodes-json-file: "C:\\path\\to\\nodes.json" # The path to your nodes.json file

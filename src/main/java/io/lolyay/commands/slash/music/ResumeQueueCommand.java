@@ -1,8 +1,9 @@
-package io.lolyay.commands.music;
+package io.lolyay.commands.slash.music;
 
 
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandContext;
 import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.embedmakers.StatusEmbedGenerator;
 import io.lolyay.musicbot.GuildMusicManager;
@@ -12,9 +13,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class ResumeQueueCommand implements Command {
+import java.util.Collections;
+
+public class ResumeQueueCommand extends Command {
 
     @Override
     public String getName() {
@@ -38,7 +40,7 @@ public class ResumeQueueCommand implements Command {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(CommandContext event) {
         final Member member = event.getMember();
         final Guild guild = event.getGuild();
 
@@ -61,23 +63,23 @@ public class ResumeQueueCommand implements Command {
             return;
         }
 
-        event.deferReply().queue();
+        event.deferReply(false);
 
 
         final GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(guild.getIdLong());
 
         if (!musicManager.isPlaying()) {
-            event.getHook().sendMessage(Emoji.ERROR.getCode() + " No Track is playing, couldn't resume!").queue();
+            event.reply(Emoji.ERROR.getCode() + " No Track is playing, couldn't resume!").queue();
             return;
         }
 
         if (musicManager.getQueManager().isEmpty()) {
-            event.getHook().sendMessage(Emoji.ERROR.getCode() + " Queue is empty!").queue();
+            event.reply(Emoji.ERROR.getCode() + " Queue is empty!").queue();
             return;
         }
 
         member.getJDA().getDirectAudioController().connect(memberChannel);
-        event.getHook().sendMessage(Emoji.SUCCESS.getCode() + " Resumed Playback!").queue();
-        event.getHook().sendMessageEmbeds(StatusEmbedGenerator.generate(musicManager).build()).queue();
+        event.reply(Emoji.SUCCESS.getCode() + " Resumed Playback!").queue();
+        event.replyEmbeds(Collections.singleton(StatusEmbedGenerator.generate(musicManager).build())).queue();
     }
 }

@@ -7,8 +7,10 @@ public class CommandOption implements CommandOptionType {
     private String description;
     private OptionType type;
     private boolean required;
+    private boolean greedy;
 
-    public CommandOption(String name, String description, OptionType type, boolean required) {
+    public CommandOption(String name, String description, OptionType type, boolean required, boolean greedy) {
+        this.greedy = greedy;
         this.name = name;
         this.description = description;
         this.type = type;
@@ -45,5 +47,13 @@ public class CommandOption implements CommandOptionType {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public boolean isGreedy() { // can Contain Whitespace
+        return greedy;
+    }
+
+    public void setGreedy(boolean greedy) {
+        this.greedy = greedy;
     }
 }

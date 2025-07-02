@@ -1,15 +1,17 @@
 
-package io.lolyay.commands.info;
+package io.lolyay.commands.slash.info;
 
 
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandContext;
 import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.embedmakers.StatusEmbedGenerator;
 import io.lolyay.musicbot.GuildMusicManager;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class StatusCommand implements Command {
+import java.util.Collections;
+
+public class StatusCommand extends Command {
 
 
     @Override
@@ -33,8 +35,8 @@ public class StatusCommand implements Command {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(CommandContext event) {
         GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong());
-        event.replyEmbeds(StatusEmbedGenerator.generate(musicManager).build()).queue();
+        event.replyEmbeds(Collections.singletonList(StatusEmbedGenerator.generate(musicManager).build())).queue();
     }
 }

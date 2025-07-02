@@ -1,8 +1,9 @@
-package io.lolyay.commands.music;
+package io.lolyay.commands.slash.music;
 
 
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandContext;
 import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.embedmakers.LyricsEmbedGenerator;
@@ -11,9 +12,11 @@ import io.lolyay.musicbot.lyrics.getters.MusixMatchGetter;
 import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.utils.Emoji;
 import io.lolyay.utils.Logger;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.entities.Message;
 
-public class GetLyricsCommand implements Command {
+import java.util.Collections;
+
+public class GetLyricsCommand extends Command {
 
     @Override
     public String getName() {
@@ -37,7 +40,7 @@ public class GetLyricsCommand implements Command {
 
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(CommandContext event) {
         GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong());
 
         // DOESNT WORK (FIXED?)
@@ -52,30 +55,30 @@ public class GetLyricsCommand implements Command {
         }
 
 
-
-        event.deferReply().queue();
+        event.deferReply(false);
         new MusixMatchGetter().getLyrics(musicManager.getQueue().getFirst().track().getInfo().getTitle()).thenAcceptAsync(
                 lyrics -> {
                     if (lyrics == null) {
-                        event.getHook().sendMessage(Emoji.ERROR.getCode() + " No Lyrics found for this song").queue();
+                        event.reply(Emoji.ERROR.getCode() + " No Lyrics found for this song").queue();
                         return;
                     }
 
-                    event.getHook().sendMessageEmbeds(LyricsEmbedGenerator.generate(lyrics).build()).queue(message -> {
+                    event.replyEmbeds(Collections.singleton(LyricsEmbedGenerator.generate(lyrics).build())).queue(message -> {
+                        Message sentMessage = (Message) message;
                         if (ConfigManager.getConfigBool("live-lyrics-enabled")) {
                             try {
-                                SyncedLyricsPlayer.start(event.getGuild().getIdLong(), message);
-                                SyncedLyricsPlayer.nextSong(message.getGuildIdLong(), musicManager.getQueue().getFirst().track().getInfo().getTitle(), musicManager.getQueue().getFirst().startTime());
+                                SyncedLyricsPlayer.start(event.getGuild().getIdLong(), sentMessage);
+                                SyncedLyricsPlayer.nextSong(sentMessage.getGuildIdLong(), musicManager.getQueue().getFirst().track().getInfo().getTitle(), musicManager.getQueue().getFirst().startTime());
                             } catch (Exception e) {
                                 Logger.err("Error starting synced lyrics: " + e.getMessage());
-                                event.getHook().sendMessage(Emoji.ERROR.getCode() + " Error starting synced lyrics: " + e.getMessage()).queue();
+                                event.reply(Emoji.ERROR.getCode() + " Error starting synced lyrics: " + e.getMessage()).queue();
                             }
                         }
                     });
                 }
         ).exceptionally((e) -> {
             Logger.err("Error getting lyrics: " + e.getMessage());
-            event.getHook().sendMessage(Emoji.ERROR.getCode() + " Error getting lyrics: " + e.getMessage()).queue();
+            event.reply(Emoji.ERROR.getCode() + " Error getting lyrics: " + e.getMessage()).queue();
             e.printStackTrace();
             return null;
         });

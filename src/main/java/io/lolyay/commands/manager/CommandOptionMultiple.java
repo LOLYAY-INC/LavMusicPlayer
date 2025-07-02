@@ -10,6 +10,7 @@ public class CommandOptionMultiple implements CommandOptionType {
     private OptionType type;
     private final boolean required;
     private KVPair<String, String>[] options;
+    private final boolean greedy;
 
     @SuppressWarnings("unchecked")
     public static <E extends Enum<E>> KVPair<String, String>[] enumToKVPairArray(Class<E> enumClass) {
@@ -28,12 +29,13 @@ public class CommandOptionMultiple implements CommandOptionType {
         return pairs;
     }
 
-    public CommandOptionMultiple(String name, String description, KVPair<String, String>[] options, OptionType type,boolean required) {
+    public CommandOptionMultiple(String name, String description, KVPair<String, String>[] options, OptionType type, boolean required, boolean greedy) {
         this.name = name;
         this.required = required;
         this.description = description;
         this.options = options;
         this.type = type;
+        this.greedy = greedy;
     }
 
     @Override
@@ -73,5 +75,9 @@ public class CommandOptionMultiple implements CommandOptionType {
 
     public boolean isRequired() {
         return required;
+    }
+
+    public boolean isGreedy() {
+        return greedy;
     }
 }

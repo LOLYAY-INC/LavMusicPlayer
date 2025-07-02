@@ -1,14 +1,14 @@
 
-package io.lolyay.commands.music;
+package io.lolyay.commands.slash.music;
 
 
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandContext;
 import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.utils.Emoji;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class StopCommand implements Command {
+public class StopCommand extends Command {
 
 
     @Override
@@ -32,7 +32,7 @@ public class StopCommand implements Command {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(CommandContext event) {
         if(JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).isPlaying()){
             JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong()).stop();
             event.reply(Emoji.SUCCESS.getCode() + " Stopped Playback and Cleared the queue!").queue();

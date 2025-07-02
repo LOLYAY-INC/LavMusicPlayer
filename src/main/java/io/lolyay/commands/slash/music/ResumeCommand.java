@@ -1,26 +1,25 @@
 
-package io.lolyay.commands.music;
+package io.lolyay.commands.slash.music;
 
 
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandContext;
 import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.musicbot.GuildMusicManager;
-import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Emoji;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class PauseCommand implements Command {
+public class ResumeCommand extends Command {
 
 
     @Override
     public String getName() {
-        return "pause";
+        return "resume";
     }
 
     @Override
     public String getDescription() {
-        return "Pauses the current Track, resume with /resume";
+        return "Resumes the current Track if paused with /pause.";
     }
 
     @Override
@@ -34,17 +33,17 @@ public class PauseCommand implements Command {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(CommandContext event) {
         GuildMusicManager musicManager = JdaMain.playerManager.getGuildMusicManager(event.getGuild().getIdLong());
         if(!musicManager.isPlaying()){
-            event.reply(Emoji.ERROR.getCode() + " No Track is playing, couldn't pause!").queue();
+            event.reply(Emoji.ERROR.getCode() + " No Track was playing, couldn't resume!").queue();
             return;
         }
-        if(musicManager.isPaused()){
-            event.reply(Emoji.ERROR.getCode() + " Already paused!").queue();
+        if(!musicManager.isPaused()){
+            event.reply(Emoji.ERROR.getCode() + " Already playing!").queue();
             return;
         }
-        musicManager.pause();
-        event.reply(Emoji.SUCCESS.getCode() + " Paused Playback!").queue();
+        musicManager.resume();
+        event.reply(Emoji.SUCCESS.getCode() + " Resumed Playback!").queue();
     }
 }

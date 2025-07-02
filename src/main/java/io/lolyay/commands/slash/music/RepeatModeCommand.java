@@ -1,19 +1,19 @@
 
-package io.lolyay.commands.music;
+package io.lolyay.commands.slash.music;
 
 import io.lolyay.JdaMain;
 import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandContext;
 import io.lolyay.commands.manager.CommandOptionMultiple;
 import io.lolyay.musicbot.queue.RepeatMode;
 import io.lolyay.utils.Emoji;
 import io.lolyay.utils.KVPair;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 
 import static io.lolyay.commands.manager.CommandOptionMultiple.enumToKVPairArray;
 
 
-public class RepeatModeCommand implements Command {
+public class RepeatModeCommand extends Command {
 
 
     @Override
@@ -30,7 +30,7 @@ public class RepeatModeCommand implements Command {
     public CommandOptionMultiple[] getOptions() {
         KVPair<String, String>[] repeatOptions = enumToKVPairArray(RepeatMode.class);
         return new CommandOptionMultiple[] {
-                new CommandOptionMultiple("mode", "The Repeatmode", repeatOptions, OptionType.STRING,true)
+                new CommandOptionMultiple("mode", "The Repeatmode", repeatOptions, OptionType.STRING, true, false)
         };
     }
 
@@ -40,7 +40,7 @@ public class RepeatModeCommand implements Command {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(CommandContext event) {
         String argsstr = event.getOption("mode").getAsString();
         RepeatMode value;
         //  Settings settings = event.getClient().getSettingsFor(event.getGuild());

@@ -1,13 +1,13 @@
-package io.lolyay.commands.music;
+package io.lolyay.commands.slash.music;
 
 
 import io.lolyay.commands.manager.Command;
+import io.lolyay.commands.manager.CommandContext;
 import io.lolyay.commands.manager.CommandOption;
 import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.utils.Emoji;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class StopLiveLyricsCommand implements Command {
+public class StopLiveLyricsCommand extends Command {
 
     @Override
     public String getName() {
@@ -31,7 +31,7 @@ public class StopLiveLyricsCommand implements Command {
 
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(CommandContext event) {
         if (!SyncedLyricsPlayer.isLive(event.getGuild().getIdLong())) {
             event.reply(Emoji.ERROR.getCode() + " No Lyrics are currently active").queue();
             return;

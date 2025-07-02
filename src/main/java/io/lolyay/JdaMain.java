@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 public class JdaMain {
     public static JDABuilder builder;
@@ -30,7 +31,8 @@ public class JdaMain {
 
     public static void init() throws InterruptedException {
 
-        builder = JDABuilder.createDefault(ConfigManager.getConfig("discord-bot-token"), GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_EXPRESSIONS,GatewayIntent.SCHEDULED_EVENTS);
+        builder = JDABuilder.create(ConfigManager.getConfig("discord-bot-token"), GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT);
+        builder.disableCache(CacheFlag.EMOJI, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS);
         Logger.debug("Created Builder, Setting up...");
 
 
