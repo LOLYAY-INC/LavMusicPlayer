@@ -65,8 +65,63 @@ lavalink-password: "pleaseletmein"
 #and paste it here.
 youtube-oauth-refresh-token: ""
 
+# The country code for the Lavalink server to search in what language for, default is "us"
+country-code: "us"
 
 
+# Additional Lavaplayer Sources Configuration (Only if you want to use one of these sources)
+
+enable-spotify: false # if you enable this you need to fill out the spotify client id and secret:
+
+# To get a Spotify clientId & clientSecret you must go to https://developer.spotify.com/dashboard and create a new application.
+spotify-client-id: "YOUR_SPOTIFY_CLIENT_ID"
+spotify-client-secret: "YOUR_SPOTIFY_CLIENT_SECRET"
+
+
+# if you enable this you need to fill out the apple music token:
+enable-apple-music: false
+
+# To get a Apple Music token without a Developer Account:
+#1. Go to https://music.apple.com
+#2. Open DevTools and go to the Sources tab
+#3. Search with this regex "(?<token>(ey[\w-]+)\.([\w-]+)\.([\w-]+))" in all index-*.js files
+#4. Copy the token from the source code
+apple-music-token: "YOUR_APPLE_MUSIC_TOKEN"
+
+
+# if you enable this you need to fill out the deezer decryption key and alr cookie:
+enable-deezer: false
+
+# To get a Deezer decryption key go to https://gist.github.com/svbnet/b79b705a4c19d74896670c1ac7ad627e and follow the instructions
+deezer-decryption-key: "YOUR_DEEZER_DECRYPTION_KEY"
+
+# To obtain the Deezer ARL (Also Required Login) cookie,
+# log in to your Deezer account through a web browser,
+# open the browser's developer tools (usually by pressing F12),
+# navigate to the "Storage" or "Application" tab, and find the "arl" cookie within the list of cookies.
+# The ARL is a long alphanumeric string that you can then copy
+deezer-arl-cookie: "YOUR_DEEZER_ARL_COOKIE"
+
+# if you enable this you need to fill out the tidal token:
+enable-tidal: false
+
+# How to get a Tidal token:
+# 1. Open Tidal Desktop
+# 2. Start a track
+# 3. Install 'Fiddler Everywhere' and enable for HTTPS captures
+# 5. Login to the Tidal desktop app and start playing a track.
+# 6. Stop Fiddler capture
+# 7. Look for host: desktop.tidal.com;
+# 8. Double click that request
+# 9. In the Inspectors pane for scroll down to "Miscellaneous" and you should see "x-tidal-token"
+# 10. Copy the token
+tidal-token: "YOUR_TIDAL_TOKEN"
+
+
+
+#########################
+# Global Configuration #
+#########################
 
 # =========================
 # Permissions Configuration
