@@ -54,15 +54,16 @@ lavalink-secure: false
 lavalink-password: "pleaseletmein"
 
 
+
 # =======================
-# Lavalink Server Configuration ( Only used if you are using an Integrated Lavaplayer )
+# Integrated Lavaplayer Configuration ( Only used if you are using an Integrated Lavaplayer )
 # =======================
 
-# After starting the bot for the first time, you will be asked to open a browser window and log into your youtube account. Then it will output the refresh token in console.
-# If you dont want to do the whole oauth process again, you can just copy the refresh token from the console output and paste it here.
+# After starting the bot for the first time, you will be asked to open a browser window and log into your youtube account.
+#Then it will output the refresh token in console.
+# If you dont want to do the whole oauth process again, you can just copy the refresh token from the console output,
+#and paste it here.
 youtube-oauth-refresh-token: ""
-
-
 
 
 
