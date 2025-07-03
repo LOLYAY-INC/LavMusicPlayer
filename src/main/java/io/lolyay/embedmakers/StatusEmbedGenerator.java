@@ -1,9 +1,12 @@
 package io.lolyay.embedmakers;
 
+import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.config.guildconfig.GuildConfig;
 import io.lolyay.config.guildconfig.GuildConfigManager;
 import io.lolyay.musicbot.GuildMusicManager;
+import io.lolyay.musicbot.backendswapper.client.ClientPlayerManager;
+import io.lolyay.musicbot.backendswapper.structs.ENVIRONMENT;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
@@ -22,6 +25,17 @@ public class StatusEmbedGenerator {
         builder.addField("**Volume:**", musicManager.getVolume() + " / 100 (Default: " + guildConfig.volume() + ")", true);
         builder.addField("**Tracks played:**", String.valueOf(guildConfig.plays()), true);
         builder.addField("**Live lyrics:**", ConfigManager.getConfigBool("live-lyrics-enabled") ? "Enabled" : "Disabled", true);
+        builder.addField("**Bot type (Integrated Lavaplayer / Lavalink Nodes):**", JdaMain.environment == ENVIRONMENT.LAVALINK ? "Integrated Lavaplayer" : "Lavalink Nodes", false);
+        if (JdaMain.environment == ENVIRONMENT.CLIENT) {
+            builder.addField("**Node:**", ((ClientPlayerManager) JdaMain.playerManager).lavaLinkClient.getOrCreateLink(musicManager.getGuildId()).getNode().getName(), false);
+        }
+        if (JdaMain.environment == ENVIRONMENT.LAVALINK) {
+            builder.addField("**Country code:**", ConfigManager.getConfig("country-code"), false);
+            builder.addField("**Spotify Enabled:**", ConfigManager.getConfigBool("enable-spotify") ? "Enabled" : "Disabled", false);
+            builder.addField("**Apple Music Enabled:**", ConfigManager.getConfigBool("enable-apple-music") ? "Enabled" : "Disabled", false);
+            builder.addField("**Deezer Enabled:**", ConfigManager.getConfigBool("enable-deezer") ? "Enabled" : "Disabled", false);
+            builder.addField("**Tidal Enabled:**", ConfigManager.getConfigBool("enable-tidal") ? "Enabled" : "Disabled", false);
+        }
         if(!musicManager.getQueManager().getQueue().isEmpty())
             builder.setThumbnail(getImageURL(musicManager));
         builder.setColor(genColor(musicManager.isPlaying(),musicManager.isPaused()));
