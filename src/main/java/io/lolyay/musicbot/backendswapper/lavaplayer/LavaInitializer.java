@@ -51,6 +51,7 @@ public class LavaInitializer extends io.lolyay.musicbot.backendswapper.Initializ
         playerManager.registerSourceManager(new NicoAudioSourceManager());
         playerManager.registerSourceManager(new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY));
         setupYoutube(playerManager);
+        new AdditionalSourcesManager().setup(playerManager);
 
     }
 

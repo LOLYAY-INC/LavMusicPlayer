@@ -14,8 +14,11 @@ import java.util.function.Function;
 
 public class AdditionalSourcesManager {
 
-    private void setup(AudioPlayerManager playerManager) {
-
+    public void setup(AudioPlayerManager playerManager) {
+        setupDeezer(playerManager);
+        setupTidal(playerManager);
+        setupSpotify(playerManager);
+        setupAppleMusic(playerManager);
     }
 
 
