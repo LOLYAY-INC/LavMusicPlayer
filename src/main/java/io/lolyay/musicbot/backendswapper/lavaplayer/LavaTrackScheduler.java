@@ -6,9 +6,11 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import io.lolyay.JdaMain;
+import io.lolyay.config.ConfigManager;
 import io.lolyay.customevents.events.music.TrackEndedEvent;
 import io.lolyay.musicbot.GuildMusicManager;
 import io.lolyay.musicbot.backendswapper.structs.MusicTrackEndReason;
+import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.utils.Logger;
 
 public class LavaTrackScheduler extends AudioEventAdapter {
@@ -24,8 +26,9 @@ public class LavaTrackScheduler extends AudioEventAdapter {
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-
-
+        long guildId = ((LavaLinkPlayerManager) JdaMain.playerManager).getPlayerFactory().guildIdFromPlayer(player);
+        JdaMain.playerManager.getGuildMusicManager(guildId).getQueue().getFirst().startTime(System.currentTimeMillis() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
+        SyncedLyricsPlayer.adjustStartTime(guildId, System.currentTimeMillis() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
     }
 
     @Override

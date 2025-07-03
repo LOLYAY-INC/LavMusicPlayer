@@ -12,7 +12,7 @@
     <logger name="com.sedmelluq" level="WARN"/>
     <logger name="dev.arbjerg" level="WARN"/>
     <logger name="com.dunctebot" level="WARN"/>
-    <logger name="dev.lavalink" level="WARN"/>
+    <logger name="dev.lavalink" level="INFO"/>
     <logger name="dev.lavalink.youtube.http.YoutubeOauth2Handler" level="INFO"/>
     
     <!-- Root logger -->

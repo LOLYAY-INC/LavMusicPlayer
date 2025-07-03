@@ -14,7 +14,9 @@ import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.musicbot.search.Search;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Logger;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import java.net.URI;
 import java.util.Map;
@@ -104,7 +106,7 @@ public class ClientPlayerManager extends AbstractPlayerManager {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setTrack(null)
                 .subscribe(e -> SyncedLyricsPlayer.stop(guildId));
-        JdaMain.jda.getDirectAudioController().disconnect(JdaMain.jda.getGuildById(guildId));
+        disconnect(JdaMain.jda.getGuildById(guildId));
 
     }
 
@@ -129,5 +131,15 @@ public class ClientPlayerManager extends AbstractPlayerManager {
         lavaLinkClient.getOrCreateLink(guildId).createOrUpdatePlayer()
                 .setVolume(volume)
                 .subscribe();
+    }
+
+    @Override
+    public void connect(AudioChannel voiceChannel) {
+        JdaMain.jda.getDirectAudioController().connect(voiceChannel);
+    }
+
+    @Override
+    public void disconnect(Guild voiceChannel) {
+        JdaMain.jda.getDirectAudioController().disconnect(voiceChannel);
     }
 }

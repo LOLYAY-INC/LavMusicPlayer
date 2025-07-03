@@ -86,7 +86,7 @@ public class PlayCommand extends Command {
             switch (search.result().getStatus()) {
                 case SUCCESS -> {
                     MusicAudioTrack track = search.track().get();
-                    member.getJDA().getDirectAudioController().connect(memberChannel);
+                    JdaMain.playerManager.connect(memberChannel);
                     SyncedLyricsPlayer.precacheSong(track.trackInfo().title());
                     final boolean isPlayingNow = musicManager.getQueManager().isEmpty();
                     musicManager.queueTrack(track);
@@ -96,7 +96,7 @@ public class PlayCommand extends Command {
                 }
                 case PLAYLIST -> {
                     PlaylistData playlistData = search.playlistData();
-                    member.getJDA().getDirectAudioController().connect(memberChannel);
+                    JdaMain.playerManager.connect(memberChannel);
 
                     MusicAudioTrack track = playlistData.selectedTrack();
                     SyncedLyricsPlayer.precacheSong(track.trackInfo().title());

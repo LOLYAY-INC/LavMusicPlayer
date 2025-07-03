@@ -3,7 +3,9 @@ package io.lolyay.musicbot.backendswapper;
 import io.lolyay.musicbot.GuildMusicManager;
 import io.lolyay.musicbot.search.Search;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -26,5 +28,9 @@ public abstract class AbstractPlayerManager {
     public abstract void resume(long guildId);
 
     public abstract void setVolume(long guildId, int volume);
+
+    public abstract void connect(AudioChannel channel);
+
+    public abstract void disconnect(Guild voiceChannel);
 
 }

@@ -93,7 +93,7 @@
                 <filtering>true</filtering>
             </resource>
             <resource>
-                <directory>src/main/resources/yt</directory>
+                <directory>src/main/resources/natives</directory>
                 <filtering>false</filtering>
             </resource>
         </resources>

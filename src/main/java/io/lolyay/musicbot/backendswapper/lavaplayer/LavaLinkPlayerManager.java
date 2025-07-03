@@ -12,7 +12,9 @@ import io.lolyay.musicbot.lyrics.live.SyncedLyricsPlayer;
 import io.lolyay.musicbot.search.Search;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.utils.Logger;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import java.util.Map;
 import java.util.Optional;
@@ -67,7 +69,7 @@ public class LavaLinkPlayerManager extends AbstractPlayerManager {
     @Override
     public void playTrack(MusicAudioTrack track) {
         long guildId = track.userData().dcGuildId();
-        getPlayerFactory().getOrCreatePlayer(guildId).playTrack(track.audioTrack());
+        getPlayerFactory().getOrCreatePlayer(guildId).playTrack(track.audioTrack().makeClone());
         JdaMain.eventBus.post(new TrackStartedEvent(track, guildId, null));
         track.startTime(System.currentTimeMillis() - Integer.parseInt(ConfigManager.getConfig("live-lyrics-ping-compensation")));
         Logger.debug("Set StartTime for track of guild " + guildId + " to " + track.startTime());
@@ -104,4 +106,18 @@ public class LavaLinkPlayerManager extends AbstractPlayerManager {
         getPlayerFactory().getOrCreatePlayer(guildId).setVolume(volume);
     }
 
+
+    @Override
+    public void connect(AudioChannel voiceChannel) {
+
+        voiceChannel.getGuild().getAudioManager().setSendingHandler(new LavaAudioSendHandler(
+                getPlayerFactory().getOrCreatePlayer(voiceChannel.getGuild().getIdLong())
+        ));
+        voiceChannel.getGuild().getAudioManager().openAudioConnection(voiceChannel);
+    }
+
+    @Override
+    public void disconnect(Guild voiceChannel) {
+        voiceChannel.getAudioManager().closeAudioConnection();
+    }
 }

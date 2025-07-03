@@ -1,12 +1,20 @@
 package io.lolyay.musicbot.backendswapper.lavaplayer;
 
+import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.yamusic.YandexMusicAudioSourceManager;
 import dev.arbjerg.lavalink.client.Helpers;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
-import dev.lavalink.youtube.clients.skeleton.Client;
 import io.lolyay.JdaMain;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.utils.Logger;
@@ -25,12 +33,29 @@ public class LavaInitializer extends io.lolyay.musicbot.backendswapper.Initializ
     }
 
     private void setup(long botId, JDABuilder jdaBuilder) {
-        AudioPlayerManager playerManager = new DefaultAudioPlayerManager() {
-        };
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        YoutubeAudioSourceManager source = new YoutubeAudioSourceManager(true, new Music(), new Tv(), new TvHtml5Embedded(), new Web(), new WebEmbedded(),
-                new MWeb(), new AndroidMusic(), new AndroidVr(), new Ios());
+        AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 
+        registerSourceManagers(playerManager);
+
+        JdaMain.playerManager = new LavaLinkPlayerManager(playerManager, new LavaPlayerFactory(playerManager));
+    }
+
+    private void registerSourceManagers(AudioPlayerManager playerManager) {
+        playerManager.registerSourceManager(new YandexMusicAudioSourceManager(true));
+        playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
+        playerManager.registerSourceManager(new BandcampAudioSourceManager());
+        playerManager.registerSourceManager(new VimeoAudioSourceManager());
+        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        playerManager.registerSourceManager(new BeamAudioSourceManager());
+        playerManager.registerSourceManager(new GetyarnAudioSourceManager());
+        playerManager.registerSourceManager(new NicoAudioSourceManager());
+        playerManager.registerSourceManager(new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY));
+        setupYoutube(playerManager);
+
+    }
+
+    private void setupYoutube(AudioPlayerManager playerManager) {
+        YoutubeAudioSourceManager source = new YoutubeAudioSourceManager(true, true, true, new Music(), new Tv(), new AndroidVr(), new Web(), new WebEmbedded(), new MWeb(), new AndroidMusic(), new AndroidVr(), new TvHtml5Embedded());
 
         //OAUTH2
         String token = RefreshTokenStore.load() == null ? ConfigManager.getConfig("youtube-oauth-refresh-token") : RefreshTokenStore.load();
@@ -42,18 +67,17 @@ public class LavaInitializer extends io.lolyay.musicbot.backendswapper.Initializ
             source.useOauth2(token, true);
             RefreshTokenStore.store(token);
         }
+
         if (source.getOauth2RefreshToken() != null && !source.getOauth2RefreshToken().isBlank()) {
             RefreshTokenStore.store(source.getOauth2RefreshToken());
             Logger.success("Saved refresh token for youtube oauth2");
         }
 
-
         playerManager.registerSourceManager(source);
 
-        JdaMain.playerManager = new LavaLinkPlayerManager(playerManager, new LavaPlayerFactory(playerManager));
     }
 
-    private class RefreshTokenStore {
+    private static class RefreshTokenStore {
         public static void store(String token) {
             try {
                 Files.writeString(Path.of("refresh_token.txt"), token);

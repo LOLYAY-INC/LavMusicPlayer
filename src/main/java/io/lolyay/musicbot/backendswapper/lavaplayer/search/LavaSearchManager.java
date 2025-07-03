@@ -133,7 +133,7 @@ public class LavaSearchManager extends AbstractSearchManager {
                 // No event because it will call handleTrackLoadedResult
 
                 Logger.debug("Treating Playlist as single track from " + source.getSourceName() + ": " + audioPlaylist.getName());
-                trackLoaded(audioPlaylist.getSelectedTrack());
+                trackLoaded(audioPlaylist.getSelectedTrack() == null ? audioPlaylist.getTracks().getFirst() : audioPlaylist.getSelectedTrack());
             }
         }
 
@@ -170,7 +170,7 @@ public class LavaSearchManager extends AbstractSearchManager {
 
             // No event because it will call handleTrackLoadedResult
 
-            trackLoaded(audioPlaylist.getSelectedTrack());
+            trackLoaded(audioPlaylist.getSelectedTrack() == null ? audioPlaylist.getTracks().getFirst() : audioPlaylist.getSelectedTrack());
         }
     }
 
