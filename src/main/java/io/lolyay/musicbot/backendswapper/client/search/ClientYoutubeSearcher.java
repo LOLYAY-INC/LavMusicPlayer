@@ -25,10 +25,8 @@ public class ClientYoutubeSearcher {
 
     private static void doFirstSearch(String query, Optional<Member> member, Consumer<Search> callback, long guildId, Link link, GuildMusicManager guildMusicManager) {
         HttpSearcher searcher = new HttpSearcher(guildMusicManager);
-        if (!searcher.canSearch(query))
-            doSecondSearch(query, member, callback, guildId, link, guildMusicManager);
-        else {
-            link.loadItem(searcher.getPrefix() + query).subscribe(lavalinkLoadResult -> manager.handleLoadResult(
+
+        link.loadItem(searcher.getPrefix() + query).subscribe(lavalinkLoadResult -> manager.handleLoadResult(
                     searcher,
                     lavalinkLoadResult,
                     member,
@@ -42,16 +40,14 @@ public class ClientYoutubeSearcher {
                     query,
                     guildId
             ));
-        }
+
 
     }
 
     private static void doSecondSearch(String query, Optional<Member> member, Consumer<Search> callback, long guildId, Link link, GuildMusicManager guildMusicManager) {
         YoutubeMusicSearcher searcher = new YoutubeMusicSearcher(guildMusicManager);
-        if (!searcher.canSearch(query))
-            doThirdSearch(query, member, callback, guildId, link, guildMusicManager);
-        else {
-            link.loadItem(searcher.getPrefix() + query).subscribe(lavalinkLoadResult -> manager.handleLoadResult(
+
+        link.loadItem(searcher.getPrefix() + query).subscribe(lavalinkLoadResult -> manager.handleLoadResult(
                     searcher,
                     lavalinkLoadResult,
                     member,
@@ -65,16 +61,14 @@ public class ClientYoutubeSearcher {
                     query,
                     guildId
             ));
-        }
+
 
     }
 
     private static void doThirdSearch(String query, Optional<Member> member, Consumer<Search> callback, long guildId, Link link, GuildMusicManager guildMusicManager) {
         YoutubeSearcher searcher = new YoutubeSearcher(guildMusicManager);
-        if (!searcher.canSearch(query))
-            doFourthSearch(query, member, callback, guildId, link, guildMusicManager);
-        else {
-            link.loadItem(searcher.getPrefix() + query).subscribe(lavalinkLoadResult -> manager.handleLoadResult(
+
+        link.loadItem(searcher.getPrefix() + query).subscribe(lavalinkLoadResult -> manager.handleLoadResult(
                     searcher,
                     lavalinkLoadResult,
                     member,
@@ -88,7 +82,7 @@ public class ClientYoutubeSearcher {
                     query,
                     guildId
             ));
-        }
+
 
     }
 

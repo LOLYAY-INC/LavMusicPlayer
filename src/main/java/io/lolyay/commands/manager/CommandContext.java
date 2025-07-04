@@ -19,15 +19,14 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CommandContext {
     private final Map<String, KVPair<OptionType, Object>> options = new HashMap<>();
     private Message message;
     private Type type;
     private SlashCommandInteractionEvent event;
+    private Command command;
     private boolean wasReplied = false;
 
     public static CommandContext of(@NotNull SlashCommandInteractionEvent event) {
@@ -41,11 +40,12 @@ public class CommandContext {
         return context;
     }
 
-    public static CommandContext of(@NotNull Message message) {
+    public static CommandContext of(@NotNull Message message, Command command) {
         final CommandContext context = new CommandContext();
         context.setEvent(null);
         context.setType(Type.PREFIXED);
         context.setMessage(message);
+        context.setCommand(command);
         return context;
     }
 
@@ -92,6 +92,10 @@ public class CommandContext {
         this.event = event;
     }
 
+    private void setCommand(Command command) {
+        this.command = command;
+    }
+
     public Map<String, KVPair<OptionType, Object>> getOptions() {
         return options;
     }
@@ -123,9 +127,14 @@ public class CommandContext {
     @Nullable
     public CommandOption getOption(@Nonnull String name) {
         if (!isFromSlash()) {
-            if (options.size() == 1) {
-                return CommandOption.of(options.entrySet().iterator().next().getValue(), name);
-            } else return null;
+            if (command == null) return null;
+            List<CommandOptionType> commandOptions = Arrays.asList(command.getOptions());
+            for (int i = 0; i < commandOptions.size(); i++) {
+                if (commandOptions.get(i).getName().equalsIgnoreCase(name)) {
+                    return getOption(i);
+                }
+            }
+            return null;
         }
         return CommandOption.of(options.get(name), name);
     }

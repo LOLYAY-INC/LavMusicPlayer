@@ -26,7 +26,7 @@ public abstract class AbstractPrefixer {
 
     public CommandContext generateContext(Message message) {
         Logger.debug("Generating context for command: " + getReferer().getName());
-        CommandContext context = CommandContext.of(message);
+        CommandContext context = CommandContext.of(message, getReferer());
         String args = message.getContentDisplay().replace(PREFIX + getReferer().getName(), "").trim();
         if (getReferer().getOptions() != null) {
             ArrayList<CommandContext.CommandOption> options = extractOptions(message, args);

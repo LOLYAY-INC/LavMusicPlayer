@@ -46,7 +46,7 @@ public class JdaMain {
             environment = ENVIRONMENT.LAVALINK;
             Logger.debug("Using LavaPlayer Backend...");
             new LavaInitializer().init();
-        } else if (ConfigManager.getConfig("operating-mode").equalsIgnoreCase("backendswapper")) {
+        } else if (ConfigManager.getConfig("operating-mode").equalsIgnoreCase("nodes")) {
             environment = ENVIRONMENT.CLIENT;
             Logger.debug("Using BackendSwapper Backend...");
             new ClientInitializer().init();

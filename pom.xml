@@ -123,6 +123,11 @@
             <version>4.7.2</version>
         </dependency>
         <dependency>
+            <groupId>org.jitsi</groupId>
+            <artifactId>libjitsi</artifactId>
+            <version>1.1-34-gb93ce2ee</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.topi314.lavasrc</groupId>
             <artifactId>protocol-jvm</artifactId>
             <version>4.7.2</version>

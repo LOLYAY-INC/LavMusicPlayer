@@ -41,13 +41,16 @@ Don't want to bother with hosting it yourself? You can add the official instance
 
 ## ✨ Features
 
-- **High-Quality Audio:** Delivers smooth, high-quality music streaming by offloading audio processing to a Lavalink server.
-- **Wide Source Support:** Play music from YouTube (search or URL), SoundCloud, direct HTTP MP3 links, and even Twitch streams.
-- **Modern Slash Commands:** All commands are integrated as easy-to-use slash commands (`/`).
-- **Queue Control:** Full queue system with options to repeat a single track or the entire queue.
-- **Easy to Configure:** A single `settings.yml` file makes configuration a breeze.
-- **Multi-Guild Support:** Works out of the box in multiple servers simultaneously.
-- **Auto-Leave:** The bot automatically leaves the voice channel when it's left alone.
+- **High-Quality Audio:** Delivers smooth, high-quality music streaming.
+- **Dual Operating Modes:** Choose between using external **Lavalink nodes** for scalability or a simple, **integrated
+  Lavaplayer** for ease of use.
+- **Expanded Source Support:** Play music from YouTube, SoundCloud, Spotify, Apple Music, Deezer, Tidal, and more.
+- **Hybrid Commands:** Supports both modern slash commands (`/`) and traditional prefix-based commands for flexibility.
+- **Full Queue Control:** A comprehensive queue system with options to repeat tracks or the entire queue.
+- **Easy Configuration:** A single, well-documented `settings.yml` file makes configuration a breeze.
+- **Lyrics Support:** Fetch lyrics for songs, with a "live lyrics" feature that highlights the current line.
+
+---
 
 ## 🎵 Commands
 
@@ -79,215 +82,176 @@ This guide is for running the bot using the pre-compiled releases. No developmen
 #### Prerequisites
 
 - **Java 23 or higher:** You need Java installed to run the `.jar` file.
-- **A running Lavalink Server:** This bot requires a connection to a Lavalink server. You can find public ones [here](https://lavalink-list.appujet.site/) or host your own.
 - **A Discord Bot Token:** Create a bot application in the [Discord Developer Portal](https://discord.com/developers/applications).
+- **A running Lavalink Server (Optional):** Only required if you choose the `nodes` operating mode.
 
 ### Setup Instructions
 
 1.  **Download the Bot**
-    Go to the [**Latest Release Page**](https://github.com/LOLYAY-INC/LavMusicBot/releases/latest) on GitHub. Download the `.jar` file (e.g., `LavMusicBot-1.0.0.jar`) and save it to a new, empty folder where you want the bot to live.
+    Go to the [**Latest Release Page**](https://github.com/LOLYAY-INC/LavMusicBot/releases/latest) on GitHub. Download
+    the `.jar` file (e.g., `LavMusicBot-1.0.0.jar`) and save it to a new, empty folder.
 
 2.  **Generate the Configuration File**
-    Open your terminal or command prompt, navigate to the folder where you saved the bot, and run it for the first time with the following command:
+    Open your terminal or command prompt, navigate to the folder where you saved the bot, and run it for the first time:
     ```sh
     java -jar LavMusicBot-1.0.0.jar
     ```
     *(Replace `LavMusicBot-1.0.0.jar` with the actual name of the file you downloaded).*
 
-    The bot will state that a new configuration file was created and then shut down. This is expected. You will now see a `settings.yml` file in the folder.
+    The bot will state that a new configuration file was created and then shut down. You will now see a `settings.yml`
+    file in the folder.
 
 3.  **Edit the Configuration**
-    Open the newly created `settings.yml` file with any text editor. Fill in your `discord-bot-token` and your `lavalink-*` details. **The bot will not start without these values.**
+    Open the newly created `settings.yml` file with any text editor. Follow the guide below to configure the bot. You
+    must at least provide your `discord-bot-token`.
 
 4.  **Run the Bot**
-    Once you have saved your changes to `settings.yml`, run the exact same command again:
+    Once you have saved your changes to `settings.yml`, run the same command again:
     ```sh
     java -jar LavMusicBot-1.0.0.jar
     ```
-    This time, the bot will read your configuration and connect to Discord. Congratulations, your bot is now online!
-    *Note: If you get Bad Audio on Mobile, That's an Issue with your Lavalink Server, as in my Testing turning the `resamplingQuality` of your Lavalink Server to `HIGH` fixed it.* 
+    This time, the bot will read your configuration and connect to Discord. Congratulations!
 
-5. **Command Line Arguments**
-   The bot supports several command line arguments:
-   ```
-   -DEBUG                    # Enables debug logging
-   -OVERWRITE_CONFIG         # Forces overwriting of the config file
-   -NO_REGISTER_COMMANDS     # Skips registering slash commands
-   ```
 ---
 
-### ⚙️ Configuration (settings.yml)
+## ⚙️ Configuration (`settings.yml`)
 
-This `settings.yml` file will be automatically generated in the same folder as your `.jar` file after you run it for the first time. Open it and edit the values as needed.
+The `settings.yml` file is your control panel for the bot. The most important setting is `operating-mode`, which
+determines how the bot handles audio.
 
-### Guild Configuration Storage
+### **1. Operating Mode**
 
-The bot automatically creates a `guildconfigs` folder in the same directory as the jar file to store per-guild settings.
-Each server gets its own JSON file (using the guild ID as the filename) that preserves settings like volume level,
-repeat mode, and play count between bot restarts. These files are managed automatically and don't need manual editing.
+You must choose one of two modes:
+
+- **`lavaplayer`**: (Recommended for beginners) Uses a built-in audio player. It's easy to set up and supports many
+  sources like Spotify, Apple Music, etc., out-of-the-box. **No separate Lavalink server is needed.**
+- **`nodes`**: Uses one or more external Lavalink servers. This is for more advanced users who want to distribute the
+  bot's load. You will need to provide connection details for your Lavalink server(s).
 
 ```yaml
-# ---------------------------------- #
-#      LavMusicBot Config            #
-# ---------------------------------- #
+# =======================
+# The Bot can Operate in 2 modes:
+# 1. Using one or more Lavalink servers (nodes) that need to be run separately.
+# 2. Using an Integrated Lavaplayer, which is simpler to set up.
+# =======================
+operating-mode: lavaplayer # Either "lavaplayer" or "nodes"
+```
 
+---
+
+### **2. General Configuration**
+
+These settings apply regardless of the operating mode.
+
+```yaml
 # Your discord bot token, get it from https://discord.com/developers/applications
 discord-bot-token: "YOUR_TOKEN_HERE"
 
 # The default volume of the bot when it starts playing in a new server.
-# Value must be between 1 and 100.
 default-volume: 10
 
-# Set this to true if you want to clear the queue when the voice-channel is empty ( aka everyone left and the bot is alone in the channel ).
-clear-on-empty-channel: true
+# Should the bot stop playing music when the voice-channel is empty
+stop-on-empty-channel: true
 
+# If a playlist gets loaded, should the whole playlist be added to the queue?
+add-full-playlists-to-queue: false
 
+# The bot primarily uses modern slash commands. You can also define an optional prefix for legacy text-based commands.
+command-prefix: "."
+```
 
-using-nodes-json-file: false # Set this to true if you are using a nodes.json file, if you want to use the bottom config, set this to false
-nodes-json-file: "C:\\path\\to\\nodes.json" # The path to your nodes.json file
+---
 
-# =======================
-# Lavalink Server Details (Only if you're not using a nodes.json file)
-# =======================
-# Get these from your Lavalink provider or your own server.
-# A list of public servers can be found at https://lavalink-list.appujet.site/
+### **3. Lavalink Node Mode (`operating-mode: nodes`)**
+
+These settings are **only** used if `operating-mode` is set to `nodes`.
+
+You can connect to Lavalink servers in two ways:
+
+**A) Using a `nodes.json` file (for multiple servers):**
+
+```yaml
+using-nodes-json-file: true
+nodes-json-file: "nodes.json" # The path to your nodes.json file
+```
+
+**B) Connecting to a single server directly:**
+
+```yaml
+using-nodes-json-file: false
 
 # The hostname or IP address of the Lavalink server.
 lavalink-host: "lavalink.example.com"
-
 # The port the Lavalink server is running on.
 lavalink-port: 2000
-
 # Set to 'true' if your Lavalink server uses a secure (SSL/TLS) connection.
 lavalink-secure: false
-
 # The password for your Lavalink server.
 lavalink-password: "pleaseletmein"
-
-  # ============
-                     =============
-# Permissions Configuration
-# =========================
-
-# Set this to true if you want to enable permissions
-permissions-enabled: false
-
-# Set this to true if you want to use a blacklist instead of a whitelist
-whitelist-acts-as-blacklist: false
-
-# The role IDs of the roles you want to allow to use the bot
-role-id-whitelist:
-  - "123123123"
-  - "456456456"
-
-
-# ====================
-# Lyrics Configuration
-# ====================
-# Enable or disable lyrics functionality
-# Set to 'true' to enable the /lyrics command
-lyrics-enabled: false
-
-# MusixMatch Authentication (Required for lyrics)
-# ---------------------------------------------
-# To use the lyrics feature, you need to provide a valid MusixMatch user token.
-# Here's how to get it:
-# 1. Sign up for a free account at https://www.musixmatch.com/
-# 2. Log in to your MusixMatch account in your web browser
-# 3. Open Developer Tools (F12 or right-click -> Inspect)
-# 4. Go to the 'Application' tab (or 'Storage' in Firefox)
-# 5. In the left sidebar, expand 'Cookies' and select 'https://www.musixmatch.com'
-# 6. Find the cookie named 'musixmatchUserToken'
-# 7. Copy the token value (a long string of characters) and paste it below
-musixmatch-user-cookie: "YOUR_MUSIXMATCH_USER_TOKEN"
-
-
-# Enable of disable the live lyrics feature, it highlights the current line playing, only works with musixmatch
-# I think this is the best feature
-live-lyrics-enabled: true
-
-# How many milliseconds to move the line earlier than the song, higher = line gets highlighted earlier
-live-lyrics-ping-compensation: 10
-
-
-# --- Do Not Edit Below This Line ---
-version: "${project.version}"
 ```
-## Configuration Options
 
-### Basic Settings
-- `discord-bot-token`: Your Discord bot token from the [Discord Developer Portal](https://discord.com/developers/applications)
-- `default-volume`: Default volume level (1-100) for the bot when joining a new server
+---
 
-### Lavalink Configuration
-- `using-nodes-json-file`: Set to `true` to use a nodes.json file for Lavalink configuration.
-- `nodes-json-file`: Path to your nodes.json file (if using nodes.json)
-- **OR**
-- `lavalink-host`: Hostname or IP of your Lavalink server
-- `lavalink-port`: Port of your Lavalink server
-- `lavalink-secure`: Set to `true` for SSL/TLS (`wss://`) connections
-- `lavalink-password`: Authentication password for your Lavalink server
+### **4. Integrated Lavaplayer Mode (`operating-mode: lavaplayer`)**
 
-### Permission Settings
-- `permissions-enabled`: Enable/disable role-based permissions
-- `whitelist-acts-as-blacklist`: When enabled, the whitelist becomes a blacklist
-- `role-id-whitelist`: List of role IDs that are allowed (or denied) to use the bot
+These settings are **only** used if `operating-mode` is set to `lavaplayer`.
 
-### Lyrics Configuration
+#### **YouTube OAuth**
 
-- `lyrics-enabled`: Enable/disable lyrics functionality
-- `musixmatch-user-cookie`: MusixMatch user token for lyrics
-- `live-lyrics-enabled`: Check [live lyrics](#live-lyrics)
-- `live-lyrics-ping-compensation`: Check [live lyrics](#live-lyrics)
+To prevent issues with YouTube, the bot can use an authenticated account. After starting the bot for the first time, you
+will be asked to open a browser window and log into your YouTube account. The bot will then output a refresh token in
+the console. Paste it here to avoid doing this process again.
 
-## Live Lyrics
-# BETA ONLY
-
-This feature highlights the current line playing, currently only works with MusixMatch.
-It's a great feature, check it out!
-
-### Ping Compensation
-
-The live lyrics feature highlights the current line playing, so it's important to make sure the line is highlighted at
-the right time.
-The `live-lyrics-ping-compensation` option allows you to adjust how many milliseconds to move the line earlier than the
-song, higher = line gets highlighted earlier.
-The default value is 10 milliseconds, which is a good balance between highlighting the line and not highlighting it too
-early.
-
-### The music is still out of sync?
-
-We rely on MusixMatch to get the lyrics, so it's possible that the lyrics are not in sync with the song.
-If the lyrics are too late or too early, try adjusting the `live-lyrics-ping-compensation` option.
-
-## Nodes.json File
-Nodes.json is a file that contains a list of Lavalink servers if you want to use more than one, if not you can use the standard config options.
-In the config file, you can set the `using-nodes-json-file` to `true` and provide the path to your `nodes.json` file.
-If you do that then you can omit the `lavalink-host`, `lavalink-port`, `lavalink-secure`, and `lavalink-password` fields.
-You can get single json config from https://lavalink-list.appujet.site/non-ssl
 ```yaml
-using-nodes-json-file: true
-nodes-json-file: "path/to/nodes.json"
+youtube-oauth-refresh-token: ""
 ```
-### Example nodes.json
-```json
-[
-  {
-    "identifier": "Lavalink Server 1",
-    "password": "secret",
-    "host": "lava.example.com",
-    "port": 1234,
-    "secure": false
-  },
-  {
-    "identifier": "Lavalink Server 2",
-    "password": "pleaseletmein",
-    "host": "lava.somthig.else",
-    "port": 1234,
-    "secure": true
-  }
-]
+
+#### **Additional Music Sources**
+
+Enable and configure extra music sources. The `country-code` (e.g., "US", "DE") is used to get region-specific search
+results.
+
+```yaml
+# The country code for searches, default is "us"
+country-code: "us"
 ```
+
+- **Spotify**
+  ```yaml
+  enable-spotify: false
+  # To get a Spotify clientId & clientSecret, go to https://developer.spotify.com/dashboard
+  spotify-client-id: "YOUR_SPOTIFY_CLIENT_ID"
+  spotify-client-secret: "YOUR_SPOTIFY_CLIENT_SECRET"
+  ```
+
+- **Apple Music**
+  ```yaml
+  enable-apple-music: false
+  # How to get a token is described in the config file.
+  apple-music-token: "YOUR_APPLE_MUSIC_TOKEN"
+  ```
+
+- **Deezer**
+  ```yaml
+  enable-deezer: false
+  # Instructions for getting the key and cookie are in the config file.
+  deezer-decryption-key: "YOUR_DEEZER_DECRYPTION_KEY"
+  deezer-arl-cookie: "YOUR_DEEZER_ARL_COOKIE"
+  ```
+
+- **Tidal**
+  ```yaml
+  enable-tidal: false
+  # Instructions for getting the token are in the config file.
+  tidal-token: "YOUR_TIDAL_TOKEN"
+  ```
+
+---
+
+### **5. Permissions & Lyrics**
+
+These sections are configured towards the bottom of the `settings.yml` file. Please refer to the detailed comments in
+the generated file for instructions on setting up role-based permissions and the lyrics feature.
 
 ## 🗺️ Roadmap
 
