@@ -1,6 +1,6 @@
 # LavMusicPlayer
 
-A fork of [LavMusicBot](https://github.com/LOLYAY-INC/LavMusicBot) but ** replacing discord with local playback**m
+A fork of [LavMusicBot](https://github.com/LOLYAY-INC/LavMusicBot) but **replacing discord with local playback**,
 intending to be like Spotify desktop or any other local music player.
 
 # The project just started, so this is still in development.
@@ -30,6 +30,10 @@ If you have a suggestion that would make this better, please fork the repo and c
 
 *Note: I made this [Lavalink JSON to Java Converter](https://lolyay.dev/tools/lavalinkconverter/) to use with the JSON
 you get from: [The lavalink Server List](https://lavalink-list.appujet.site/non-ssl)
+
+## 📚 API Documentation
+
+For detailed information about the WebSocket API, packet system, and how to interact with LavMusicPlayer programmatically, please see the [API Documentation](API_DOCUMENTATION.md).
 
 ## 📜 License
 
