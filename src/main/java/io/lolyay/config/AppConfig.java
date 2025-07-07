@@ -62,8 +62,6 @@ public class AppConfig {
 
 
     public static class AdditionalSourcesConfig {
-        @SerializedName("volume")
-        private int volume;
 
         @SerializedName("yt-oauth2-refresh-token")
         private String youtubeOauth2RefreshToken = "";
@@ -89,15 +87,6 @@ public class AppConfig {
 
         @SerializedName("deezer-arl-cookie")
         private String deezerArlCookie = "";
-
-
-        public int getVolume() {
-            return volume;
-        }
-
-        public void setVolume(int volume) {
-            this.volume = volume;
-        }
 
         public String getYoutubeOauth2RefreshToken() {
             return youtubeOauth2RefreshToken;
