@@ -5,15 +5,12 @@ import com.sedmelluq.discord.lavaplayer.tools.io.ByteBufferInputStream;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import dev.arbjerg.lavalink.client.player.Track;
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringBufferInputStream;
 import java.nio.ByteBuffer;
 import java.util.Base64;
-import java.util.Objects;
 
 public class MusicAudioTrack {
     @Expose
@@ -36,7 +33,7 @@ public class MusicAudioTrack {
 
         AudioTrack audioTrack1 = null;
         try {
-            audioTrack1 = JdaMain.playerManager.getAudioPlayerManager().decodeTrack(new MessageInput(new ByteBufferInputStream(ByteBuffer.wrap(decoded)))).decodedTrack;
+            audioTrack1 = LavMusicPlayer.playerManager.getAudioPlayerManager().decodeTrack(new MessageInput(new ByteBufferInputStream(ByteBuffer.wrap(decoded)))).decodedTrack;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -81,7 +78,7 @@ public class MusicAudioTrack {
     private byte[] encodeTrack(AudioTrack audioTrack) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            JdaMain.playerManager.getAudioPlayerManager().encodeTrack(new MessageOutput(outputStream), audioTrack);
+            LavMusicPlayer.playerManager.getAudioPlayerManager().encodeTrack(new MessageOutput(outputStream), audioTrack);
         } catch (IOException e) {
             // It's good practice to log the exception or handle it appropriately.
             throw new RuntimeException("Failed to encode audio track", e);
@@ -100,7 +97,7 @@ public class MusicAudioTrack {
         if(audioTrack == null){
             try {
                 byte[] encoded = encodeFromString(this.encoded);
-                audioTrack = JdaMain.playerManager.getAudioPlayerManager().decodeTrack(new MessageInput(new ByteBufferInputStream(ByteBuffer.wrap(encoded)))).decodedTrack;
+                audioTrack = LavMusicPlayer.playerManager.getAudioPlayerManager().decodeTrack(new MessageInput(new ByteBufferInputStream(ByteBuffer.wrap(encoded)))).decodedTrack;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -1,7 +1,7 @@
 package io.lolyay.musicbot;
 
 
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.musicbot.abstracts.AbstractPlayerManager;
@@ -74,7 +74,7 @@ public class MusicManager {
      */
     public void onTrackEnd() {
             this.isPlaying = false;
-            if(!JdaMain.headlessMode.isHeadless)
+            if(!LavMusicPlayer.headlessMode.isHeadless)
                 PacketHandler.broadcastPacket(new S2CTrackStoppedPacket());
     }
 
@@ -92,7 +92,7 @@ public class MusicManager {
     }
 
     public MusicAudioTrack getCurrentTrack() {
-        if(JdaMain.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack() == null) return null;
-        return new MusicAudioTrack(JdaMain.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack());
+        if(LavMusicPlayer.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack() == null) return null;
+        return new MusicAudioTrack(LavMusicPlayer.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack());
     }
 }

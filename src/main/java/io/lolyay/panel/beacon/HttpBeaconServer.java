@@ -4,7 +4,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.panel.Packet.BeaconablePacket;
 import io.lolyay.panel.Packet.PacketHandler;
 import io.lolyay.utils.Logger;
@@ -16,8 +16,9 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
 public class HttpBeaconServer {
+    public static int port = 80;
 
-    public static void start(int port) throws IOException {
+    public static void start() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
         // This context path MUST match the URL used in your Svelte app's fetch call.
@@ -107,7 +108,7 @@ public class HttpBeaconServer {
             if (exchange.getRequestURI().toString().equals("favicon.ico")) {
                 return;
             }
-            if(path.isEmpty()) {
+            if(path.equals("/")) {
                 path = "index.html";
             }
             if (!path.startsWith("/")) {
@@ -125,7 +126,7 @@ public class HttpBeaconServer {
             }
 
 
-            InputStream is = JdaMain.class.getResourceAsStream("/assets" + path);
+            InputStream is = LavMusicPlayer.class.getResourceAsStream("/assets" + path);
             if (is == null) {
                 sendResponse(exchange, 404, "Not Found");
                 return;

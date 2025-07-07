@@ -4,9 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import io.lolyay.JdaMain;
-import io.lolyay.config.ConfigManager;
-import io.lolyay.customevents.events.search.PlaylistTrackLoadedEvent;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.customevents.events.search.PreSearchEvent;
 import io.lolyay.customevents.events.search.SearchNotFoundEvent;
 import io.lolyay.customevents.events.search.SingleTrackLoadedEvent;
@@ -34,7 +32,7 @@ public class LavaSearchManager extends AbstractSearchManager {
 
     public void searchWithDefaultOrder(String query, Consumer<Search> callback) {
 
-        PreSearchEvent.SearchEventResult override = JdaMain.eventBus.postAndGet(new PreSearchEvent(query, callback)).getOverride();
+        PreSearchEvent.SearchEventResult override = LavMusicPlayer.eventBus.postAndGet(new PreSearchEvent(query, callback)).getOverride();
 
         if (override != null) {
             Logger.debug("Search override: " + override.getStatus());
@@ -88,7 +86,7 @@ public class LavaSearchManager extends AbstractSearchManager {
             Logger.log("Loaded single track from " + source.getSourceName() + ": " + audioTrack.getInfo().title);
             MusicAudioTrack musicAudioTrack = new MusicAudioTrack(audioTrack);
 
-            SingleTrackLoadedEvent event = JdaMain.eventBus.postAndGet(new SingleTrackLoadedEvent(callback, source, musicAudioTrack));
+            SingleTrackLoadedEvent event = LavMusicPlayer.eventBus.postAndGet(new SingleTrackLoadedEvent(callback, source, musicAudioTrack));
 
             event.getCallback().accept(Search.wasTrack(
                     Search.SearchResult.SUCCESS(), source.getSourceName(),
@@ -114,7 +112,7 @@ public class LavaSearchManager extends AbstractSearchManager {
 
         @Override
         public void noMatches() {
-            JdaMain.eventBus.post(new SearchNotFoundEvent(query, callback, source));
+            LavMusicPlayer.eventBus.post(new SearchNotFoundEvent(query, callback, source));
 
             Logger.debug("Track not found from " + source.getSourceName() + ": " + query);
 
@@ -129,7 +127,7 @@ public class LavaSearchManager extends AbstractSearchManager {
         public void loadFailed(FriendlyException e) {
             Logger.err("Error loading track from " + source.getSourceName() + ": " + e.getMessage());
 
-            JdaMain.eventBus.post(new SearchNotFoundEvent(query, callback, source));
+            LavMusicPlayer.eventBus.post(new SearchNotFoundEvent(query, callback, source));
 
             callback.accept(Search.wasError(
                     Search.SearchResult.ERROR(e.getMessage()),
@@ -166,7 +164,7 @@ public class LavaSearchManager extends AbstractSearchManager {
             Logger.log("Loaded single track from " + source.getSourceName() + ": " + audioTrack.getInfo().title);
             MusicAudioTrack musicAudioTrack = new MusicAudioTrack(audioTrack);
 
-            JdaMain.eventBus.post(new SingleTrackLoadedEvent(null, source, musicAudioTrack));
+            LavMusicPlayer.eventBus.post(new SingleTrackLoadedEvent(null, source, musicAudioTrack));
 
             callback.accept(new Search[]{Search.wasTrack(
                     Search.SearchResult.SUCCESS(), source.getSourceName(),

@@ -1,29 +1,23 @@
 package io.lolyay;
 
-import com.sedmelluq.discord.lavaplayer.tools.io.ByteBufferInputStream;
-import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
-import dev.lavalink.youtube.clients.Music;
+import io.lolyay.config.ConfigLoader;
 import io.lolyay.customevents.EventBus;
 import io.lolyay.musicbot.HeadlessMode;
 import io.lolyay.musicbot.LavaLinkPlayerManager;
 import io.lolyay.musicbot.MusicManager;
-import io.lolyay.musicbot.abstracts.AbstractPlayerManager;
 import io.lolyay.musicbot.LavaInitializer;
 import io.lolyay.musicbot.jtmc.MediaManager;
 import io.lolyay.musicbot.output.Player;
-import io.lolyay.musicbot.search.Search;
 import io.lolyay.musicbot.structs.ENVIRONMENT;
-import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.panel.Server;
 import io.lolyay.panel.beacon.HttpBeaconServer;
+import io.lolyay.tray.TrayManager;
 import io.lolyay.utils.Logger;
 
 import java.io.IOException;
 
-import static io.lolyay.musicbot.search.Search.SearchResult.Status.SUCCESS;
 
-
-public class JdaMain {
+public class LavMusicPlayer {
     public static boolean debug = false;
     public static boolean shouldRegisterCommands = true;
 
@@ -38,11 +32,11 @@ public class JdaMain {
 
     public static void init() throws InterruptedException {
 
-        Logger.debug("Initlializing...");
+        Logger.debug("Initializing...");
 
         environment = ENVIRONMENT.LAVALINK;
-        Logger.debug("Using LavaPlayer Backend...");
         new LavaInitializer().init();
+        Logger.debug("Initialized Lavalink.");
 
         musicManager = new MusicManager(playerManager);
 
@@ -50,18 +44,34 @@ public class JdaMain {
 
         mediaManager = new MediaManager(eventBus, "LavMusicPlayer", "lavmusicplayer");
 
-        Logger.log("Music Bot Setup Complete");
+        Logger.log("Music Setup Complete");
 
         try {
-            HttpBeaconServer.start(Server.PORT + 1);
-            Logger.log("Beacon Server started on port " + (Server.PORT + 1));
+            HttpBeaconServer.start();
+            Logger.log("Http Server started on port " + (Server.PORT + 1));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         new Server().init();
 
-        Logger.log("Server started on port " + Server.PORT);
+        Logger.log("Api Server started on port " + Server.PORT);
+
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                TrayManager.setupTray();
+                Logger.log("Tray Setup Complete");
+            }
+        });
+    }
+
+    public static void init(String configPath) throws InterruptedException {
+        try {
+            ConfigLoader.load(configPath);
+        } catch (IOException e) {
+            Logger.err("Error creating / reading config file.");
+            System.exit(1);
+        }
     }
 
 }

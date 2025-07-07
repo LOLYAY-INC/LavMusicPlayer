@@ -1,6 +1,6 @@
 package io.lolyay.musicbot.search;
 
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.musicbot.LavaLinkPlayerManager;
 import io.lolyay.musicbot.search.searchers.DefaultSearcher;
 import io.lolyay.musicbot.search.searchers.HttpSearcher;
@@ -25,7 +25,7 @@ public class LavaYoutubeSearcherMultiple {
         if (!searcher.canSearch(query))
             doSecondSearch(query, callback);
         else {
-            ((LavaLinkPlayerManager) JdaMain.playerManager).getAudioPlayerManager()
+            ((LavaLinkPlayerManager) LavMusicPlayer.playerManager).getAudioPlayerManager()
                     .loadItem(searcher.getPrefix() + query, new LavaSearchManager.LavaResultHandlerMultiple(
                             search -> {
                                 for (Search s : search) {
@@ -42,7 +42,7 @@ public class LavaYoutubeSearcherMultiple {
 
     private static void doSecondSearch(String query, Consumer<Search[]> callback) {
         YoutubeMusicSearcher searcher = new YoutubeMusicSearcher();
-        ((LavaLinkPlayerManager) JdaMain.playerManager).getAudioPlayerManager()
+        ((LavaLinkPlayerManager) LavMusicPlayer.playerManager).getAudioPlayerManager()
                 .loadItem(searcher.getPrefix() + query, new LavaSearchManager.LavaResultHandlerMultiple(
                         search -> {
                             for (Search s : search) {
@@ -61,7 +61,7 @@ public class LavaYoutubeSearcherMultiple {
     private static void doThirdSearch(String query, Consumer<Search[]> callback) {
         YoutubeSearcher searcher = new YoutubeSearcher( );
 
-        ((LavaLinkPlayerManager) JdaMain.playerManager).getAudioPlayerManager()
+        ((LavaLinkPlayerManager) LavMusicPlayer.playerManager).getAudioPlayerManager()
                 .loadItem(searcher.getPrefix() + query, new LavaSearchManager.LavaResultHandlerMultiple(
                         search -> {
                             for (Search s : search) {
@@ -78,7 +78,7 @@ public class LavaYoutubeSearcherMultiple {
 
     private static void doFourthSearch(String query, Consumer<Search[]> callback) {
         DefaultSearcher searcher = new DefaultSearcher();
-        ((LavaLinkPlayerManager) JdaMain.playerManager).getAudioPlayerManager()
+        ((LavaLinkPlayerManager) LavMusicPlayer.playerManager).getAudioPlayerManager()
                 .loadItem(searcher.getPrefix() + query, new LavaSearchManager.LavaResultHandlerMultiple(callback, query, searcher));
     }
 }

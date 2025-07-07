@@ -1,6 +1,6 @@
 package io.lolyay.panel;
 
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.panel.Packet.C2SPacket;
 import io.lolyay.panel.Packet.PacketHandler;
 import io.lolyay.panel.Packet.PacketInitializer;
@@ -36,6 +36,6 @@ public class ConnectionHandler {
     public void handleStart(WebSocketServer serveri) {
         server = serveri;
         PacketInitializer.initialize();
-        JdaMain.scheduledTasksManager.startScheduledTask(new ScheduledPanelUpdater(), 1000, TimeUnit.MILLISECONDS);
+        LavMusicPlayer.scheduledTasksManager.startScheduledTask(new ScheduledPanelUpdater(), 1000, TimeUnit.MILLISECONDS);
     }
 }

@@ -5,11 +5,9 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import io.lolyay.JdaMain;
-import io.lolyay.config.ConfigManager;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.customevents.events.music.TrackEndedEvent;
 import io.lolyay.musicbot.structs.MusicTrackEndReason;
-import io.lolyay.utils.Logger;
 
 public class LavaTrackScheduler extends AudioEventAdapter {
     @Override
@@ -28,13 +26,13 @@ public class LavaTrackScheduler extends AudioEventAdapter {
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        LavaPlayerFactory factory = ((LavaLinkPlayerManager) JdaMain.playerManager).getPlayerFactory();
+        LavaPlayerFactory factory = ((LavaLinkPlayerManager) LavMusicPlayer.playerManager).getPlayerFactory();
         MusicManager musicManager = MusicManager.getInstance();
 
 
-        JdaMain.eventBus.post(new TrackEndedEvent(musicManager.getCurrentTrack(), MusicTrackEndReason.fromAudioTrackEndReason(endReason), -1, null));
+        LavMusicPlayer.eventBus.post(new TrackEndedEvent(musicManager.getCurrentTrack(), MusicTrackEndReason.fromAudioTrackEndReason(endReason), -1, null));
 
-        if (endReason.mayStartNext && !JdaMain.headlessMode.isHeadless) {
+        if (endReason.mayStartNext && !LavMusicPlayer.headlessMode.isHeadless) {
             musicManager.onTrackEnd();
         }
 

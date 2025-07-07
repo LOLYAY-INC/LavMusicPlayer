@@ -10,7 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class ConfigManager {
-    private static final String CONFIG_FILE = "config.json";
+    public static String CONFIG_FILE = "config.json";
     private static AppConfig config;
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 

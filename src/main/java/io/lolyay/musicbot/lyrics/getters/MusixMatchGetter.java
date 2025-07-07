@@ -3,7 +3,7 @@ package io.lolyay.musicbot.lyrics.getters;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.musicbot.lyrics.LyricsNotFoundException;
 import io.lolyay.musicbot.lyrics.Scraper;
@@ -176,7 +176,7 @@ public class MusixMatchGetter extends LyricsGetterLiveAble {
         };
 
 
-        JdaMain.scheduledTasksManager.startDelayedTask(new Thread(scrapingTask), 100, TimeUnit.MILLISECONDS);
+        LavMusicPlayer.scheduledTasksManager.startDelayedTask(new Thread(scrapingTask), 100, TimeUnit.MILLISECONDS);
 
         return future;
     }
@@ -224,7 +224,7 @@ public class MusixMatchGetter extends LyricsGetterLiveAble {
         };
 
 
-        JdaMain.scheduledTasksManager.startDelayedTask(new Thread(scrapingTask), 10, TimeUnit.MILLISECONDS);
+        LavMusicPlayer.scheduledTasksManager.startDelayedTask(new Thread(scrapingTask), 10, TimeUnit.MILLISECONDS);
 
         return future;
     }

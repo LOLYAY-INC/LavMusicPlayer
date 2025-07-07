@@ -20,6 +20,11 @@ public class ConfigLoader {
         Logger.debug("Configuration loaded successfully");
     }
 
+    public static void load(String configFile) throws IOException {
+        ConfigManager.CONFIG_FILE = configFile;
+        load();
+    }
+
     /**
      * Forces the creation of a new config file with default values.
      * @return true if the config file was created successfully, false otherwise

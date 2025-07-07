@@ -1,7 +1,6 @@
 package io.lolyay.panel.Packet.Packets.S2C.media;
 
 import com.google.gson.annotations.Expose;
-import io.lolyay.JdaMain;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
 import io.lolyay.panel.Packet.AbstractPacket;
 import io.lolyay.panel.Packet.S2CPacket;

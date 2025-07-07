@@ -3,6 +3,7 @@ package io.lolyay;
 import io.lolyay.config.ConfigLoader;
 import io.lolyay.customevents.events.lifecycle.PreInitEvent;
 import io.lolyay.eventlisteners.EventRegistrer;
+import io.lolyay.panel.beacon.HttpBeaconServer;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
 
@@ -23,8 +24,8 @@ public class Main {
         try {
             EventRegistrer.register();
 
-            JdaMain.eventBus.post(new PreInitEvent());
-            JdaMain.init();
+            LavMusicPlayer.eventBus.post(new PreInitEvent());
+            LavMusicPlayer.init();
         } catch (Exception e) {
             Logger.err("Error while starting bot: ");
             e.printStackTrace();
@@ -48,7 +49,7 @@ public class Main {
             case "-DEBUG":
             {
                 Logger.log("Debug mode enabled");
-                JdaMain.debug = true;
+                LavMusicPlayer.debug = true;
                 break;
             }
 
@@ -62,6 +63,9 @@ public class Main {
                 Logger.warn("Registering commands...");
                 break;
             }
+            case "-p", "-port":
+                HttpBeaconServer.port = Integer.parseInt(pair.getValue());
+                break;
         }
     }
 

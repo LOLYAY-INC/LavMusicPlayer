@@ -15,10 +15,9 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.yamusic.YandexMusicAudioSourceManager;
-import dev.arbjerg.lavalink.client.Helpers;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.musicbot.dlp.YoutubeDlpDownloader;
 import io.lolyay.utils.Logger;
@@ -47,7 +46,7 @@ public class LavaInitializer  {
 
         registerSourceManagers(playerManager);
 
-        JdaMain.playerManager = new LavaLinkPlayerManager(playerManager, new LavaPlayerFactory(playerManager));
+        LavMusicPlayer.playerManager = new LavaLinkPlayerManager(playerManager, new LavaPlayerFactory(playerManager));
     }
 
     private void registerSourceManagers(AudioPlayerManager playerManager) {

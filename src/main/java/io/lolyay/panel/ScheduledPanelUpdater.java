@@ -1,6 +1,6 @@
 package io.lolyay.panel;
 
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.panel.Packet.PacketHandler;
 import io.lolyay.panel.Packet.Packets.S2C.headless.S2CWeAreHeadlessPacket;
 import io.lolyay.panel.Packet.Packets.S2C.media.S2CUpdatePlayerPacket;
@@ -13,7 +13,7 @@ public class ScheduledPanelUpdater implements Runnable {
         try {
             PacketHandler.broadcastPacket(new S2CUpdatePlayerPacket());
             PacketHandler.broadcastPacket(new S2CUpdatePlayerPositionPacket());
-            if(JdaMain.headlessMode.isHeadless) PacketHandler.broadcastPacket(new S2CWeAreHeadlessPacket());
+            if(LavMusicPlayer.headlessMode.isHeadless) PacketHandler.broadcastPacket(new S2CWeAreHeadlessPacket());
         } catch (Exception e) {
             Logger.err(e.getMessage());
         }

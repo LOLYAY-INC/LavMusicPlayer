@@ -1,6 +1,6 @@
 package io.lolyay.panel.Packet.Packets.C2S.media;
 
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.panel.Packet.AbstractPacket;
 import io.lolyay.panel.Packet.C2SPacket;
 import io.lolyay.panel.Packet.PacketHandler;
@@ -13,7 +13,7 @@ public class C2SUnpauseTrackPacket extends AbstractPacket implements C2SPacket {
     public void recivePacket(WebSocket socket) {
 
 
-        JdaMain.musicManager.resume();
+        LavMusicPlayer.musicManager.resume();
 
         PacketHandler.sendPacket(socket, new S2CSuccessPacket(getOpcode(), ""));
 

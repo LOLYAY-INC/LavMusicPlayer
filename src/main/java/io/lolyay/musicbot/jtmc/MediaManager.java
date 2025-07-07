@@ -56,19 +56,19 @@ public class MediaManager {
         TrackInfo trackInfo = musicTrack.trackInfo();
         String artworkUrl = trackInfo.artWorkUrl();
         File artworkFile = null;
-        if (tempArtworkPath != null) {
-            try {
-                Files.deleteIfExists(tempArtworkPath);
-            } catch (IOException e) {
-                System.err.println("Failed to delete temporary artwork file: " + e.getMessage());
-            }
-        }
         
         if (artworkUrl != null && !artworkUrl.isEmpty()) {
             try {
                 // Download the artwork to a temporary file
                 URL url = new URL(artworkUrl);
                 tempArtworkPath = Files.createTempFile("artwork-", ".tmp");
+                if (tempArtworkPath != null) {
+                    try {
+                        Files.deleteIfExists(tempArtworkPath);
+                    } catch (IOException e) {
+                        System.err.println("Failed to delete temporary artwork file: " + e.getMessage());
+                    }
+                }
                 try (InputStream in = url.openStream()) {
                     Files.copy(in, tempArtworkPath, StandardCopyOption.REPLACE_EXISTING);
                     artworkFile = tempArtworkPath.toFile();

@@ -1,8 +1,7 @@
 package io.lolyay.musicbot;
 
 import com.google.gson.annotations.Expose;
-import dev.lavalink.youtube.clients.Music;
-import io.lolyay.JdaMain;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.customevents.EventListener;
 import io.lolyay.customevents.events.music.TrackEndedEvent;
 import io.lolyay.musicbot.tracks.MusicAudioTrack;
@@ -27,13 +26,13 @@ public class HeadlessMode {
         for(MusicAudioTrack track : tracks){
             track.fillInAudioTrack();
         }
-        JdaMain.eventBus.register(this);
+        LavMusicPlayer.eventBus.register(this);
         Logger.warn("[HEADLESS] Headless mode enabled!");
     }
 
     public void disable(){
         if(isHeadless)
-            JdaMain.eventBus.unregister(this);
+            LavMusicPlayer.eventBus.unregister(this);
         isHeadless = false;
     }
 

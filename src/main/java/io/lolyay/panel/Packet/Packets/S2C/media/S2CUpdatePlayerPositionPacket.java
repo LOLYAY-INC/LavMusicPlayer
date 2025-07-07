@@ -1,9 +1,7 @@
 package io.lolyay.panel.Packet.Packets.S2C.media;
 
 import com.google.gson.annotations.Expose;
-import io.lolyay.JdaMain;
-import io.lolyay.musicbot.MusicManager;
-import io.lolyay.musicbot.tracks.MusicAudioTrack;
+import io.lolyay.LavMusicPlayer;
 import io.lolyay.panel.Packet.AbstractPacket;
 import io.lolyay.panel.Packet.S2CPacket;
 
@@ -14,12 +12,12 @@ public class S2CUpdatePlayerPositionPacket extends AbstractPacket implements S2C
     public long duration;
 
     public S2CUpdatePlayerPositionPacket() {
-        if(JdaMain.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack() == null) {
+        if(LavMusicPlayer.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack() == null) {
             this.position = 0;
             return;
         }
-        this.position = JdaMain.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack().getPosition();
-        this.duration = JdaMain.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack().getDuration();
+        this.position = LavMusicPlayer.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack().getPosition();
+        this.duration = LavMusicPlayer.playerManager.getPlayerFactory().getOrCreatePlayer().getPlayingTrack().getDuration();
 
     }
 
