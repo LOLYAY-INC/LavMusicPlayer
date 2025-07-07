@@ -1,17 +1,19 @@
 package io.lolyay;
 
 import io.lolyay.config.ConfigLoader;
-import io.lolyay.customevents.events.lifecycle.PreInitEvent;
+import io.lolyay.eventbus.events.lifecycle.PreInitEvent;
 import io.lolyay.eventlisteners.EventRegistrer;
-import io.lolyay.panel.beacon.HttpBeaconServer;
+import io.lolyay.panel.webserver.HttpServer;
 import io.lolyay.utils.KVPair;
 import io.lolyay.utils.Logger;
 
 public class Main {
     public static void main(String[] args) {
 
+        Runtime.getRuntime().addShutdownHook(new Thread(ShutdownHandler::shutdown));
+
         parseArgs(args);
-        Logger.log("Starting bot...");
+        Logger.log("Starting deamon...");
 
         try {
             ConfigLoader.load();
@@ -56,16 +58,24 @@ public class Main {
             case "-OVERWRITE_CONFIG":
             {
                 Logger.warn("Overwriting Config...");
-                break;
-            }
-            case "-NO_REGISTER_COMMANDS":
-            {
-                Logger.warn("Registering commands...");
+                ConfigLoader.forceCreateNewConfig();
                 break;
             }
             case "-p", "-port":
-                HttpBeaconServer.port = Integer.parseInt(pair.getValue());
+                HttpServer.port = Integer.parseInt(pair.getValue());
                 break;
+            case "-s", "-silent":
+                Logger.warn("Silent mode enabled");
+                LavMusicPlayer.silent = true;
+                break;
+
+            case "-noextract", "-no-extract":
+                Logger.warn("No extract mode enabled");
+                LavMusicPlayer.shouldExtract = false;
+                break;
+
+            default:
+                Logger.err("Unknown argument: " + pair.getKey());
         }
     }
 

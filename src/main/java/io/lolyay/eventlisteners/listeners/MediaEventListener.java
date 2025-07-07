@@ -1,11 +1,11 @@
 package io.lolyay.eventlisteners.listeners;
 
 import io.lolyay.LavMusicPlayer;
-import io.lolyay.customevents.Event;
-import io.lolyay.customevents.EventListener;
-import io.lolyay.customevents.events.media.MediaPauseEvent;
-import io.lolyay.customevents.events.media.MediaPlayEvent;
-import io.lolyay.customevents.events.media.MediaStopEvent;
+import io.lolyay.eventbus.Event;
+import io.lolyay.eventbus.EventListener;
+import io.lolyay.eventbus.events.media.MediaPauseEvent;
+import io.lolyay.eventbus.events.media.MediaPlayEvent;
+import io.lolyay.eventbus.events.media.MediaStopEvent;
 import io.lolyay.utils.Logger;
 
 public class MediaEventListener extends Event {

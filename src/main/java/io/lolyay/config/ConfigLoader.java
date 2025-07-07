@@ -10,6 +10,9 @@ import java.io.IOException;
  * This class is now a simple wrapper around ConfigManager for backward compatibility.
  */
 public class ConfigLoader {
+
+    // Remainings of LavMusicBot
+
     /**
      * Loads the configuration from the config file.
      * @throws IOException if there's an error reading the config file

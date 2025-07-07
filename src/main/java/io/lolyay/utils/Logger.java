@@ -2,6 +2,7 @@ package io.lolyay.utils;
 
 import io.lolyay.LavMusicPlayer;
 
+import javax.swing.*;
 import java.time.LocalTime;
 
 public class Logger {
@@ -29,6 +30,8 @@ public class Logger {
     public static void err(String message) {
         String errMessage = formatLogMessage(Color.RED.getCode(), "ERR", message);
         System.out.println(errMessage);
+        if(!LavMusicPlayer.silent)
+            JOptionPane.showMessageDialog(null, errMessage, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void debug(String message) {

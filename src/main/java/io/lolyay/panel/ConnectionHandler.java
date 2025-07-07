@@ -1,9 +1,10 @@
 package io.lolyay.panel;
 
 import io.lolyay.LavMusicPlayer;
-import io.lolyay.panel.Packet.C2SPacket;
-import io.lolyay.panel.Packet.PacketHandler;
-import io.lolyay.panel.Packet.PacketInitializer;
+import io.lolyay.eventbus.events.api.packet.PacketReceivedEvent;
+import io.lolyay.panel.packet.C2SPacket;
+import io.lolyay.panel.packet.handlers.PacketHandler;
+import io.lolyay.panel.packet.handlers.PacketInitializer;
 import io.lolyay.utils.Logger;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -28,6 +29,7 @@ public class ConnectionHandler {
             return;
         }
         packet.recivePacket(socket);
+        LavMusicPlayer.eventBus.post(new PacketReceivedEvent(packet));
     }
 
     public void handleError(WebSocket socket, Exception e) {

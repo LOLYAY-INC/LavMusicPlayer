@@ -1,17 +1,17 @@
 package io.lolyay;
 
 import io.lolyay.config.ConfigLoader;
-import io.lolyay.customevents.EventBus;
-import io.lolyay.musicbot.HeadlessMode;
-import io.lolyay.musicbot.LavaLinkPlayerManager;
-import io.lolyay.musicbot.MusicManager;
-import io.lolyay.musicbot.LavaInitializer;
-import io.lolyay.musicbot.jtmc.MediaManager;
-import io.lolyay.musicbot.output.Player;
-import io.lolyay.musicbot.structs.ENVIRONMENT;
+import io.lolyay.eventbus.EventBus;
+import io.lolyay.features.headless.HeadlessMode;
+import io.lolyay.music.lavalink.LavaLinkPlayerManager;
+import io.lolyay.music.MusicManager;
+import io.lolyay.music.lavalink.LavaInitializer;
+import io.lolyay.features.jtmc.MediaManager;
+import io.lolyay.music.output.Pcm16Player;
+import io.lolyay.music.structs.ENVIRONMENT;
 import io.lolyay.panel.Server;
-import io.lolyay.panel.beacon.HttpBeaconServer;
-import io.lolyay.tray.TrayManager;
+import io.lolyay.panel.webserver.HttpServer;
+import io.lolyay.features.tray.TrayManager;
 import io.lolyay.utils.Logger;
 
 import java.io.IOException;
@@ -19,12 +19,13 @@ import java.io.IOException;
 
 public class LavMusicPlayer {
     public static boolean debug = false;
-    public static boolean shouldRegisterCommands = true;
+    public static boolean silent = false;
+    public static boolean shouldExtract = true;
 
     public static HeadlessMode headlessMode = new HeadlessMode();
     public static MediaManager mediaManager;
     public static MusicManager musicManager;
-    public static Player player;
+    public static Pcm16Player player;
     public static LavaLinkPlayerManager playerManager;
     public static ENVIRONMENT environment;
     public static Scheduler scheduledTasksManager = new Scheduler();
@@ -40,14 +41,14 @@ public class LavMusicPlayer {
 
         musicManager = new MusicManager(playerManager);
 
-        player = new Player(playerManager.getPlayerFactory().getOrCreatePlayer());
+        player = new Pcm16Player(playerManager.getPlayerFactory().getOrCreatePlayer());
 
         mediaManager = new MediaManager(eventBus, "LavMusicPlayer", "lavmusicplayer");
 
         Logger.log("Music Setup Complete");
 
         try {
-            HttpBeaconServer.start();
+            HttpServer.start();
             Logger.log("Http Server started on port " + (Server.PORT + 1));
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -3,7 +3,7 @@ package io.lolyay.config;
 import com.google.gson.annotations.SerializedName;
 
 public class AppConfig {
-    @SerializedName("discord")
+    @SerializedName("music")
     private MusicConfig music;
 
     @SerializedName("additional_sources")
