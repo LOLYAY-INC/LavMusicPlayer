@@ -181,7 +181,7 @@ Done! Now restart the demon if it has started (check your tray for the LavMusicB
 - Implement V2 Protocol including Moving playlists to server side to remove headless mode stuff
 - Implement live lyrics
 - Implement Playlist management and Import/Exporting
-
+- Mobile Support
 
 
 ## 🤝 Contributing
