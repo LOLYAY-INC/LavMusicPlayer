@@ -123,6 +123,7 @@ Seek to a specific position in the current track. This packet responds with [Suc
 ```
 
 ##### Request Player Update (Opcode: 119)
+##### DEPRECATED The demon sends a Player Update packet every second
 
 Request the current state of the player. This packet responds with [Update Player (Opcode: 200)](#update-player-opcode-200).
 
