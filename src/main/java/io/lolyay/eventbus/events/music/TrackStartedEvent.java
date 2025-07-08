@@ -1,7 +1,6 @@
 package io.lolyay.eventbus.events.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import dev.arbjerg.lavalink.client.LavalinkNode;
 import io.lolyay.eventbus.Event;
 import io.lolyay.music.track.MusicAudioTrack;
 
