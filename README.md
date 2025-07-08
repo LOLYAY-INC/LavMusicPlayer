@@ -7,10 +7,11 @@ A Java-based music player application that provides a WebSocket API for controll
 LavMusicPlayer comes with a modern, responsive web interface built with Svelte. The interface provides:
 
 - Search functionality across multiple music sources
-- Playlist management
+- (basic) Playlist management
 - Media controls (play, pause, skip, volume, etc.)
 - Track position control
 - Lyrics display
+- Headless support (keeps playing playlist when tab closed)
 
 The default web interface is open source! The bundled files are Vite production distribution files. You can find the source code at [https://github.com/LOLYAY-INC/LavMusicPlayerWeb](https://github.com/LOLYAY-INC/LavMusicPlayerWeb).
 
@@ -24,11 +25,12 @@ When LavMusicPlayer runs for the first time, it extracts the bundled web assets 
 4. Restart LavMusicPlayer to see your changes
 
 If you want to prevent the extraction of assets (e.g., if you've already customized them), use the `-noextract` command line argument.
+You can also create your own site entirely, without depending on the built in web server.
 
 ## ✨ Features
 
 ### Core Features
-- **Local Music Playback**: Play music directly on your device with high-quality audio
+- **Local Music Playback**: Play music directly on your device with a demon.
 - **WebSocket API**: Control playback programmatically through a comprehensive WebSocket API
 - **HTTP Server**: Access the web interface and static assets through the built-in HTTP server
 - **System Tray Integration**: Control the player from your system tray for easy access
@@ -63,7 +65,7 @@ If you want to prevent the extraction of assets (e.g., if you've already customi
 - `-DEBUG`: Enable debug mode for detailed logging
 - `-OVERWRITE_CONFIG`: Force creation of a new configuration file
 - `-p=PORT` or `-port=PORT`: Specify the HTTP server port (default: 80)
-- `-s` or `-silent`: Enable silent mode
+- `-s` or `-silent`: Enable silent mode ( No popups when errors happen)
 - `-noextract` or `-no-extract`: Disable resource extraction
 
 ## 📚 API Documentation
@@ -159,9 +161,9 @@ To enable Deezer search:
 
 To enable Tidal search:
 
-1. Open Tidal Desktop
-2. Start a track
-3. Install 'Fiddler Everywhere' and enable for HTTPS captures
+1. Install Tidal Desktop
+2. Install 'Fiddler Everywhere' and enable for HTTPS captures
+3. Open tidal desktop
 4. Login to the Tidal desktop app and start playing a track
 5. Stop Fiddler capture
 6. Look for host: desktop.tidal.com
@@ -172,6 +174,15 @@ To enable Tidal search:
     ```json
     "tidal-token": "YOUR_TIDAL_TOKEN"
     ```
+Done! Now restart the demon if it has started (check your tray for the LavMusicBot Icon) and you're set! Go to http://localhost:80 to open the UI.
+
+
+## Roadmap
+- Implement V2 Protocol including Moving playlists to server side to remove headless mode stuff
+- Implement live lyrics
+- Implement Playlist management and Import/Exporting
+
+
 
 ## 🤝 Contributing
 
