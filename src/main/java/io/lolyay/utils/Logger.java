@@ -31,7 +31,7 @@ public class Logger {
         String errMessage = formatLogMessage(Color.RED.getCode(), "ERR", message);
         System.out.println(errMessage);
         if(!LavMusicPlayer.silent)
-            JOptionPane.showMessageDialog(null, errMessage, "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error: " + message, "LavMusicPlayer", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void debug(String message) {

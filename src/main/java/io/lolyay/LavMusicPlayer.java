@@ -14,7 +14,10 @@ import io.lolyay.panel.webserver.HttpServer;
 import io.lolyay.features.tray.TrayManager;
 import io.lolyay.utils.Logger;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 
 public class LavMusicPlayer {
@@ -64,6 +67,13 @@ public class LavMusicPlayer {
                 Logger.log("Tray Setup Complete");
             }
         });
+
+        String url = "http://localhost:" + HttpServer.port;
+        try {
+            Desktop.getDesktop().browse(new java.net.URI(url));
+        } catch (IOException | URISyntaxException ex) {
+            JOptionPane.showMessageDialog(null, "Failed to open player", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void init(String configPath) throws InterruptedException {

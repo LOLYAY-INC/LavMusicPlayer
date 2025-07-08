@@ -18,21 +18,21 @@ public class TrayManager {
     public static void setupTray() {
         // 1. Check if the SystemTray is supported on the current platform.
         if (!SystemTray.isSupported()) {
-            System.out.println("SystemTray is not supported. Running without tray icon.");
+            Logger.err("SystemTray is not supported. Running without tray icon.");
             return;
         }
 
         // 2. Load the icon image from the resources folder.
         URL imageURL = TrayManager.class.getResource("/icon.png");
         if (imageURL == null) {
-            System.err.println("Resource not found: icon.png");
+            Logger.err("Resource not found: icon.png");
             return;
         }
         Image iconImage;
         try {
             iconImage = ImageIO.read(imageURL);
         } catch (IOException e) {
-            System.err.println("Error loading icon image: " + e.getMessage());
+            Logger.err("Error loading icon image: " + e.getMessage());
             e.printStackTrace();
             return;
         }
@@ -52,7 +52,7 @@ public class TrayManager {
         exitItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Exiting application from tray...");
+                Logger.log("Exiting application from tray...");
                 tray.remove(tray.getTrayIcons()[0]); // Cleanly remove the icon
                 System.exit(0);
             }
@@ -62,7 +62,7 @@ public class TrayManager {
         openPlayerItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Opening player from tray...");
+                Logger.debug("Opening player from tray...");
                 String url = "http://localhost:" + HttpServer.port;
                 try {
                     Desktop.getDesktop().browse(new java.net.URI(url));
@@ -72,13 +72,17 @@ public class TrayManager {
             }
         });
 
+        MenuItem buffer = new MenuItem("_____");
+        buffer.setEnabled(false); // Make it not clickable
         // Add items to the popup menu
         popup.add(statusItem);
         popup.addSeparator(); // A visual line separator
         popup.add(exitItem);
+        popup.add(openPlayerItem);
+        popup.add(buffer);
 
         // 5. Create the TrayIcon.
-        final TrayIcon trayIcon = new TrayIcon(iconImage, "Your Music Player", popup);
+        final TrayIcon trayIcon = new TrayIcon(iconImage, "LavMusicPlayer", popup);
         // Let the OS resize the image if needed
         trayIcon.setImageAutoSize(true);
 
