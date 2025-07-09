@@ -1,4 +1,4 @@
-package io.lolyay.eventbus.events.media;
+package io.lolyay.events.media;
 
 import io.lolyay.eventbus.Event;
 

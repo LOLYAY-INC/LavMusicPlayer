@@ -2,9 +2,9 @@ package io.lolyay.features.jtmc;
 
 import io.github.selemba1000.*;
 import io.lolyay.eventbus.EventBus;
-import io.lolyay.eventbus.events.media.MediaPauseEvent;
-import io.lolyay.eventbus.events.media.MediaPlayEvent;
-import io.lolyay.eventbus.events.media.MediaStopEvent;
+import io.lolyay.events.media.MediaPauseEvent;
+import io.lolyay.events.media.MediaPlayEvent;
+import io.lolyay.events.media.MediaStopEvent;
 import io.lolyay.music.track.MusicAudioTrack;
 import io.lolyay.music.track.TrackInfo;
 

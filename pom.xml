@@ -124,6 +124,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.lolyay</groupId>
+            <artifactId>eventbus</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.11.0</version>

@@ -1,4 +1,4 @@
-package io.lolyay.eventbus.events.music;
+package io.lolyay.events.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import io.lolyay.eventbus.Event;

@@ -1,7 +1,7 @@
 package io.lolyay;
 
 import io.lolyay.config.ConfigLoader;
-import io.lolyay.eventbus.events.lifecycle.PreInitEvent;
+import io.lolyay.events.lifecycle.PreInitEvent;
 import io.lolyay.eventlisteners.EventRegistrer;
 import io.lolyay.panel.webserver.HttpServer;
 import io.lolyay.utils.KVPair;

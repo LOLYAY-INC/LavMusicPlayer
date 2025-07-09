@@ -1,4 +1,4 @@
-package io.lolyay.eventbus.events.lifecycle;
+package io.lolyay.events.lifecycle;
 
 import io.lolyay.eventbus.Event;
 

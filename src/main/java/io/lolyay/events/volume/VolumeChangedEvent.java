@@ -1,8 +1,7 @@
-package io.lolyay.eventbus.events.volume;
+package io.lolyay.events.volume;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import io.lolyay.eventbus.CancellableEvent;
-import io.lolyay.eventbus.Event;
 import io.lolyay.music.track.MusicAudioTrack;
 
 public class VolumeChangedEvent extends CancellableEvent {

@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import io.lolyay.LavMusicPlayer;
-import io.lolyay.eventbus.events.music.TrackEndedEvent;
+import io.lolyay.events.music.TrackEndedEvent;
 import io.lolyay.music.MusicManager;
 import io.lolyay.music.structs.MusicTrackEndReason;
 

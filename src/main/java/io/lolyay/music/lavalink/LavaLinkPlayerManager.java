@@ -2,12 +2,11 @@ package io.lolyay.music.lavalink;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import io.lolyay.LavMusicPlayer;
-import io.lolyay.eventbus.events.music.TrackPausedEvent;
-import io.lolyay.eventbus.events.music.TrackStartedEvent;
-import io.lolyay.eventbus.events.volume.VolumeChangedEvent;
+import io.lolyay.events.music.TrackPausedEvent;
+import io.lolyay.events.music.TrackStartedEvent;
+import io.lolyay.events.volume.VolumeChangedEvent;
 import io.lolyay.music.abstracts.AbstractPlayerManager;
 import io.lolyay.music.output.Pcm16Player;
-import io.lolyay.music.structs.MusicTrackEndReason;
 import io.lolyay.search.LavaSearchManager;
 import io.lolyay.search.Search;
 import io.lolyay.music.track.MusicAudioTrack;

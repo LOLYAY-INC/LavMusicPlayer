@@ -4,7 +4,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import io.lolyay.LavMusicPlayer;
-import io.lolyay.eventbus.events.web.ServingFileEvent;
+import io.lolyay.events.web.ServingFileEvent;
 import io.lolyay.panel.packet.BeaconablePacket;
 import io.lolyay.panel.packet.handlers.PacketHandler;
 import io.lolyay.utils.Logger;

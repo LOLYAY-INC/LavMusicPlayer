@@ -1,7 +1,7 @@
 package io.lolyay.panel;
 
 import io.lolyay.LavMusicPlayer;
-import io.lolyay.eventbus.events.api.packet.PacketReceivedEvent;
+import io.lolyay.events.api.packet.PacketReceivedEvent;
 import io.lolyay.panel.packet.C2SPacket;
 import io.lolyay.panel.packet.handlers.PacketHandler;
 import io.lolyay.panel.packet.handlers.PacketInitializer;

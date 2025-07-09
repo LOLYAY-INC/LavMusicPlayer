@@ -3,7 +3,7 @@ package io.lolyay.features.headless;
 import com.google.gson.annotations.Expose;
 import io.lolyay.LavMusicPlayer;
 import io.lolyay.eventbus.EventListener;
-import io.lolyay.eventbus.events.music.TrackEndedEvent;
+import io.lolyay.events.music.TrackEndedEvent;
 import io.lolyay.music.MusicManager;
 import io.lolyay.music.track.MusicAudioTrack;
 import io.lolyay.utils.Logger;

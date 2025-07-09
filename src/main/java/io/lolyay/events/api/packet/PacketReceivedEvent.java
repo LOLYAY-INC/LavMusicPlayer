@@ -1,4 +1,4 @@
-package io.lolyay.eventbus.events.api.packet;
+package io.lolyay.events.api.packet;
 
 import io.lolyay.eventbus.Event;
 import io.lolyay.panel.packet.C2SPacket;

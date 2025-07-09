@@ -1,6 +1,5 @@
-package io.lolyay.eventbus.events.web;
+package io.lolyay.events.web;
 
-import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import io.lolyay.eventbus.Event;
 

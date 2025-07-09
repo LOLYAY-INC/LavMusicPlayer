@@ -1,4 +1,4 @@
-package io.lolyay.eventbus.events.search;
+package io.lolyay.events.search;
 
 import io.lolyay.eventbus.Event;
 import io.lolyay.search.AbstractSearcher;
