@@ -20,6 +20,10 @@
 
     <repositories>
         <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/LOLYAY-INC/*</url>
+        </repository>
+        <repository>
             <id>TopiWTF-releases</id>
             <name>Topis Maven Repo</name>
             <url>https://maven.topi.wtf/releases</url>
@@ -52,6 +56,7 @@
             <id>dv8tion</id>
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
+
     </repositories>
 
     <build>
@@ -127,6 +132,11 @@
             <groupId>io.lolyay</groupId>
             <artifactId>eventbus</artifactId>
             <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.lolyay</groupId>
+            <artifactId>lyricsv2</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
