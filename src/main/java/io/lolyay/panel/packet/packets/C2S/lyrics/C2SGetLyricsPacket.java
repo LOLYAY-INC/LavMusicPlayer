@@ -23,10 +23,9 @@ public class C2SGetLyricsPacket extends AbstractPacket implements C2SPacket {
             LyricsGetterManager.getLyricsGetterForText(track.trackInfo().title())
                             .getLyrics(track.trackInfo().title() + " " + track.trackInfo().author()).thenAccept(lyrics -> {
                         PacketHandler.sendPacket(socket, new S2CGetLyricsPacket(track, lyrics));
-
-
                     });
         } catch (LyricsNotFoundException e) {
+            Logger.err("Could not find lyrics for " + track.trackInfo().title());
             PacketHandler.sendPacket(socket, new S2CErrorPacket(getOpcode(),"Could not find lyrics"));
             Logger.err(e.getMessage());
         }
