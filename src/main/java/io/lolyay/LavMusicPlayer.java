@@ -1,8 +1,10 @@
 package io.lolyay;
 
 import io.lolyay.config.ConfigLoader;
+import io.lolyay.config.ConfigManager;
 import io.lolyay.eventbus.EventBus;
 import io.lolyay.features.headless.HeadlessMode;
+import io.lolyay.lyrics.getters.LyricsGetterManager;
 import io.lolyay.music.lavalink.LavaLinkPlayerManager;
 import io.lolyay.music.MusicManager;
 import io.lolyay.music.lavalink.LavaInitializer;
@@ -74,6 +76,8 @@ public class LavMusicPlayer {
         } catch (IOException | URISyntaxException ex) {
             JOptionPane.showMessageDialog(null, "Failed to open player", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        LyricsGetterManager.initMusixMatch(ConfigManager.getConfig().getLyrics().getMusicmatchAuthToken());
     }
 
     public static void init(String configPath) throws InterruptedException {
