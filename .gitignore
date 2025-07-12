@@ -1,0 +1,7 @@
+target/
+
+.project
+.idea
+/nodes.json
+/config.json
+/assets/
