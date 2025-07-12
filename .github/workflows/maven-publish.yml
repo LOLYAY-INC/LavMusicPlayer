@@ -5,7 +5,7 @@ name: Build and Release with Changelog
 on:
   push:
     branches:
-      - main  # Triggers the workflow on a push to the main branch
+      - master  # Triggers the workflow on a push to the main branch
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
     - name: Generate version
       id: version
       run: |
-        VERSION_NUMBER="1.0.$(git rev-list --count HEAD)"
+        VERSION_NUMBER="2.0.$(git rev-list --count HEAD)-AUTO"
         echo "number=$VERSION_NUMBER" >> $GITHUB_OUTPUT
         echo "tag=v$VERSION_NUMBER" >> $GITHUB_OUTPUT
         
