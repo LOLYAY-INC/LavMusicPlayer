@@ -21,7 +21,7 @@
     <repositories>
         <repository>
             <id>github</id>
-            <url>https://maven.pkg.github.com/LOLYAY-INC/*</url>
+            <url>https://maven.lolyay.dev/</url>
         </repository>
         <repository>
             <id>TopiWTF-releases</id>
