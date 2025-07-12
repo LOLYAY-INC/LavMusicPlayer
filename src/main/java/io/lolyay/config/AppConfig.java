@@ -12,6 +12,16 @@ public class AppConfig {
     @SerializedName("lyrics")
     private LyricsConfig lyrics;
 
+    @SerializedName("panel")
+    private PanelConfig panel;
+
+    public PanelConfig getPanel() {
+        return panel;
+    }
+    public void setPanel(PanelConfig panel) {
+        this.panel = panel;
+    }
+
     public LyricsConfig getLyrics() {
         return lyrics;
     }
@@ -60,9 +70,21 @@ public class AppConfig {
         }
     }
 
+    public static class PanelConfig {
+        @SerializedName("assets-url")
+        private String assetsUrl = "https://github.com/LOLYAY-INC/LavMusicPlayerWeb";
+
+        public String getAssetsUrl() {
+            return assetsUrl;
+        }
+
+        public void setAssetsUrl(String assetsUrl) {
+            this.assetsUrl = assetsUrl;
+        }
+    }
+
 
     public static class AdditionalSourcesConfig {
-
         @SerializedName("yt-oauth2-refresh-token")
         private String youtubeOauth2RefreshToken = "";
 

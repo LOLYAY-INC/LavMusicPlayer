@@ -14,6 +14,7 @@ public class ShutdownHandler {
             Logger.success("Shutdown complete");
         } catch (Exception e) {
             Logger.err("Error during shutdown: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

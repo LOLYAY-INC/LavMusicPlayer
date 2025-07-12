@@ -28,6 +28,9 @@ public class ConfigManager {
 
         try (FileReader reader = new FileReader(configFile)) {
             config = gson.fromJson(reader, AppConfig.class);
+        } catch (Exception e) {
+            Logger.err("Failed to load config file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -67,6 +70,9 @@ public class ConfigManager {
 
         AppConfig.LyricsConfig lyricsConfig = new AppConfig.LyricsConfig();
         defaultConfig.setLyrics(lyricsConfig);
+
+        AppConfig.PanelConfig panelConfig = new AppConfig.PanelConfig();
+        defaultConfig.setPanel(panelConfig);
 
 
         try (FileWriter writer = new FileWriter(configFile)) {

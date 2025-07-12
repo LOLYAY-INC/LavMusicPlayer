@@ -11,8 +11,8 @@ public class ErrorDetectSystem { // Renamed for clarity
     // --- Configuration ---
     private static final int MAX_PACKET_DRIFT = 200; // Max allowed deviation for packet timing
     private static final int MAX_SONG_DRIFT = 100;   // Max allowed deviation for song position
-    private static final int ANALYSIS_INTERVAL = 8; // Number of player updates to analyze
-    private static final int MAX_ERRORS_PER_INTERVAL = 5; // Threshold to trigger a warning
+    private static final int ANALYSIS_INTERVAL = 12; // Number of player updates to analyze
+    private static final int MAX_ERRORS_PER_INTERVAL = 8; // Threshold to trigger a warning
     private static final int WARN_MS_THRESHOLD = 700; // Warning threshold in milliseconds
 
     // --- State for Interval Analysis ---
@@ -36,7 +36,7 @@ public class ErrorDetectSystem { // Renamed for clarity
         S2CUpdatePlayerPacket packet = (S2CUpdatePlayerPacket) event.getPacket();
 
         // If there's no track playing, reset the state and do nothing.
-        if (packet.current == null || packet.current.audioTrack() == null) {
+        if (packet.current == null || packet.current.audioTrack() == null || !packet.playing || packet.paused) {
             resetState();
             return;
         }

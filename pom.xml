@@ -9,11 +9,6 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <!--
-            THESE TWO LINES WERE THE PROBLEM. I HAVE REMOVED THEM.
-            <maven.compiler.source>23</maven.compiler.source>
-            <maven.compiler.target>23</maven.compiler.target>
-        -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jgit.version.pattern>1.0.69-DEVELOPMENT</jgit.version.pattern>
     </properties>

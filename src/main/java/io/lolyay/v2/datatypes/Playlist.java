@@ -29,4 +29,21 @@ public class Playlist {
     public void setId(String id) {
         this.id = id;
     }
+
+    public MusicAudioTrack[] getTracks() {
+        return tracks;
+    }
+
+    public void setTracks(MusicAudioTrack[] tracks) {
+        this.tracks = tracks;
+    }
+
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
+    }
+
 }
