@@ -20,10 +20,6 @@
 
     <repositories>
         <repository>
-            <id>lolyay</id>
-            <url>https://maven.lolyay.dev/</url>
-        </repository>
-        <repository>
             <id>TopiWTF-releases</id>
             <name>Topis Maven Repo</name>
             <url>https://maven.topi.wtf/releases</url>
@@ -55,6 +51,11 @@
         <repository>
             <id>dv8tion</id>
             <url>https://m2.dv8tion.net/releases</url>
+        </repository>
+        <repository>
+            <id>lolyay-releases</id>
+            <name>lolyay.dev Maven Repo</name>
+            <url>https://maven.lolyay.dev/releases</url>
         </repository>
 
     </repositories>
