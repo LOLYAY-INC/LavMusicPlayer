@@ -103,41 +103,15 @@ public class LavaInitializer  {
                 new TvHtml5EmbeddedWithThumbnail());
 
         //OAUTH2
-        String token = RefreshTokenStore.load() == null ? ConfigManager.getConfig().getAdditionalSources().getYoutubeOauth2RefreshToken() : RefreshTokenStore.load();
+        String token = "";// ConfigManager.getConfig().getAdditionalSources().getYoutubeOauth2RefreshToken();
         if (token == null || token.isBlank()) {
             Logger.err("No refresh token found, will need to log in again");
             source.useOauth2(null, false);
         } else {
             Logger.success("Loaded refresh token for youtube oauth2 : " + token);
             source.useOauth2(token, true);
-            RefreshTokenStore.store(token);
         }
-
-        if (source.getOauth2RefreshToken() != null && !source.getOauth2RefreshToken().isBlank()) {
-            RefreshTokenStore.store(source.getOauth2RefreshToken());
-            Logger.success("Saved refresh token for youtube oauth2");
-        }
-
         playerManager.registerSourceManager(source);
-    }
-
-    private static class RefreshTokenStore {
-        public static void store(String token) {
-            try {
-                Files.writeString(Path.of("refresh_token.txt"), token);
-            } catch (IOException e) {
-                Logger.err("Could not write refresh token to file, will need to log in again");
-            }
-        }
-
-        public static String load() {
-            try {
-                return Files.readString(Path.of("refresh_token.txt"));
-            } catch (IOException e) {
-                Logger.err("Could not read refresh token from file!");
-                return null;
-            }
-        }
     }
 
     public enum YoutubeType{

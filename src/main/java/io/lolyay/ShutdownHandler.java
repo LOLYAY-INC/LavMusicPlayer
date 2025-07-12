@@ -11,6 +11,7 @@ public class ShutdownHandler {
             Logger.log("Shutting down player...");
             Server.stopserver();
             ConfigManager.saveConfig();
+            Logger.success("Shutdown complete");
         } catch (Exception e) {
             Logger.err("Error during shutdown: " + e.getMessage());
         }

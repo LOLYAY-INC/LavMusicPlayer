@@ -2,9 +2,11 @@ package io.lolyay.panel;
 
 import io.lolyay.LavMusicPlayer;
 import io.lolyay.events.api.packet.PacketReceivedEvent;
+import io.lolyay.features.YoutubeOauth2Handler;
 import io.lolyay.panel.packet.C2SPacket;
 import io.lolyay.panel.packet.handlers.PacketHandler;
 import io.lolyay.panel.packet.handlers.PacketInitializer;
+import io.lolyay.panel.packet.packets.S2C.youtube.S2COauthRequiredPacket;
 import io.lolyay.utils.Logger;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -17,6 +19,9 @@ public class ConnectionHandler {
     private WebSocketServer server;
 
     public void handleConnect(WebSocket socket, ClientHandshake clientHandshake) {
+        if(YoutubeOauth2Handler.loginRequired){
+            PacketHandler.broadcastPacket(new S2COauthRequiredPacket(YoutubeOauth2Handler.deviceCode));
+        }
     }
 
     public void handleClose(WebSocket socket, int i, String s, boolean b) {
