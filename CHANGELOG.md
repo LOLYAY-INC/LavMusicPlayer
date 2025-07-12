@@ -1,3 +1,4 @@
 # Changelog:
 
-- Starded Implementing V2 Protocol including Moving playlists to server side to remove headless mode stuff
+- Youtube Oauth2 Helper
+- Youtube Oauth2 login Now handled by client

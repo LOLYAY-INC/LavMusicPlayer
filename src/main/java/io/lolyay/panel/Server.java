@@ -1,5 +1,6 @@
 package io.lolyay.panel;
 
+import io.lolyay.LavMusicPlayer;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -16,8 +17,9 @@ public class Server {
     }
 
     public void init() {
+        InetSocketAddress address = LavMusicPlayer.exposePort ? new InetSocketAddress(PORT) : new InetSocketAddress("localhost", PORT);
 
-        server = new WebSocketServer(new InetSocketAddress("localhost", PORT)) {
+        server = new WebSocketServer(address) {
 
             @Override
             public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {

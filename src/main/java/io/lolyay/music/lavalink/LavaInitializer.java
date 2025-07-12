@@ -103,7 +103,7 @@ public class LavaInitializer  {
                 new TvHtml5EmbeddedWithThumbnail());
 
         //OAUTH2
-        String token = "";// ConfigManager.getConfig().getAdditionalSources().getYoutubeOauth2RefreshToken();
+        String token = ConfigManager.getConfig().getAdditionalSources().getYoutubeOauth2RefreshToken();
         if (token == null || token.isBlank()) {
             Logger.err("No refresh token found, will need to log in again");
             source.useOauth2(null, false);

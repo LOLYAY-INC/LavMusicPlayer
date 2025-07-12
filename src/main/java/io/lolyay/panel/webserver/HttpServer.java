@@ -21,7 +21,8 @@ public class HttpServer {
     private final static AssetProvider assetProvider = new AssetProvider();
 
     public static void start() throws IOException {
-        com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress(port), 0);
+        InetSocketAddress address = LavMusicPlayer.exposePort ? new InetSocketAddress(port) : new InetSocketAddress("localhost", port);
+        com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(address, 0);
 
         // This context path MUST match the URL used in your Svelte app's fetch call.
         server.createContext("/start-headless-on-close", new BeaconHandler());

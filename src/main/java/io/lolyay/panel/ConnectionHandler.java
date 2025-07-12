@@ -43,6 +43,6 @@ public class ConnectionHandler {
     public void handleStart(WebSocketServer serveri) {
         server = serveri;
         PacketInitializer.initialize();
-        LavMusicPlayer.scheduledTasksManager.startScheduledTask(new ScheduledPanelUpdater(), 1000, TimeUnit.MILLISECONDS);
+        LavMusicPlayer.scheduledTasksManager.startScheduledTask(new ScheduledPanelUpdater(), LavMusicPlayer.PLAYER_UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
     }
 }

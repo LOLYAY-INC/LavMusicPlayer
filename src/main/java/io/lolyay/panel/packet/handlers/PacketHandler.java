@@ -2,6 +2,8 @@ package io.lolyay.panel.packet.handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import io.lolyay.LavMusicPlayer;
+import io.lolyay.events.api.packet.PrePacketSendEvent;
 import io.lolyay.panel.Server;
 import io.lolyay.panel.packet.BeaconablePacket;
 import io.lolyay.panel.packet.C2SPacket;
@@ -57,6 +59,8 @@ public class PacketHandler {
     }
 
     public static void sendPacket(WebSocket socket, S2CPacket packet) {
+        if(LavMusicPlayer.eventBus.postAndGet(new PrePacketSendEvent(packet)).isCancelled())
+            return;
         socket.send(
                 packet.getJSON()
         );

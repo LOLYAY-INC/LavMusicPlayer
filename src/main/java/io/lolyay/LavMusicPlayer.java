@@ -3,6 +3,7 @@ package io.lolyay;
 import io.lolyay.config.ConfigLoader;
 import io.lolyay.config.ConfigManager;
 import io.lolyay.eventbus.EventBus;
+import io.lolyay.features.ErrorDetectSystem;
 import io.lolyay.features.headless.HeadlessMode;
 import io.lolyay.lyrics.getters.LyricsGetterManager;
 import io.lolyay.music.lavalink.LavaLinkPlayerManager;
@@ -23,9 +24,13 @@ import java.net.URISyntaxException;
 
 
 public class LavMusicPlayer {
+    public static final int PLAYER_UPDATE_INTERVAL = 500;
+
+
     public static boolean debug = false;
     public static boolean silent = false;
     public static boolean shouldExtract = true;
+    public static boolean exposePort = false;
 
     public static HeadlessMode headlessMode = new HeadlessMode();
     public static MediaManager mediaManager;
@@ -78,6 +83,10 @@ public class LavMusicPlayer {
         }
 
         LyricsGetterManager.initMusixMatch(ConfigManager.getConfig().getLyrics().getMusicmatchAuthToken());
+        Logger.debug("Lyrics Setup Complete");
+
+        eventBus.register(new ErrorDetectSystem());
+        Logger.debug("ErrorDetectSystem started.");
     }
 
     public static void init(String configPath) throws InterruptedException {

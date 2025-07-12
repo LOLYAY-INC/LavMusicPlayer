@@ -9,11 +9,16 @@ import io.lolyay.utils.Logger;
 
 public class Main {
     public static void main(String[] args) {
+        parseArgs(args);
+        if(!isLaunchedWithJavaW() && javaWExists() && LavMusicPlayer.silent) {
+            Logger.log("Relaunching with java-w...");
+            relaunchWithJavaW();
+            return;
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread(ShutdownHandler::shutdown));
 
-        parseArgs(args);
-        Logger.log("Starting deamon...");
+        Logger.log("Starting demon...");
 
         try {
             ConfigLoader.load();
@@ -73,20 +78,34 @@ public class Main {
                 Logger.warn("No extract mode enabled");
                 LavMusicPlayer.shouldExtract = false;
                 break;
+            case "-e", "-expose":
+                Logger.warn("Exposing ports to public");
+                LavMusicPlayer.exposePort = true;
 
             default:
                 Logger.err("Unknown argument: " + pair.getKey());
         }
     }
 
-    private static void onShutdown() {
+    private static boolean javaWExists(){
         try {
-            Logger.log("Shutting down bot...");
-            // Only save if GuildConfigManager is initialized
-
-            Logger.log("Shutdown complete");
+            Runtime.getRuntime().exec(new String[]{"java","-version"});
+            return true;
         } catch (Exception e) {
-            Logger.err("Error during shutdown: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private static boolean isLaunchedWithJavaW() {
+        return System.console() == null;
+    }
+
+    private static void relaunchWithJavaW() {
+        try {
+            Runtime.getRuntime().exec(new String[]{"javaw", "-jar", LavMusicPlayer.class.getProtectionDomain().getCodeSource().getLocation().getPath()});
+            System.exit(0);
+        } catch (Exception e) {
+            Logger.err("Error relaunching with java-w: " + e.getMessage());
         }
     }
 }
