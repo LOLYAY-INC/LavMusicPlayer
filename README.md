@@ -102,6 +102,12 @@ The configuration file has the following main sections:
   },
   "lyrics": {
     "musicmatch-auth-token": ""
+  },
+  "panel": {
+    "assets-url": "https://github.com/LOLYAY-INC/LavMusicPlayerWeb"
+  },
+  "sound": {
+    "default_output_name": "OpenAL Soft on ..."
   }
 }
 ```
@@ -110,12 +116,9 @@ The configuration file has the following main sections:
 
 #### YouTube OAuth
 
-To prevent issues with YouTube, the player can use an authenticated account:
+This Option is now Automated and Implemented in the Interface.
+When Starting the Deamon and Opening the Interface for the first time, you get Automatically Prompted to sign in with Youtube, wich saves your Oauth2 Token Automatically.
 
-1. Start LavMusicPlayer for the first time
-2. You will be prompted to open a browser window and log into your YouTube account
-3. The application will output a refresh token in the console
-4. Copy this token to the `yt-oauth2-refresh-token` field in the config file
 
 #### Spotify Integration
 
@@ -177,7 +180,6 @@ To enable Tidal search:
     ```json
     "tidal-token": "YOUR_TIDAL_TOKEN"
     ```
-Done! Now restart the demon if it has started (check your tray for the LavMusicBot Icon) and you're set! Go to http://localhost:80 to open the UI.
 
 
 ## Roadmap
@@ -198,8 +200,6 @@ If you have a suggestion that would make this better, please fork the repo and c
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-*Note: I made this [Lavalink JSON to Java Converter](https://lolyay.dev/tools/lavalinkconverter/) to use with the JSON you get from: [The lavalink Server List](https://lavalink-list.appujet.site/non-ssl)*
 
 ## 📜 License
 
