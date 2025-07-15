@@ -123,7 +123,7 @@ Seek to a specific position in the current track. This packet responds with [Suc
 ```
 
 ##### Request Player Update (Opcode: 119)
-##### DEPRECATED The demon sends a Player Update packet every second
+##### DEPRECATED The demon sends a Player Update packet every (half a) second
 
 Request the current state of the player. This packet responds with [Update Player (Opcode: 200)](#update-player-opcode-200).
 
@@ -140,6 +140,27 @@ Request the length of the current track. This packet responds with [Track Length
 ```json
 {
   "opcode": 120
+}
+```
+
+##### Get Available Speakers (Opcode: 501)
+
+Request the list of available speakers. This packet responds with [Available Speakers (Opcode: 501)](#available-speakers-opcode-501).
+
+```json
+{
+  "opcode": 501
+}
+```
+
+##### Set Speaker (Opcode: 502)
+
+Set the speaker to use. This packet responds with [Success Packet (Opcode: -2)](#success-packet-opcode--2).
+
+```json
+{
+  "opcode": 502,
+   "device": "speaker name from 501"
 }
 ```
 
@@ -207,6 +228,19 @@ Response to a track length request.
   "length": 180000  // Track length in milliseconds
 }
 ```
+
+##### Available Speakers (Opcode: 501)
+
+Response to a request for available speakers.
+
+```json
+{
+  "opcode": 501,
+  "devices": [
+    // List of available speakers
+  ]
+}
+```   
 
 ### Utility Packets
 
