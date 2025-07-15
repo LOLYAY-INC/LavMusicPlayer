@@ -17,15 +17,19 @@ The default web interface is open source! The bundled files are Vite production 
 
 ### Customizing the Web Interface
 
-When LavMusicPlayer runs for the first time, it extracts the bundled web assets into a local `assets` directory in the same folder as the JAR file. You can modify or replace these files to customize the interface:
+When LavMusicPlayer runs for the first time, it downloads the bundled web assets into a local `assets` directory in the same folder as the JAR file. You can modify or replace these files to customize the interface:
 
 1. Run LavMusicPlayer once to extract the assets
 2. Navigate to the `assets` directory
 3. Modify the files as needed
 4. Restart LavMusicPlayer to see your changes
 
-If you want to prevent the extraction of assets (e.g., if you've already customized them), use the `-noextract` command line argument.
-You can also create your own site entirely, without depending on the built in web server.
+Or You can Change the Url LavMusicPlayer Downloads from in the Config under panel -> assets-url.
+It can Either be:
+- A direct Link to a zip with the files
+- A Link to a Github Repo, With the latest Release having a "assets.zip" Asset Attached that gets downloaded.
+
+You can also create your own site entirely, without depending on the built in web server (See API_DOCUMENTATION.md).
 
 ## ✨ Features
 
