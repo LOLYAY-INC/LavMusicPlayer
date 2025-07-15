@@ -70,7 +70,6 @@ You can also create your own site entirely, without depending on the built in we
 - `-OVERWRITE_CONFIG`: Force creation of a new configuration file
 - `-p=PORT` or `-port=PORT`: Specify the HTTP server port (default: 80)
 - `-s` or `-silent`: Enable silent mode ( No popups when errors happen)
-- `-noextract` or `-no-extract`: Disable resource extraction
 
 ## 📚 API Documentation
 
