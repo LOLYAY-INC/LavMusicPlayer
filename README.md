@@ -56,7 +56,7 @@ You can also create your own site entirely, without depending on the built in we
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Java 23 or higher
+- Java 21 or higher
 - Internet connection for streaming music
 
 ### Installation
