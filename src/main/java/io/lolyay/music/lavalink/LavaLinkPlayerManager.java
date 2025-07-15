@@ -6,6 +6,7 @@ import io.lolyay.events.music.TrackPausedEvent;
 import io.lolyay.events.music.TrackStartedEvent;
 import io.lolyay.events.volume.VolumeChangedEvent;
 import io.lolyay.music.abstracts.AbstractPlayerManager;
+import io.lolyay.music.output.OpenAlPlayer;
 import io.lolyay.music.output.Pcm16Player;
 import io.lolyay.search.LavaSearchManager;
 import io.lolyay.search.Search;
@@ -50,7 +51,7 @@ public class LavaLinkPlayerManager extends AbstractPlayerManager {
 
         track.startTime(System.currentTimeMillis());
 
-        Pcm16Player.INSTANCE.startSending();
+        OpenAlPlayer.INSTANCE.startSending();
 
         Logger.debug("Started playing track: " + track.audioTrack().getInfo().title);
     }
@@ -59,7 +60,7 @@ public class LavaLinkPlayerManager extends AbstractPlayerManager {
     public void stop() {
         getPlayerFactory().getOrCreatePlayer().stopTrack();
 
-        Pcm16Player.INSTANCE.stopSending();
+        OpenAlPlayer.INSTANCE.stopSending();
     }
 
     @Override

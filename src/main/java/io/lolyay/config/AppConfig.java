@@ -4,16 +4,19 @@ import com.google.gson.annotations.SerializedName;
 
 public class AppConfig {
     @SerializedName("music")
-    private MusicConfig music;
+    private MusicConfig music = new MusicConfig();
 
     @SerializedName("additional_sources")
-    private AdditionalSourcesConfig additionalSources;
+    private AdditionalSourcesConfig additionalSources = new AdditionalSourcesConfig();
 
     @SerializedName("lyrics")
-    private LyricsConfig lyrics;
+    private LyricsConfig lyrics = new LyricsConfig();
 
     @SerializedName("panel")
-    private PanelConfig panel;
+    private PanelConfig panel = new PanelConfig();
+
+    @SerializedName("sound")
+    private SoundConfig sound = new SoundConfig();
 
     public PanelConfig getPanel() {
         return panel;
@@ -45,6 +48,12 @@ public class AppConfig {
         this.additionalSources = additionalSources;
     }
 
+    public SoundConfig getSound() {
+        return sound;
+    }
+    public void setSound(SoundConfig sound) {
+        this.sound = sound;
+    }
 
     public static class MusicConfig {
         @SerializedName("volume")
@@ -67,6 +76,18 @@ public class AppConfig {
 
         public void setCountryCode(String countryCode) {
             this.countryCode = countryCode;
+        }
+    }
+
+    public static class SoundConfig {
+        @SerializedName("default_output_name")
+        private String defaultOutputName = "";
+
+        public String getDefaultOutputName() {
+            return defaultOutputName;
+        }
+        public void setDefaultOutputName(String defaultOutputName) {
+            this.defaultOutputName = defaultOutputName;
         }
     }
 

@@ -3,5 +3,5 @@ target/
 .project
 .idea
 /nodes.json
-/config.json
+/config.hjson
 /assets/

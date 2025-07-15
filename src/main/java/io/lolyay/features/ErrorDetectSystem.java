@@ -26,7 +26,6 @@ public class ErrorDetectSystem { // Renamed for clarity
     private long lastPacketTimestamp = 0;
     private long lastSongPosition = 0;
 
-    @EventListener
     public void onPlayerUpdate(PrePacketSendEvent event) {
         // We only care about the player update packet
         if (!(event.getPacket() instanceof S2CUpdatePlayerPacket)) {

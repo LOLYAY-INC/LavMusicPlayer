@@ -10,6 +10,7 @@ import io.lolyay.music.lavalink.LavaLinkPlayerManager;
 import io.lolyay.music.MusicManager;
 import io.lolyay.music.lavalink.LavaInitializer;
 import io.lolyay.features.jtmc.MediaManager;
+import io.lolyay.music.output.OpenAlPlayer;
 import io.lolyay.music.output.Pcm16Player;
 import io.lolyay.music.structs.ENVIRONMENT;
 import io.lolyay.panel.Server;
@@ -35,7 +36,7 @@ public class LavMusicPlayer {
     public static HeadlessMode headlessMode = new HeadlessMode();
     public static MediaManager mediaManager;
     public static MusicManager musicManager;
-    public static Pcm16Player player;
+    public static OpenAlPlayer player;
     public static LavaLinkPlayerManager playerManager;
     public static ENVIRONMENT environment;
     public static Scheduler scheduledTasksManager = new Scheduler();
@@ -51,7 +52,11 @@ public class LavMusicPlayer {
 
         musicManager = new MusicManager(playerManager);
 
-        player = new Pcm16Player(playerManager.getPlayerFactory().getOrCreatePlayer());
+        if(ConfigManager.getConfig().getSound().getDefaultOutputName().isEmpty()) {
+            ConfigManager.getConfig().getSound().setDefaultOutputName(OpenAlPlayer.getAvailableDevices().getFirst());
+        }
+
+        player = new OpenAlPlayer(playerManager.getPlayerFactory().getOrCreatePlayer(),ConfigManager.getConfig().getSound().getDefaultOutputName());
 
         mediaManager = new MediaManager(eventBus, "LavMusicPlayer", "lavmusicplayer");
 

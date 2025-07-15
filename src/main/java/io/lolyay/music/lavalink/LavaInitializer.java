@@ -3,7 +3,6 @@ package io.lolyay.music.lavalink;
 import com.github.topi314.lavasrc.ytdlp.YtdlpAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.format.Pcm16AudioDataFormat;
-import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
@@ -19,6 +18,7 @@ import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
 import io.lolyay.LavMusicPlayer;
 import io.lolyay.config.ConfigManager;
+import io.lolyay.music.formats.CustomFloatPcmAudioDataFormat;
 import io.lolyay.music.sources.AdditionalSourcesManager;
 import io.lolyay.music.sources.dlp.YoutubeDlpDownloader;
 import io.lolyay.utils.Logger;
@@ -26,7 +26,6 @@ import io.lolyay.utils.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 
 public class LavaInitializer  {
     private static YoutubeType DEFAULT_YOUTUBE_TYPE = YoutubeType.YOUTUBE_SOURCE;
@@ -43,7 +42,9 @@ public class LavaInitializer  {
         // Configure output format to match Player class requirements: 48kHz, 16-bit, stereo, signed, little-endian PCM
         playerManager.getConfiguration().setOutputFormat(new Pcm16AudioDataFormat(2, 48000, 960, false));
         playerManager.getConfiguration().setOpusEncodingQuality(10);
-        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
+        playerManager.getConfiguration().setOutputFormat(
+                new CustomFloatPcmAudioDataFormat(2, 48000, 960, false) // false = little-endian
+        );
 
         registerSourceManagers(playerManager);
 

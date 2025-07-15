@@ -11,6 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jgit.version.pattern>1.0.69-DEVELOPMENT</jgit.version.pattern>
+        <lwjgl.version>3.3.3</lwjgl.version>
     </properties>
 
     <repositories>
@@ -67,7 +68,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <release>23</release>
+                    <release>21</release>
                 </configuration>
             </plugin>
 
@@ -125,14 +126,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.lolyay</groupId>
+            <groupId>dev.lolyay</groupId>
             <artifactId>eventbus</artifactId>
-            <version>1.2.1</version>
+            <version>1.3.4</version>
         </dependency>
         <dependency>
-            <groupId>io.lolyay</groupId>
+            <groupId>dev.lolyay</groupId>
             <artifactId>lyricsv2</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.4</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -168,6 +169,58 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>${lwjgl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+            <version>${lwjgl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>natives-linux</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>natives-linux</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>natives-macos</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>natives-macos</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>natives-windows</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>natives-windows</classifier>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

@@ -109,6 +109,7 @@ public class HttpServer {
             }
 
             String mimeType = assetProvider.getMimeType(path);
+           // Logger.log("[HTTP] Serving " + path);
 
             if(!assetProvider.getAsset(path).exists()) {
                 sendResponse(exchange, 404, "Not Found");

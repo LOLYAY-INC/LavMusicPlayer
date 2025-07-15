@@ -74,6 +74,9 @@ public class ConfigManager {
         AppConfig.PanelConfig panelConfig = new AppConfig.PanelConfig();
         defaultConfig.setPanel(panelConfig);
 
+        AppConfig.SoundConfig soundConfig = new AppConfig.SoundConfig();
+        defaultConfig.setSound(soundConfig);
+
 
         try (FileWriter writer = new FileWriter(configFile)) {
             gson.toJson(defaultConfig, writer);
