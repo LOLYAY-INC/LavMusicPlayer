@@ -26,7 +26,6 @@ public class CustomFloatPcmAudioDataFormat extends AudioDataFormat {
     public CustomFloatPcmAudioDataFormat(int channelCount, int sampleRate, int chunkSampleCount, boolean bigEndian) {
         super(channelCount, sampleRate, chunkSampleCount);
         this.bigEndian = bigEndian;
-        // 4 bytes per sample for 32-bit float
         this.silenceBytes = new byte[channelCount * chunkSampleCount * 4];
     }
 
@@ -52,13 +51,11 @@ public class CustomFloatPcmAudioDataFormat extends AudioDataFormat {
 
     @Override
     public AudioChunkDecoder createDecoder() {
-        // Decoding from float back to short is not needed for playback.
         return new FloatPcmChunkDecoder(this,bigEndian);
     }
 
     @Override
     public AudioChunkEncoder createEncoder(AudioConfiguration configuration) {
-        // Here is the key part: we return an instance of our new float encoder.
         return new FloatPcmChunkEncoder(this, bigEndian);
     }
 }

@@ -24,7 +24,7 @@ public class MusicAudioTrack {
 
     public MusicAudioTrack(AudioTrack track) {
         this.audioTrack = track;
-        this.trackInfo = new TrackInfo(track.getInfo().title, track.getInfo().author, track.getInfo().artworkUrl.replace("w1000-h1000","w60-h60-l90-rj"),track.getDuration());
+        this.trackInfo = new TrackInfo(track.getInfo().title, track.getInfo().author, (track.getInfo().artworkUrl == null ? "" : track.getInfo().artworkUrl).replace("w1000-h1000","w60-h60-l90-rj"),track.getDuration());
         this.encoded = encodeToString(encodeTrack(track));
     }
 

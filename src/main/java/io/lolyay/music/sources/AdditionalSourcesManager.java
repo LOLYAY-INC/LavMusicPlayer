@@ -61,6 +61,8 @@ public class AdditionalSourcesManager {
             Logger.err("You need to set your deezer decryption key and alr cookie!");
             return;
         }
+        Logger.debug(ConfigManager.getConfig().getAdditionalSources().getDeezerDecryptionKey());
+        Logger.debug(ConfigManager.getConfig().getAdditionalSources().getDeezerArlCookie());
         DeezerAudioSourceManager deezerAudioSourceManager = new DeezerAudioSourceManager(
                 ConfigManager.getConfig().getAdditionalSources().getDeezerDecryptionKey(),
                 ConfigManager.getConfig().getAdditionalSources().getDeezerArlCookie(),

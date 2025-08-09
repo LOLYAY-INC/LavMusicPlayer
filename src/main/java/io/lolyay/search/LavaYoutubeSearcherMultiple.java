@@ -14,9 +14,6 @@ public class LavaYoutubeSearcherMultiple {
 
     public static void doSearch(String query, Consumer<Search[]> callback, LavaSearchManager searchManager) {
         manager = searchManager;
-        if (query.startsWith("http"))
-            doFirstSearch(query, callback);
-        else
             doSecondSearch(query, callback);
     }
 
@@ -77,8 +74,17 @@ public class LavaYoutubeSearcherMultiple {
     }
 
     private static void doFourthSearch(String query, Consumer<Search[]> callback) {
-        DefaultSearcher searcher = new DefaultSearcher();
+        YoutubeSearcher searcher = new YoutubeSearcher( );
+
         ((LavaLinkPlayerManager) LavMusicPlayer.playerManager).getAudioPlayerManager()
-                .loadItem(searcher.getPrefix() + query, new LavaSearchManager.LavaResultHandlerMultiple(callback, query, searcher));
-    }
+                .loadItem(query, new LavaSearchManager.LavaResultHandlerMultiple(
+                        search -> {
+                            for (Search s : search) {
+                                if (!s.result().isSuccess()) {
+                                    callback.accept(search);
+                                    return;
+                                }
+                            }
+                            callback.accept(search);
+                        }, query, searcher));}
 }

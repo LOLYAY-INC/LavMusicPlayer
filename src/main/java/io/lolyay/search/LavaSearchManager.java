@@ -23,7 +23,6 @@ public class LavaSearchManager extends AbstractSearchManager {
     // Default Search Order:
     // Internet (http) -> Youtube Music (ytm) -> Youtube (yt) -> Other (other)
     private final Class<? extends AbstractSearcher>[] searchers = new Class[]{
-            HttpSearcher.class,
             YoutubeMusicSearcher.class,
             YoutubeSearcher.class,
             DefaultSearcher.class

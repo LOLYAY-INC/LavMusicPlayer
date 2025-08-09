@@ -5,7 +5,6 @@ import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import io.lolyay.utils.Logger;
 import org.lwjgl.openal.*;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.nio.charset.StandardCharsets;
 import org.lwjgl.system.MemoryUtil;
 import static org.lwjgl.openal.AL10.*;
 import static org.lwjgl.openal.ALC10.*;
@@ -26,6 +24,7 @@ public class OpenAlPlayer {
 
     private static final int BUFFER_COUNT = 4;
     private static final int OPENAL_FORMAT = AL_FORMAT_STEREO_FLOAT32;
+    // 20ms of 48kHz 32-bit float stereo audio: 48000 * 0.020 * 2 channels * 4 bytes/sample = 7680 bytes
     private static final int FRAME_BYTE_SIZE = 7680;
     private String deviceName;
 
@@ -63,7 +62,6 @@ public class OpenAlPlayer {
         }
 
         return ALUtil.getStringList(NULL, ALC_ALL_DEVICES_SPECIFIER);
-
     }
 
     public void startSending() {
@@ -116,53 +114,56 @@ public class OpenAlPlayer {
         AL.createCapabilities(ALC.createCapabilities(device));
 
         final int source = alGenSources();
-
         final int[] buffers = new int[BUFFER_COUNT];
-        for (int i = 0; i < BUFFER_COUNT; i++) {
-            buffers[i] = alGenBuffers();
-            checkAlError("Generate Buffer " + i);
+        alGenBuffers(buffers);
+        checkAlError("Generate Buffers");
+
+        final ArrayList<Integer> freeBuffers = new ArrayList<>();
+        for (int buffer : buffers) {
+            freeBuffers.add(buffer);
         }
 
         final ByteBuffer directBuffer = ByteBuffer.allocateDirect(FRAME_BYTE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
 
         try {
-            for (int bufferId : buffers) {
-                AudioFrame frame = audioPlayer.provide(1, java.util.concurrent.TimeUnit.SECONDS);
-                if (frame == null) {
-                    Logger.warn("Could not get initial frame. Track might fail to start.");
-                    break;
-                }
-                directBuffer.clear();
-                directBuffer.put(frame.getData());
-                directBuffer.flip();
-                alBufferData(bufferId, OPENAL_FORMAT, directBuffer, 48000);
-                alSourceQueueBuffers(source, bufferId);
-            }
-
-            alSourcePlay(source);
-
             while (running.get()) {
+                // Reclaim any processed buffers
                 int processed = alGetSourcei(source, AL_BUFFERS_PROCESSED);
-                for (int i = 0; i < processed; i++) {
-                    int bufferId = alSourceUnqueueBuffers(source);
-                    checkAlError("Unqueue Buffer");
-                    AudioFrame frame = audioPlayer.provide();
+                if (processed > 0) {
+                    int[] unqueued = new int[processed];
+                    alSourceUnqueueBuffers(source, unqueued);
+                    checkAlError("Unqueue Buffers");
+                    for (int bufferId : unqueued) {
+                        freeBuffers.add(bufferId);
+                    }
+                }
+
+                // Fill free buffers with new audio data
+                while (!freeBuffers.isEmpty()) {
+                    AudioFrame frame = audioPlayer.provide(); // Provides a 20ms frame
                     if (frame != null) {
+                        int bufferId = freeBuffers.remove(0);
                         directBuffer.clear();
                         directBuffer.put(frame.getData());
                         directBuffer.flip();
                         alBufferData(bufferId, OPENAL_FORMAT, directBuffer, 48000);
-                        checkAlError("Re-buffer Data");
+                        checkAlError("Buffer Data");
                         alSourceQueueBuffers(source, bufferId);
-                        checkAlError("Re-queue Buffer");
+                        checkAlError("Queue Buffer");
+                    } else {
+                        // No more audio data available, stop trying for now
+                        break;
                     }
                 }
 
+                // If the source stopped due to buffer underrun, restart it if we have more buffers
                 if (alGetSourcei(source, AL_SOURCE_STATE) != AL_PLAYING && alGetSourcei(source, AL_BUFFERS_QUEUED) > 0) {
                     alSourcePlay(source);
+                    checkAlError("Restart Playback");
                 }
 
-                Thread.sleep(15);
+                // Wait for one frame's duration before checking again.
+                Thread.sleep(20);
             }
         } catch (InterruptedException e) {
             Logger.debug("OpenAL thread interrupted, shutting down.");

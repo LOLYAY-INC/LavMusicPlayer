@@ -14,10 +14,7 @@ public class LavaYoutubeSearcher {
 
     public static void doSearch(String query, Consumer<Search> callback, LavaSearchManager searchManager) {
         manager = searchManager;
-        if (query.startsWith("http"))
-            doFirstSearch(query, callback);
-        else
-            doSecondSearch(query, callback);
+        doSecondSearch(query, callback);
     }
 
     private static void doFirstSearch(String query, Consumer<Search> callback) {
