@@ -17,15 +17,19 @@ The default web interface is open source! The bundled files are Vite production 
 
 ### Customizing the Web Interface
 
-When LavMusicPlayer runs for the first time, it extracts the bundled web assets into a local `assets` directory in the same folder as the JAR file. You can modify or replace these files to customize the interface:
+When LavMusicPlayer runs for the first time, it downloads the bundled web assets into a local `assets` directory in the same folder as the JAR file. You can modify or replace these files to customize the interface:
 
 1. Run LavMusicPlayer once to extract the assets
 2. Navigate to the `assets` directory
 3. Modify the files as needed
 4. Restart LavMusicPlayer to see your changes
 
-If you want to prevent the extraction of assets (e.g., if you've already customized them), use the `-noextract` command line argument.
-You can also create your own site entirely, without depending on the built in web server.
+Or You can Change the Url LavMusicPlayer Downloads from in the Config under panel -> assets-url.
+It can Either be:
+- A direct Link to a zip with the files
+- A Link to a Github Repo, With the latest Release having a "assets.zip" Asset Attached that gets downloaded.
+
+You can also create your own site entirely, without depending on the built in web server (See API_DOCUMENTATION.md).
 
 ## ✨ Features
 
@@ -52,7 +56,7 @@ You can also create your own site entirely, without depending on the built in we
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Java 23 or higher
+- Java 21 or higher
 - Internet connection for streaming music
 
 ### Installation
@@ -66,7 +70,6 @@ You can also create your own site entirely, without depending on the built in we
 - `-OVERWRITE_CONFIG`: Force creation of a new configuration file
 - `-p=PORT` or `-port=PORT`: Specify the HTTP server port (default: 80)
 - `-s` or `-silent`: Enable silent mode ( No popups when errors happen)
-- `-noextract` or `-no-extract`: Disable resource extraction
 
 ## 📚 API Documentation
 
@@ -99,6 +102,12 @@ The configuration file has the following main sections:
   },
   "lyrics": {
     "musicmatch-auth-token": ""
+  },
+  "panel": {
+    "assets-url": "https://github.com/LOLYAY-INC/LavMusicPlayerWeb"
+  },
+  "sound": {
+    "default_output_name": "OpenAL Soft on ..."
   }
 }
 ```
@@ -107,12 +116,9 @@ The configuration file has the following main sections:
 
 #### YouTube OAuth
 
-To prevent issues with YouTube, the player can use an authenticated account:
+This Option is now Automated and Implemented in the Interface.
+When Starting the Deamon and Opening the Interface for the first time, you get Automatically Prompted to sign in with Youtube, wich saves your Oauth2 Token Automatically.
 
-1. Start LavMusicPlayer for the first time
-2. You will be prompted to open a browser window and log into your YouTube account
-3. The application will output a refresh token in the console
-4. Copy this token to the `yt-oauth2-refresh-token` field in the config file
 
 #### Spotify Integration
 
@@ -174,7 +180,6 @@ To enable Tidal search:
     ```json
     "tidal-token": "YOUR_TIDAL_TOKEN"
     ```
-Done! Now restart the demon if it has started (check your tray for the LavMusicBot Icon) and you're set! Go to http://localhost:80 to open the UI.
 
 
 ## Roadmap
@@ -195,8 +200,6 @@ If you have a suggestion that would make this better, please fork the repo and c
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-*Note: I made this [Lavalink JSON to Java Converter](https://lolyay.dev/tools/lavalinkconverter/) to use with the JSON you get from: [The lavalink Server List](https://lavalink-list.appujet.site/non-ssl)*
 
 ## 📜 License
 

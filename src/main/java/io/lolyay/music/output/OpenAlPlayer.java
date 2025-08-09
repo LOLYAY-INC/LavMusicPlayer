@@ -66,7 +66,7 @@ public class OpenAlPlayer {
 
     public void startSending() {
         if (running.get()) {
-            Logger.warn("startSending called while a player was already running. Stopping the old one first.");
+            Logger.log("startSending called while a player was already running. Stopping the old one first. this is expected for song changes.");
             stopSending();
         }
 
